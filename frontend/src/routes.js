@@ -39,7 +39,7 @@ export const routes = [
     element: <MainLayout />,
     children: [
       { path: 'login', element: <div>login</div> },
-      { path: 'regiter', element: <div>register</div> },
+      { path: 'register', element: <div>register</div> },
       { path: '404', element: <div>not found</div> },
       { path: '/', element: <Navigate to="/classes" /> },
       { path: '*', element: <Navigate to="/404" replace/> }
