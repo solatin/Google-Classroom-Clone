@@ -36,7 +36,7 @@ export const CreateClassModal = ({ open, handleClose }) => {
 					Create
 				</Button>
 				<Button onClick={handleClose} autoFocus variant="outlined">
-					Cancle
+					Cancel
 				</Button>
 			</DialogActions>
 		</Dialog>
