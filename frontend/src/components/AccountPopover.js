@@ -15,7 +15,7 @@ import {
 import PersonIcon from '@mui/icons-material/Person';
 import { useAuth } from '../hooks/useAuth';
 
-const AccountPopover = () => {
+const AccountPopover = ({props}) => {
   const anchorRef = useRef(null);
   const { user, onLogout } = useAuth();
   const navigate = useNavigate();
@@ -49,6 +49,7 @@ const AccountPopover = () => {
           alignItems: 'center',
           display: 'flex'
         }}
+        {...props}
       >
         <Avatar
           src={user?.avatar}
@@ -75,13 +76,10 @@ const AccountPopover = () => {
           <Typography color="textPrimary" variant="subtitle2">
             {user?.name}
           </Typography>
-          <Typography color="textSecondary" variant="subtitle2">
-            Devias
-          </Typography>
         </Box>
         <Divider />
         <Box sx={{ mt: 2 }}>
-          <MenuItem component={RouterLink} to="/dashboard/social/profile">
+          <MenuItem component={RouterLink} to="/profile" onClick={handleClose}>
             <ListItemIcon>
               <PersonIcon fontSize="small" />
             </ListItemIcon>
@@ -89,15 +87,6 @@ const AccountPopover = () => {
               primary={
                 <Typography color="textPrimary" variant="subtitle2">
                   Profile
-                </Typography>
-              }
-            />
-          </MenuItem>
-          <MenuItem component={RouterLink} to="/dashboard/account">
-            <ListItemText
-              primary={
-                <Typography color="textPrimary" variant="subtitle2">
-                  Settings
                 </Typography>
               }
             />

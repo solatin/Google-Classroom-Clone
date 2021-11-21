@@ -7,7 +7,8 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import React from 'react';
-import AccountPopover from './AccountPopover';
+import { Link } from 'react-router-dom';
+import AccountPopover from '../AccountPopover';
 
 export default function NavBar({ openSideBar, onClickAddButton }) {
 	return (
@@ -23,7 +24,11 @@ export default function NavBar({ openSideBar, onClickAddButton }) {
 					>
 						<MenuIcon />
 					</IconButton>
-					<img src="/static/google_logo.svg" alt="" />
+					<Link to="/">
+						<Box sx={{ mt: 1 }}>
+							<img src="/static/google_logo.svg" alt="" />
+						</Box>
+					</Link>
 					<Typography variant="h6" sx={{ flexGrow: 1, ml: 1, color: 'black' }}>
 						Classroom
 					</Typography>

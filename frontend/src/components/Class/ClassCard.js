@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import PropTypes from 'prop-types';
 
-export default function ClassCard({ item }) {
+export default function ClassCard({ item, onClick }) {
 	return (
 		<Card sx={{ maxWidth: 310, maxHeight: 300, borderRadius: 2 }}>
 			<Box
@@ -33,6 +33,7 @@ export default function ClassCard({ item }) {
 							},
 							fontSize: 28
 						}}
+						onClick={() => onClick(item._id)}
 					>
 						{item.name}
 					</Typography>
@@ -68,5 +69,6 @@ export default function ClassCard({ item }) {
 }
 
 ClassCard.propTypes = {
-	item: PropTypes.object.isRequired
+	item: PropTypes.object.isRequired,
+	onClick: PropTypes.func.isRequired,
 };

@@ -2,7 +2,7 @@ import { Box, Drawer, Typography } from '@mui/material';
 import { LAYOUT } from 'src/configs/layout';
 import PropTypes from 'prop-types';
 
-const MainSidebar = ({ closeSideBar, isSideBarOpen }) => {
+const ClassListSidebar = ({ closeSideBar, isSideBarOpen }) => {
 	return (
 		<Drawer
 			anchor="left"
@@ -30,9 +30,9 @@ const MainSidebar = ({ closeSideBar, isSideBarOpen }) => {
 	);
 };
 
-MainSidebar.propTypes = {
+ClassListSidebar.propTypes = {
 	closeSideBar: PropTypes.func.isRequired,
 	isSideBarOpen: PropTypes.bool.isRequired
 }
 
-export default MainSidebar;
+export default ClassListSidebar;
