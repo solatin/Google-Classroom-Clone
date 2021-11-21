@@ -13,9 +13,6 @@ app.use(cors());
 mongoose.connect(
 	`mongodb+srv://${process.env.USER_NAME}:${process.env.MONGODB_PASSWORD}@cluster0.jqf7i.mongodb.net/${process.env.DATABASE_NAME}?retryWrites=true&w=majority`
 );
-console.log(
-	`mongodb+srv://${process.env.USER_NAME}:${process.env.MONGODB_PASSWORD}@cluster0.jqf7i.mongodb.net/${process.env.DATABASE_NAME}?retryWrites=true&w=majority`
-);
 
 mongoose.connection.once('open', async (ref) => {
 	console.log('Connected to mongo server!');
@@ -31,6 +28,7 @@ app.post('/classes', async (req, res) => {
 	await newClass.save();
 	res.status(202).json(newClass);
 });
+
 
 const host = '0.0.0.0';
 const port = process.env.PORT || 8080;
