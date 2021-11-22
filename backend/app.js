@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+var nodemailer = require('nodemailer');
 const cors = require('cors');
 require('dotenv').config();
 
@@ -12,6 +13,14 @@ const ACCESS_SECRET_KEY = process.env.JWT_ACCESS_TOKEN_SECRET_KEY;
 const ACCESS_EXP = parseInt(process.env.JWT_ACCESS_TOKEN_EXP);
 const REFRESH_SECRET_KEY = process.env.JWT_REFRESH_TOKEN_SECRET_KEY;
 const REFRESH_EXP = parseInt(process.env.JWT_REFRESH_TOKEN_EXP);
+
+var transporter = nodemailer.createTransport({
+	service: 'gmail',
+	auth: {
+		user: 'test.22.11.2021@gmail.com',
+		pass: '18CNTNWNC'
+	}
+})
 
 const app = express();
 
@@ -32,8 +41,19 @@ app.get('/classes', auth, async (req, res) => {
 	res.json(listClass);
 });
 
+function makeCode(length) {
+	var result = '';
+	var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	var charactersLength = characters.length;
+	for (var i = 0; i < length; i++) {
+		result += characters.charAt(Math.floor(Math.random() * charactersLength));
+	}
+	return result;
+}
+
 app.post('/classes', async (req, res) => {
 	const newClass = new Class(req.body);
+	newClass.code = makeCode(6);
 	await newClass.save();
 	res.status(202).json(newClass);
 });
@@ -88,6 +108,23 @@ app.post('/login', async (req, res) => {
     email: account.email,
   });
 });
+app.get('/sendInvite', async (req, res) => {
+	var mailOptions = {
+		from: 'ttdat.09.08.2000@gmail.com',
+		to: 'bobyba20@gmail.com',
+		subject: 'Invite to classroom',
+		text: 'You have been invited to join our classroom. If you don\'t join, Fuck you!!!'
+	}
+	transporter.sendMail(mailOptions, function (error, info) {
+		if (error) {
+			console.log(error);
+		}
+		else {
+			console.log("Email sent Success");
+		}
+	})
+})
+
 const host = '0.0.0.0';
 const port = process.env.PORT || 8080;
 
