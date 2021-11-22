@@ -1,4 +1,4 @@
-import { IconButton } from "@material-ui/core";
+import { IconButton } from "@mui/material";
 import { Menu, MoreVert } from "@material-ui/icons";
 import React from "react";
 import "./Announcement.css";

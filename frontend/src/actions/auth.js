@@ -18,9 +18,12 @@ export const loginFailure = (error) => ({
   error
 });
 
-export const loginRequest = () => async (dispatch) => {
+export const loginRequest = (form) => async (dispatch) => {
   dispatch({ type: AuthTypes.LOGIN_REQUEST });
-  return axios.get('/mock-server/user.json').then(({ data }) => data);
+  const rs = await axios.post('/login', form);
+  localStorage.setItem('access-token', rs.jwtAccessToken);
+  localStorage.setItem('refresh-token', rs.jwtRefreshToken);
+  dispatch(loginSuccess(rs));
 };
 
 export const logoutRequest = () => ({ type: AuthTypes.LOGOUT_REQUEST });

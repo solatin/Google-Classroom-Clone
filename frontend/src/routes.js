@@ -5,6 +5,8 @@ import ClassFeed from 'src/components/ClassDetailLayout/ClassFeed/ClassFeed';
 import ClassAssignments from 'src/components/ClassDetailLayout/ClassAssignments/ClassAssignments';
 import MainLayout from './components/MainLayout';
 import { ClassesPage } from './pages/Classes';
+import { Login } from './pages/Login';
+import { Register } from './pages/Register';
 import ClassMembers from './components/ClassDetailLayout/ClassMembers/ClassMembers';
 
 export const routes = [
@@ -41,8 +43,8 @@ export const routes = [
     path: '/',
     element: <MainLayout />,
     children: [
-      { path: 'login', element: <div>login</div> },
-      { path: 'register', element: <div>register</div> },
+      { path: 'login', element: <Login /> },
+      { path: 'register', element: <Register /> },
       { path: '404', element: <div>not found</div> },
       { path: '/', element: <Navigate to="/classes" /> },
       { path: '*', element: <Navigate to="/404" replace/> }

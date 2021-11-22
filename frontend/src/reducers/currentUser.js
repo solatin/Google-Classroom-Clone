@@ -4,7 +4,7 @@ import storage from 'redux-persist/lib/storage';
 import { AuthTypes } from 'src/actions';
 
 const INITIAL_STATE = {
-  node: { name: 'sol' },
+  node: null,
   error: null,
   loading: false
 };
