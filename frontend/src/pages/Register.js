@@ -2,13 +2,16 @@ import { Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@m
 import { Box } from '@mui/system';
 import { Helmet } from 'react-helmet';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router';
 import axiosClient from 'src/utils/axios';
 
 export const Register = () => {
+	const navigate = useNavigate();
 	const { register, handleSubmit } = useForm();
 	const onSubmit = async (form) => {
     try{
 		  await axiosClient.post('/register', form);
+			navigate('/login');
     } catch (e) {
       console.log(e);
     }

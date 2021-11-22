@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet';
 import { useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
+import { Link } from 'react-router-dom';
 import * as AuthActions from 'src/actions/auth';
 
 export const Login = () => {
@@ -28,6 +29,7 @@ export const Login = () => {
         <TextField fullWidth  label="Email" variant="outlined" {...register('email')} sx={{mb: 2}}/>
 				<TextField fullWidth label="Password" variant="outlined" {...register('password')} sx={{mb: 2}} />
         <Button variant="contained" onClick={handleSubmit(onSubmit)}>Login</Button>
+        <Link to="/register">Register</Link>
         </Box>
 			</Box>
 		</>
