@@ -35,7 +35,9 @@ mongoose.connection.once('open', async(ref) => {
     console.log('Connected to mongo server!');
 });
 
-app.get('/classes', async(req, res) => {
+app.get('/classes', auth, async(req, res) => {
+		console.log(res.locals.account);
+
     const listClass = await Class.find();
     res.json(listClass);
 });
@@ -115,8 +117,8 @@ app.post('/login', async (req, res) => {
     });
   }
 
-  const { _id } = account;
-  const jwtPayload = { id: _id };
+  const { _id, role } = account;
+  const jwtPayload = { id: _id, role};
   const jwtAccessToken = await generateToken(jwtPayload, ACCESS_SECRET_KEY, ACCESS_EXP);
   const jwtRefreshToken = await generateToken({}, REFRESH_SECRET_KEY, REFRESH_EXP);
 
