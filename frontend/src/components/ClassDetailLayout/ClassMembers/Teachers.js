@@ -25,7 +25,7 @@ const Teachers = () => {
             <span className="avatar">
                 <img src="/static/avatar1.jpg" aria-hidden="true" height="30px" width="30px" alt="" />
             </span>
-            <span className="name">{classData.name}</span>
+            <span className="name">{classData.teacher_name}</span>
         </div>
     );
 }
