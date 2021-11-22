@@ -6,22 +6,37 @@ import { useEffect } from "react";
 import { useState } from "react";
 // import { useAuthState } from "react-firebase-hooks/auth";
 import { useParams } from "react-router-dom";
+import authAxios from "src/utils/authAxios";
 import Announcement from "./Announcement";
 // import { auth, db } from "../firebase";
 import "./ClassFeed.css";
+
+const handlePostAnnouncement = () => {
+  // to do
+}
 
 function ClassFeed() {
   const [classData, setClassData] = useState({});
   const [announcementContent, setAnnouncementContent] = useState("");
   const [posts, setPosts] = useState([]);
-  // const [user, loading, error] = useAuthState(auth);
+  // const [user, loading, error] = React.useAuthState(requireAuth);
   const { id } = useParams();
   // const history = useHistory();
+
+  const fetch = async() => {
+    const rs = await authAxios.get(`/class-details/${id}/feed`);
+    console.log(rs);
+    setClassData(rs);
+  }
+
   useEffect(() => {
-    // reverse the array
-    let reversedArray = classData?.posts?.reverse();
-    setPosts(reversedArray);
-  }, [classData]);
+    // reverse the array  
+    // let reversedArray = classData?.posts?.reverse();
+    // setPosts(reversedArray);
+
+    fetch();
+  }, []);
+
 //   const createPost = async () => {
 //     try {
 //       const myClassRef = await db.collection("classes").doc(id).get();
@@ -57,10 +72,14 @@ function ClassFeed() {
 //     if (loading) return;
 //     if (!user) history.replace("/");
 //   }, [loading, user]);
+
   return (
     <div className="class">
       <div className="class__nameBox">
-        <div className="class__name">{classData?.name}</div>
+        {/* <div className="class__name">{classData.name}</div> */}
+        <div className="class_code">Mã lớp: {classData.code}</div>
+        <div className="teacher_name">{classData.teacher_name}</div>
+        <div className="class__name">{classData.name}</div>
       </div>
       <div className="class__announce">
         {/* <img src={user?.photoURL} alt="My image" /> */}
@@ -68,9 +87,9 @@ function ClassFeed() {
           type="text"
           value={announcementContent}
           onChange={(e) => setAnnouncementContent(e.target.value)}
-          placeholder="Announce something to your class"
+          placeholder="Thông báo nội dung nào đó cho lớp học của bạn"
         />
-        <IconButton onClick="">
+        <IconButton onClick={handlePostAnnouncement}>
           <SendOutlined />
         </IconButton>
       </div>

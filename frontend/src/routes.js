@@ -5,6 +5,7 @@ import ClassFeed from 'src/components/ClassDetailLayout/ClassFeed/ClassFeed';
 import ClassAssignments from 'src/components/ClassDetailLayout/ClassAssignments/ClassAssignments';
 import MainLayout from './components/MainLayout';
 import { ClassesPage } from './pages/Classes';
+import ClassMembers from './components/ClassDetailLayout/ClassMembers/ClassMembers';
 
 export const routes = [
 	{
@@ -31,7 +32,7 @@ export const routes = [
 			},
 			{
 				path: '/members',
-				element: <div>members</div>
+				element: <ClassMembers />
 			}
 		]
 	},

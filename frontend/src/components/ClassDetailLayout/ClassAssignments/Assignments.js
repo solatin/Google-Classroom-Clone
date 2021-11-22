@@ -8,7 +8,7 @@ import "./Assignments.css";
 
 const Assignments = () => {
     return(
-        <Card sx={{ maxWidth: 1000, maxHeight: 300, borderRadius: 2 }}>
+        <Card sx={{ maxWidth: 1000, maxHeight: 300, borderRadius: 2, margin: 2 }}>
 			<CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
 					<Typography
@@ -21,7 +21,7 @@ const Assignments = () => {
 							fontSize: 16
 						}}  
 					>
-                    <img src="/static/notebook.svg" alt="" />
+                    <img src="/static/notebook.svg" height="30px" width="30px" alt="" />
 						Assignments
 					</Typography>
 				</Box>
