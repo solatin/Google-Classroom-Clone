@@ -13,25 +13,25 @@ export const CreateClassModal = ({ open, handleClose }) => {
 		<Dialog
 			open={open}
 			onClose={handleClose}
-      fullWidth
+			fullWidth
 			aria-labelledby="alert-dialog-title"
 			aria-describedby="alert-dialog-description"
 		>
 			<DialogTitle id="alert-dialog-title">
 				<Typography variant="h5" textAlign="center">Create new class</Typography>
 			</DialogTitle>
-      <Divider />
+			<Divider />
 			<DialogContent>
-				<TextField fullWidth  color="secondary" label="Class Name" variant="outlined" {...register('name')} sx={{display: 'block', mb: 2}}/>
+				<TextField fullWidth color="secondary" label="Class Name" variant="outlined" {...register('name')} sx={{ display: 'block', mb: 2 }} />
 				<TextField fullWidth color="secondary" label="Teacher Name" variant="outlined" {...register('teacher_name')} />
 			</DialogContent>
-			<DialogActions sx={{p: 3, pt: 0}}>
+			<DialogActions sx={{ p: 3, pt: 0 }}>
 				<Button
 					onClick={() => {
 						handleClose();
 						handleSubmit(onSubmit)();
 					}}
-          variant="contained"
+					variant="contained"
 				>
 					Create
 				</Button>

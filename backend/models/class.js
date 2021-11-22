@@ -12,6 +12,9 @@ const ClassSchema = new Schema(
     },
     duration: {
       type: String
+    },
+    code: {
+      type: String
     }
   },
   { collection: "Class" }
