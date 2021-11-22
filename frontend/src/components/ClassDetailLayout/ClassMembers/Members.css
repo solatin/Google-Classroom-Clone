@@ -1,0 +1,13 @@
+.avatar {
+    flex: 0 0 2.5rem;
+    padding: 0 0.5rem;
+    text-align: center;
+}
+
+.name {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-left: 0.5rem;
+    max-width: 30rem;
+}
