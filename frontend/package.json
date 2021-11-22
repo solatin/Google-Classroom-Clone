@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@emotion/react": "^11.4.0",
-    "@emotion/styled": "^11.3.0",
+    "@emotion/react": "^11.6.0",
+    "@emotion/styled": "^11.6.0",
+    "@material-ui/core": "^5.0.0-beta.5",
+    "@material-ui/icons": "^4.11.2",
     "@mui/icons-material": "^5.0.5",
-    "@mui/material": "^5.0.6",
+    "@mui/material": "^5.1.1",
     "@reduxjs/toolkit": "^1.5.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
@@ -29,6 +31,7 @@
     "redux-thunk": "^2.3.0",
     "reduxsauce": "^1.2.0",
     "reselect": "^4.0.0",
+    "uuid": "^8.3.2",
     "web-vitals": "^1.0.1",
     "yup": "^0.32.9"
   },

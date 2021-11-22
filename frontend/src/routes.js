@@ -1,8 +1,11 @@
 import { Navigate } from 'react-router';
 import ClassLayout from 'src/components/ClassDetailLayout/ClassLayout';
 import ClassListLayout from 'src/components/ClassListLayout/ClassListLayout';
+import ClassFeed from 'src/components/ClassDetailLayout/ClassFeed/ClassFeed';
+import ClassAssignments from 'src/components/ClassDetailLayout/ClassAssignments/ClassAssignments';
 import MainLayout from './components/MainLayout';
 import { ClassesPage } from './pages/Classes';
+import ClassMembers from './components/ClassDetailLayout/ClassMembers/ClassMembers';
 
 export const routes = [
 	{
@@ -21,15 +24,15 @@ export const routes = [
 		children: [
 			{
 				path: '/feed',
-				element: <div>feed</div>
+				element: <ClassFeed />
 			},
 			{
 				path: '/assignments',
-				element: <div>assignments</div>
+				element: <ClassAssignments />
 			},
 			{
 				path: '/members',
-				element: <div>members</div>
+				element: <ClassMembers />
 			}
 		]
 	},
