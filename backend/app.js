@@ -1,9 +1,18 @@
 const express = require('express');
 const mongoose = require('mongoose');
+var nodemailer = require('nodemailer');
 const cors = require('cors');
 require('dotenv').config();
 
 const Class = require('./models/class.js');
+
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'test.22.11.2021@gmail.com',
+        pass: '18CNTNWNC'
+    }
+})
 
 const app = express();
 
@@ -46,6 +55,39 @@ app.get('/class-details/:id/members', async(req, res) => {
     const classData = await Class.findById(req.params.id);
     // console.log(classData);
     res.json(classData);
+});
+
+function makeCode(length) {
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
+app.post('/classes', async(req, res) => {
+    const newClass = new Class(req.body);
+    newClass.code = makeCode(6);
+    await newClass.save();
+    res.status(202).json(newClass);
+});
+
+app.get('/sendInvite', async(req, res) => {
+    var mailOptions = {
+        from: 'test.22.11.2021@gmail.com',
+        to: 'bobyba20@gmail.com',
+        subject: 'Invite to classroom',
+        text: 'You have been invited to join our classroom. If you don\'t join, Fuck you!!!'
+    }
+    transporter.sendMail(mailOptions, function(error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log("Email sent Success");
+        }
+    })
 })
 
 const host = '0.0.0.0';

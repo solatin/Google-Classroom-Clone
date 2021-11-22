@@ -21,7 +21,6 @@ export const fetchFailure = (error) => ({
 });
 
 export const fetchRequest = () => async (dispatch) => {
-  console.log('zo action')
   try {
     dispatch({ type: ClassListTypes.LIST_CLASS_FETCH_REQUEST });
     const rs = await authAxios.get('/classes');
@@ -43,9 +42,10 @@ export const createRequest = (newClass) => async (dispatch) => {
   try {
     dispatch({ type: ClassListTypes.LIST_CLASS_CREATE_REQUEST });
     await authAxios.post('/classes', newClass);
+    dispatch(fetchRequest());
   } catch (e) {
     dispatch(createFailure(e));
   }
 };
 
-export const resetRequest = () =>  ({ type: ClassListTypes.LIST_CLASS_RESET_REQUEST });
+export const resetRequest = () => ({ type: ClassListTypes.LIST_CLASS_RESET_REQUEST });
