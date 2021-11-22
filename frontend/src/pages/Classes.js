@@ -12,7 +12,6 @@ export const ClassesPage = () => {
 	const navigate = useNavigate();
 	const classList = useSelector(ClassListSelectors.getList);
 	useEffect(() => {
-		console.log('zo');
 		dispatch(ClassListActions.fetchRequest());
 		return () => dispatch(ClassListActions.resetRequest());
 	}, [dispatch]);

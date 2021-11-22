@@ -3,6 +3,8 @@ import ClassLayout from 'src/components/ClassDetailLayout/ClassLayout';
 import ClassListLayout from 'src/components/ClassListLayout/ClassListLayout';
 import MainLayout from './components/MainLayout';
 import { ClassesPage } from './pages/Classes';
+import { Login } from './pages/Login';
+import { Register } from './pages/Register';
 
 export const routes = [
 	{
@@ -38,8 +40,8 @@ export const routes = [
     path: '/',
     element: <MainLayout />,
     children: [
-      { path: 'login', element: <div>login</div> },
-      { path: 'register', element: <div>register</div> },
+      { path: 'login', element: <Login /> },
+      { path: 'register', element: <Register /> },
       { path: '404', element: <div>not found</div> },
       { path: '/', element: <Navigate to="/classes" /> },
       { path: '*', element: <Navigate to="/404" replace/> }

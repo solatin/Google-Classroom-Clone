@@ -21,7 +21,6 @@ export const fetchFailure = (error) => ({
 });
 
 export const fetchRequest = () => async (dispatch) => {
-  console.log('zo action')
   try {
     dispatch({ type: ClassListTypes.LIST_CLASS_FETCH_REQUEST });
     const rs = await authAxios.get('/classes');

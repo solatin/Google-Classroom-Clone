@@ -47,6 +47,7 @@ export const requireAuth = (NewComponent) => (props) => {
   useEffect(() => {
     if (!user) {
       navigate('/login');
+      console.log('not user');
     }
   }, [navigate, user]);
 
