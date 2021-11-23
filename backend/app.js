@@ -5,14 +5,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const Class = require('./models/class.js');
-const Account = require('./models/account.js');
-const { generateToken } = require('./utils/jwt.js');
 const auth = require('./middlewares/auth.js');
-
-const ACCESS_SECRET_KEY = process.env.JWT_ACCESS_TOKEN_SECRET_KEY;
-const ACCESS_EXP = parseInt(process.env.JWT_ACCESS_TOKEN_EXP);
-const REFRESH_SECRET_KEY = process.env.JWT_REFRESH_TOKEN_SECRET_KEY;
-const REFRESH_EXP = parseInt(process.env.JWT_REFRESH_TOKEN_EXP);
 
 var transporter = nodemailer.createTransport({
     service: 'gmail',
