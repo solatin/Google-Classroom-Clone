@@ -7,7 +7,7 @@ const ClassSchema = new Schema(
     name: {
       type: String
     },
-    teacher_name: {
+    owner_id: {
       type: String
     },
     duration: {
