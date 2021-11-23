@@ -38,16 +38,17 @@ export const routes = [
 			}
 		]
 	},
-	{ path: '/profile', element: <ClassListLayout />, children: [{path: '/', element: <div>profile</div>}] },
+	{ path: '/profile', element: <ClassListLayout />, children: [{ path: '/', element: <div>profile</div> }] },
 	{
-    path: '/',
-    element: <MainLayout />,
-    children: [
-      { path: 'login', element: <Login /> },
-      { path: 'register', element: <Register /> },
-      { path: '404', element: <div>not found</div> },
-      { path: '/', element: <Navigate to="/classes" /> },
-      { path: '*', element: <Navigate to="/404" replace/> }
-    ]
-  }
+		path: '/',
+		element: <MainLayout />,
+		children: [
+			{ path: 'login', element: <Login /> },
+			{ path: 'register', element: <Register /> },
+			{ path: '404', element: <div>not found</div> },
+			{ path: '/', element: <Navigate to="/classes" /> },
+			{ path: '*', element: <Navigate to="/404" replace /> }
+		]
+	},
+	{ path: '/acceptInvite/:id/:email', element: <div></div> }
 ];
