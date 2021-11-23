@@ -43,8 +43,10 @@ export const Login = () => {
 			</Helmet>
 			<Box sx={{ mx: 'auto', my: 'auto', width: '300px' }}>
 				<Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexFlow: 'column', mt: '100px' }}>
-          <LockIcon color="primary" fontSize="large"/>
-          <Typography variant="h4" sx={{mb: 3}}>Login</Typography>
+					<LockIcon color="primary" fontSize="large" />
+					<Typography variant="h4" sx={{ mb: 3 }}>
+						Login
+					</Typography>
 					<TextField fullWidth label="Email" variant="outlined" {...register('email')} sx={{ mb: 2 }} />
 					<TextField fullWidth label="Password" variant="outlined" {...register('password')} sx={{ mb: 2 }} />
 					<Button variant="contained" onClick={handleSubmit(onSubmit)}>
@@ -60,7 +62,9 @@ export const Login = () => {
 					/>
 					<Box component="span" sx={{ mt: 2 }}>
 						Don&apos;t have an account yet?
-						<Link to="/register" style={{marginLeft: '5px'}}>Register</Link>
+						<Link to="/register" style={{ marginLeft: '5px' }}>
+							Register
+						</Link>
 					</Box>
 				</Box>
 			</Box>
