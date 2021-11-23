@@ -1,6 +1,9 @@
 import { createTypes } from 'reduxsauce';
 import authAxios from 'src/utils/authAxios';
 
+import { useSelector } from 'react-redux';
+import * as UserSelectors from 'src/selectors/user';
+
 export const ClassListTypes = createTypes(`
   LIST_CLASS_FETCH_REQUEST
   LIST_CLASS_FETCH_SUCCESS
@@ -41,6 +44,9 @@ export const createFailure = (error) => ({
 export const createRequest = (newClass) => async (dispatch) => {
   try {
     dispatch({ type: ClassListTypes.LIST_CLASS_CREATE_REQUEST });
+    // const user = useSelector(UserSelectors.getAuthUser);
+    // newClass.teacherEmail = user.teacherEmail;
+    // console.log(newClass)
     await authAxios.post('/classes', newClass);
     dispatch(fetchRequest());
   } catch (e) {
