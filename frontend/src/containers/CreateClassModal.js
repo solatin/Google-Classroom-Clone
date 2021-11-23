@@ -23,7 +23,7 @@ export const CreateClassModal = ({ open, handleClose }) => {
 			<Divider />
 			<DialogContent>
 				<TextField fullWidth color="secondary" label="Class Name" variant="outlined" {...register('name')} sx={{ display: 'block', mb: 2 }} />
-				<TextField fullWidth color="secondary" label="Teacher Name" variant="outlined" {...register('teacher_name')} />
+				{/* <TextField fullWidth color="secondary" label="Teacher Name" variant="outlined" {...register('teacher_name')} /> */}
 			</DialogContent>
 			<DialogActions sx={{ p: 3, pt: 0 }}>
 				<Button
