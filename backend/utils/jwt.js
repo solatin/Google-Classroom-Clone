@@ -13,7 +13,6 @@ const verifyToken = (jwtToken, jwtSecretKey, ignoreExpiration = false) => {
 };
 
 const generateToken = (jwtPayload, jwtSecretKey, jwtExp) => {
-	console.log('generate', jwtPayload);
 	return new Promise((resolve, reject) => {
 		jwt.sign(jwtPayload, jwtSecretKey, { expiresIn: jwtExp }, (error, token) => {
 			if (error) {
