@@ -135,29 +135,15 @@ app.post('/login', async (req, res) => {
     email: account.email,
   });
 });
-app.get('/sendInvite', async (req, res) => {
-  var mailOptions = {
-    from: 'ttdat.09.08.2000@gmail.com',
-    to: 'bobyba20@gmail.com',
-    subject: 'Invite to classroom',
-    text: 'You have been invited to join our classroom. If you don\'t join, Fuck you!!!'
-  }
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      console.log(error);
-    }
-    else {
-      console.log("Email sent Success");
-    }
-  })
-});
-app.get('/sendInvite', async (req, res) => {
+
+app.post('/sendInviteTeacher', auth, async (req, res) => {
   var mailOptions = {
     from: 'test.22.11.2021@gmail.com',
-    to: 'bobyba20@gmail.com',
+    to: req.body.email,
     subject: 'Invite to classroom',
-    text: 'You have been invited to join our classroom. If you don\'t join, Fuck you!!!'
+    text: 'You have been invited to join our classroom. Please login to your account and follow this link: http://localhost:3000/acceptInvite/' + req.body.classId + '/' + req.body.email
   }
+  console.log(req.body);
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       console.log(error);
@@ -165,6 +151,21 @@ app.get('/sendInvite', async (req, res) => {
       console.log("Email sent Success");
     }
   })
+})
+
+app.get('/acceptInvite/:id/:email', auth, async (req, res) => {
+console.log(1);
+  const account = res.locals.account;
+  const acc = await Account.findById(id);
+console.log(acc)
+  if (acc.email === email) {
+    const newClass = await Class.findById(id);
+    const checkExist = (account.role === 'teacher' ? ClassTeacher.find({ teacher_id: account.id, code: newClass.code }) : ClassStudent.find({ student_id: account.id, code: newClass.code })).length !== 0;
+    if (checkExist === false) {
+      const newClassMember = account.role === 'teacher' ? new ClassTeacher({ teacher_id: account.id, code: newClass.code }) : new ClassStudent({ student_id: account.id, code: newClass.code });
+      await newClassMember.save();
+    }
+  }
 })
 
 const host = '0.0.0.0';

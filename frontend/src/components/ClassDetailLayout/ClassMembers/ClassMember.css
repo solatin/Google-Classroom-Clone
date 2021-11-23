@@ -16,6 +16,11 @@
     line-height: 2rem;
 }
 
+.contain {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
 .line {
     border-top: 1px solid #1967d2;
 }

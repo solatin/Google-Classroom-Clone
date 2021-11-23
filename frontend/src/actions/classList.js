@@ -44,9 +44,6 @@ export const createFailure = (error) => ({
 export const createRequest = (newClass) => async (dispatch) => {
   try {
     dispatch({ type: ClassListTypes.LIST_CLASS_CREATE_REQUEST });
-    // const user = useSelector(UserSelectors.getAuthUser);
-    // newClass.teacherEmail = user.teacherEmail;
-    // console.log(newClass)
     await authAxios.post('/classes', newClass);
     dispatch(fetchRequest());
   } catch (e) {

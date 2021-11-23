@@ -3,14 +3,20 @@ import { Dialog } from '@mui/material';
 import './style.css'
 import { TextField, Grid, DialogActions, Button } from '@mui/material';
 import { ReactComponent as CopySvg } from '../Icons/copy_icon.svg'
+import authAxios from 'src/utils/authAxios';
 
 
 
-const FormInviteModal = ({ open, handleCloseForm }) => {
+const FormInviteModal = ({ open, handleCloseForm, teacher, classId }) => {
     const [email, setEmail] = useState("");
     const linkUrl = "Link copy to url"
     const copyToClipBoard = () => {
         navigator.clipboard.writeText(linkUrl);
+    }
+
+    const sendInvitation = async () => {
+        const invitation = { 'email': email, 'classId': classId }
+        teacher ? await authAxios.post('/sendInviteTeacher', invitation) : await authAxios.post('/sendInviteStudent', invitation);
     }
     return (
         <Dialog open={open} maxWidth="lg" onClose={handleCloseForm} className="form__dialog" aria-labelledby="customized-dialog-title">
@@ -43,7 +49,7 @@ const FormInviteModal = ({ open, handleCloseForm }) => {
                 </div>
                 <DialogActions>
                     <Button onClick={handleCloseForm}>Hủy</Button>
-                    <Button color='primary' disabled={email.length === 0}>Tạo</Button>
+                    <Button color='primary' disabled={email.length === 0} onClick={sendInvitation}>Tạo</Button>
                 </DialogActions>
             </div>
         </Dialog>
