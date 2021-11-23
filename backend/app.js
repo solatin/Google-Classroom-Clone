@@ -36,6 +36,14 @@ mongoose.connect(
 
 mongoose.connection.once('open', async (ref) => {
   console.log('Connected to mongo server!');
+})
+app.use('/auth/', require('./controllers/account'));
+
+app.get('/classes', auth, async (req, res) => {
+  console.log(res.locals.account);
+
+  const listClass = await Class.find();
+  res.json(listClass);
 });
 
 app.get('/classes', auth, async (req, res) => {
@@ -85,57 +93,6 @@ app.post('/classes', auth, async (req, res) => {
   res.status(202).json(newClass);
 });
 
-app.post('/register', async (req, res) => {
-  const rs = await Account.find({ email: req.body.email }).exec();
-  if (rs.length > 0) {
-    res.status(409).json('email already exist!');
-    return;
-  }
-
-  const jwtRefreshToken = await generateToken({}, REFRESH_SECRET_KEY, REFRESH_EXP);
-  const newAccount = new Account({ ...req.body, refresh_token: jwtRefreshToken });
-  const { _id, role } = await newAccount.save();
-  const jwtPayload = { id: _id.toString(), role };
-  const jwtAccessToken = await generateToken(jwtPayload, ACCESS_SECRET_KEY, ACCESS_EXP);
-  return res.status(201).json({
-    message: 'Register account successfully',
-    jwtAccessToken,
-    jwtRefreshToken
-  });
-});
-
-app.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-
-  const [account] = await Account.find({ email: req.body.email }).exec();
-  if (!account) {
-    return res.status(401).json({
-      message: 'Email does not exist'
-    });
-  }
-
-  const validate = account.password === password;
-  if (!validate) {
-    return res.status(401).json({
-      message: 'Incorrect password'
-    });
-  }
-
-  const { _id, role } = account;
-  const jwtPayload = { id: _id, role };
-  const jwtAccessToken = await generateToken(jwtPayload, ACCESS_SECRET_KEY, ACCESS_EXP);
-  const jwtRefreshToken = await generateToken({}, REFRESH_SECRET_KEY, REFRESH_EXP);
-
-  account.refresh_token = jwtRefreshToken;
-  await account.save();
-
-  return res.status(201).json({
-    jwtAccessToken,
-    jwtRefreshToken,
-    email: account.email,
-  });
-});
-
 app.post('/sendInviteTeacher', auth, async (req, res) => {
   var mailOptions = {
     from: 'test.22.11.2021@gmail.com',
@@ -154,10 +111,10 @@ app.post('/sendInviteTeacher', auth, async (req, res) => {
 })
 
 app.get('/acceptInvite/:id/:email', auth, async (req, res) => {
-console.log(1);
+  console.log(1);
   const account = res.locals.account;
   const acc = await Account.findById(id);
-console.log(acc)
+  console.log(acc)
   if (acc.email === email) {
     const newClass = await Class.findById(id);
     const checkExist = (account.role === 'teacher' ? ClassTeacher.find({ teacher_id: account.id, code: newClass.code }) : ClassStudent.find({ student_id: account.id, code: newClass.code })).length !== 0;
