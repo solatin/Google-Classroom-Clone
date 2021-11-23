@@ -1,12 +1,15 @@
 import React from 'react';
 import { useParams } from "react-router-dom";
 import authAxios from "src/utils/authAxios";
-import { v4 as uuidv4 } from 'uuid';
 
 import "./ClassMember.css"
-
 import Teachers from "./Teachers"
+import IconButton from '@mui/material/IconButton';
+import AddIcon from '@mui/icons-material/Add';
 import Students from "./Students"
+import { Grid } from '@mui/material';
+import FormInviteModal from 'src/containers/FormInviteModal';
+import { useState } from 'react';
 
 const ColoredLine = ({ color }) => (
     <hr
@@ -20,39 +23,58 @@ const ColoredLine = ({ color }) => (
 );
 
 const ClassMembers = () => {
+    const [openTeacherForm, setOpenTeacherForm] = useState(false);
+    const [openStudentForm, setOpenStudentForm] = useState(false);
     const [classData, setClassData] = React.useState({});
     const { id } = useParams();
 
-    const fetch = async() => {
+    const fetch = async () => {
         const rs = await authAxios.get(`/class-details/${id}/members`);
         console.log(rs);
         setClassData(rs);
-      }
-    
+    }
+
     React.useEffect(() => {
-    fetch();
+        fetch();
     }, []);
 
     // const teachers = classData.map((data) => {
     //     <Teachers key={uuidv4()} value={data.name} />
     // })
 
-    return(
+    return (
         <div className="container">
-            <h2 className="title">
-                Giáo viên
+            <Grid container className="contain">
+                <Grid item xs='11' className="title">
+                    Giáo viên
+                </Grid>
+                <Grid item xs='1' className="class__icon">
+                    <IconButton sx={{ mr: 2 }} onClick={() => setOpenTeacherForm(true)}>
+                        <AddIcon />
+                    </IconButton>
+                </Grid>
                 <ColoredLine color="#1967d2" />
-            </h2>
-            <Teachers />
+            </Grid>
 
-            <h2 className="title">
-                Bạn học
+            <Teachers />
+            <Grid container className="contain">
+                <Grid item xs='11' className="title">
+                    Bạn học
+                </Grid>
+                <Grid item xs='1' className="class__icon">
+                    <IconButton sx={{ mr: 2 }} onClick={() => setOpenStudentForm(true)}>
+                        <AddIcon />
+                    </IconButton>
+                </Grid>
+
                 <ColoredLine color="#1967d2" />
-            </h2>
+            </Grid>
             <Students />
             <Students />
             <Students />
-        </div>
+            <FormInviteModal open={openTeacherForm} handleCloseForm={() => setOpenTeacherForm(false)} teacher={true} classId={id} />
+            <FormInviteModal open={openStudentForm} handleCloseForm={() => setOpenStudentForm(false)} teacher={false} classId={id} />
+        </div >
     );
 }
 

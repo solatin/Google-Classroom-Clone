@@ -10,7 +10,7 @@ export const Register = () => {
 	const { register, handleSubmit } = useForm();
 	const onSubmit = async (form) => {
     try{
-		  await axiosClient.post('/register', form);
+		  await axiosClient.post('/auth/register', form);
 			navigate('/login');
     } catch (e) {
       console.log(e);

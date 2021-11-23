@@ -20,7 +20,7 @@ export const loginFailure = (error) => ({
 
 export const loginRequest = (form) => async (dispatch) => {
   dispatch({ type: AuthTypes.LOGIN_REQUEST });
-  const rs = await axios.post('/login', form);
+  const rs = await axios.post('/auth/login', form);
   localStorage.setItem('access-token', rs.jwtAccessToken);
   localStorage.setItem('refresh-token', rs.jwtRefreshToken);
   dispatch(loginSuccess(rs));

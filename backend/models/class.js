@@ -6,9 +6,8 @@ const ClassSchema = new Schema({
     name: {
         type: String
     },
-    teacher_id: {
-        type: Schema.Types.ObjectId,
-        ref: "Account"
+    owner_id: {
+      type: String
     },
     duration: {
         type: String
