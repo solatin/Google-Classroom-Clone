@@ -2,28 +2,26 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const AccountSchema = new Schema(
-  {
+const AccountSchema = new Schema({
     display_name: {
-      type: String
+        type: String
     },
     mssv: {
-      type: String
+        type: String
     },
     email: {
-      type: String
+        type: String
     },
     password: {
-      type: String
+        type: String
     },
     refresh_token: {
-      type: String
+        type: String
     },
     role: {
-      type: String
-    }
-  },
-  { collection: "Account" }
-);
+        type: String
+    },
+
+}, { collection: "Account" });
 
 module.exports = mongoose.model("Account", AccountSchema);

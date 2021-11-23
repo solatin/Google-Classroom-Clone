@@ -55,23 +55,43 @@ app.get('/classes', auth, async (req, res) => {
     listClassCode.push(element.code)
   }
   const listClass = await Class.find({ 'code': { $in: listClassCode } });
+  // console.log(listClass);
   res.json(listClass);
 });
 
-app.get('/class-details/:id/feed', async (req, res) => {
+
+// to do
+app.get('/class-details/:id/feed', auth, async (req, res) => {
   // Get class data (class name, teacher name, announcements)
 
-  const classData = await Class.findById(req.params.id);
-  // console.log(classData);
+  const account = res.locals.account;
+  const listClassTeacher = await ClassTeacher.find({ 'teacher_id': account._id });
+  const listClassMember = account.role === 'teacher' ? await ClassTeacher.find({ 'teacher_id': account.id }) : await ClassStudent.find({ 'student_id': account.id });
+  const listClassCode = [];
+  for (let index = 0; index < listClassMember.length; index++) {
+    const element = listClassMember[index];
+    listClassCode.push(element.code)
+  }
+  
+  let classData = await Class.findById(req.params.id);
+  classData.teacher_name = 'Quang';
+
+  console.log(classData);
   res.json(classData);
 });
 
-app.get('/class-details/:id/members', async (req, res) => {
+
+// to do
+app.get('/class-details/:id/members', auth, async (req, res) => {
   // Get members in class
 
+  const account = res.locals.account;
+  const ClassMember = account.role === 'teacher' ? await ClassTeacher.find({ 'teacher_id': account.id }) : await ClassStudent.find({ 'student_id': account.id });
+
+  console.log(ClassMember);
   const classData = await Class.findById(req.params.id);
   // console.log(classData);
-  res.json(classData);
+  res.json(ClassMember);
 });
 
 function makeCode(length) {
