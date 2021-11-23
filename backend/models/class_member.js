@@ -2,19 +2,16 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const ClassSchema = new Schema(
-  {
-    teacher_name: {
-      type: String
+const ClassSchema = new Schema({
+    student_name: {
+        type: String
     },
     duration: {
-      type: String
+        type: String
     },
     code: {
-      type: String
+        type: String
     }
-  },
-  { collection: "Class" }
-);
+}, { collection: "ClassMember" });
 
-module.exports = mongoose.model("Class", ClassSchema);
+module.exports = mongoose.model("ClassMember", ClassSchema);
