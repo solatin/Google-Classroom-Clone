@@ -10,18 +10,18 @@ const REFRESH_EXP = parseInt(process.env.JWT_REFRESH_TOKEN_EXP);
 const Account = require('../models/account.js');
 
 const { OAuth2Client } = require('google-auth-library')
-const client = new OAuth2Client(process.env.CLIENT_ID)
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
 router.post("/google", async (req, res) => {
-  console.log(process.env.GOOGLE_CLIENT_ID);
-  const { token }  = req.body
-  const ticket = await client.verifyIdToken({
+  const { token }  = req.body;
+  try {
+    const ticket = await client.verifyIdToken({
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID
   });
   const { name, email } = ticket.getPayload();
 
-  let [account] = await Account.find({ email: req.body.email}).exec();
+  let [account] = await Account.find({ email }).exec();
   if (!account) {
     const jwtRefreshToken = await generateToken({}, REFRESH_SECRET_KEY, REFRESH_EXP);
     account = new Account({ display_name: name, email, refresh_token: jwtRefreshToken, role: 'teacher'});
@@ -42,6 +42,10 @@ router.post("/google", async (req, res) => {
     email: account.email,
     name: account.display_name
   });
+  } catch (e) {
+    return res.status(401);
+  }
+
 })
 
 router.post('/register', async (req, res) => {
@@ -59,8 +63,7 @@ router.post('/register', async (req, res) => {
   return res.status(201).json({
     message: 'Register account successfully',
     jwtAccessToken,
-    jwtRefreshToken,
-    name: account.display_name
+    jwtRefreshToken
   });
 });
 
