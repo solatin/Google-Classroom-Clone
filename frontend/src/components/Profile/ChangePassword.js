@@ -9,12 +9,12 @@ const handleClick = () => {
 const ChangePassword = () => {
     return (
         <>
-            <div className="container">
+            <div className="container2">
                 <br/>
                 <input placeholder="Nhập mật khẩu cũ"></input>
                 <input placeholder="Nhập mật khẩu mới"></input>
                 <input placeholder="Nhập lại mật khẩu mới"></input>
-                <button className="button" onClick={handleClick}>Đổi mật khẩu</button>
+                <button className="button2" onClick={handleClick}>Đổi mật khẩu</button>
             </div>
         </>
         

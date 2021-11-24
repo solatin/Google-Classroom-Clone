@@ -82,6 +82,14 @@ app.post('/class-details/members', auth, async (req, res) => {
   res.json({ 'listTeacher': listTeacherRes, 'listStudent': listStudentRes });
 });
 
+app.get('/profile', auth, async (req, res) => {
+  const account = res.locals.account;
+  console.log(account);
+  const profileData = await Account.findById(account.id);
+  console.log(profileData);
+  res.json(profileData);
+})
+
 function makeCode(length) {
   var result = '';
   var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
