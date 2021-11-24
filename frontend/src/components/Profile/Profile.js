@@ -27,15 +27,15 @@ const Profile = () => {
 
     return(
         <>
-            <div class="container">
+            <div class="container1">
                 <h1>Profile</h1>
                 <img src="https://i.ibb.co/pdJfzx9/profile-picture.jpg" alt="profile-picture" border="0" />
                 <h4></h4>
                 <h4>Họ và tên: {profileData.display_name}</h4> 
                 <h4>Email: {profileData.email}</h4>
-                <button className="button" onClick={handleClick}>Change Password</button>
+                <button className="button2" onClick={handleClick}>Change Password</button>
             </div>
-        </>
+        </> 
     )
 }
 
