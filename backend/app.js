@@ -12,11 +12,6 @@ const { generateToken } = require('./utils/jwt.js');
 const auth = require('./middlewares/auth.js');
 const account = require('./models/account.js');
 
-const ACCESS_SECRET_KEY = process.env.JWT_ACCESS_TOKEN_SECRET_KEY;
-const ACCESS_EXP = parseInt(process.env.JWT_ACCESS_TOKEN_EXP);
-const REFRESH_SECRET_KEY = process.env.JWT_REFRESH_TOKEN_SECRET_KEY;
-const REFRESH_EXP = parseInt(process.env.JWT_REFRESH_TOKEN_EXP);
-
 var transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -38,6 +33,13 @@ mongoose.connection.once('open', async (ref) => {
   console.log('Connected to mongo server!');
 })
 app.use('/auth/', require('./controllers/account'));
+
+app.get('/classes', auth, async (req, res) => {
+  // console.log(res.locals.account);
+
+  const listClass = await Class.find();
+  res.json(listClass);
+});
 
 app.get('/classes', auth, async (req, res) => {
   const account = res.locals.account;
