@@ -6,7 +6,6 @@ const verifyToken = (jwtToken, jwtSecretKey, ignoreExpiration = false) => {
 			if (error) {
 				return reject(error);
 			}
-			console.log('decode', decoded);
 			return resolve(decoded);
 		});
 	});

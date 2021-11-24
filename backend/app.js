@@ -35,7 +35,7 @@ mongoose.connection.once('open', async (ref) => {
 app.use('/auth/', require('./controllers/account'));
 
 app.get('/classes', auth, async (req, res) => {
-  console.log(res.locals.account);
+  // console.log(res.locals.account);
 
   const listClass = await Class.find();
   res.json(listClass);
