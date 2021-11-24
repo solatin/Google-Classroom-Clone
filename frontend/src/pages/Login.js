@@ -1,13 +1,13 @@
-import { Box, Button, FormControl, FormControlLabel, FormHelperText, TextField, Typography } from '@mui/material';
+import LockIcon from '@mui/icons-material/Lock';
+import { Box, Button, FormControl, FormHelperText, TextField, Typography } from '@mui/material';
+import { GoogleLogin } from 'react-google-login';
 import { Helmet } from 'react-helmet';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
-import { GoogleLogin } from 'react-google-login';
 import * as AuthActions from 'src/actions/auth';
 import axiosClient from 'src/utils/axios';
-import LockIcon from '@mui/icons-material/Lock';
 
 export const Login = () => {
 	const navigate = useNavigate();
