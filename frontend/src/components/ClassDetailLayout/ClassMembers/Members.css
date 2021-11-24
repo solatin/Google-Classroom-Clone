@@ -1,13 +1,34 @@
 .avatar {
     flex: 0 0 2.5rem;
-    padding: 0 0.5rem;
     text-align: center;
 }
 
 .name {
     text-overflow: ellipsis;
-    overflow: hidden;
+    /* overflow: hidden; */
     white-space: nowrap;
     margin-left: 0.5rem;
     max-width: 30rem;
+}
+
+.members {
+    display: flex;
+    align-items: center;
+}
+
+.student {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.textField {
+    width: 100px !important;
+    margin-right: 5px !important;
+}
+
+.submitField {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }

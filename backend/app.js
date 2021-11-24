@@ -46,9 +46,7 @@ app.get('/classes', auth, async (req, res) => {
   res.json(listClass);
 });
 
-// to do
 app.post('/class-details/feed', auth, async (req, res) => {
-  // Get class data (class name, teacher name, announcements)
   const id = req.body.classId;
   const classroom = await Class.findById(id);
   const owner = await Account.findById(classroom.owner_id);
@@ -57,18 +55,31 @@ app.post('/class-details/feed', auth, async (req, res) => {
   res.json(classData);
 });
 
-
-// to do
-app.get('/class-details/:id/members', auth, async (req, res) => {
-  // Get members in class
-
+app.post('/class-details/members', auth, async (req, res) => {
   const account = res.locals.account;
-  const ClassMember = account.role === 'teacher' ? await ClassTeacher.find({ 'teacher_id': account.id }) : await ClassStudent.find({ 'student_id': account.id });
+  const classroom = await Class.findById(req.body.classId)
+  const listStudent = await ClassStudent.find({ 'code': classroom.code })
+  const listStudentId = [];
+  for (let index = 0; index < listStudent.length; index++) {
+    const element = listStudent[index];
+    listStudentId.push(mongoose.Types.ObjectId(element.student_id));
+  }
+  const listStudentInfo = await Account.find({ '_id': { $in: listStudentId } });
+  const listStudentRes = []
+  for (let index = 0; index < listStudent.length; index++) {
+    const element = listStudent[index];
+    listStudentRes.push({ 'student_class_id': element.student_class_id, 'display_name': listStudentInfo[index].display_name, 'can_change': account.id === element.student_id });
+  }
 
-  console.log(ClassMember);
-  const classData = await Class.findById(req.params.id);
-  // console.log(classData);
-  res.json(ClassMember);
+  const listTeacher = await ClassTeacher.find({ 'code': classroom.code })
+  const listTeacherId = [];
+  for (let index = 0; index < listTeacher.length; index++) {
+    const element = listTeacher[index];
+    listTeacherId.push(mongoose.Types.ObjectId(element.teacher_id));
+  }
+  const listTeacherRes = await Account.find({ '_id': { $in: listTeacherId } });
+
+  res.json({ 'listTeacher': listTeacherRes, 'listStudent': listStudentRes });
 });
 
 function makeCode(length) {
@@ -97,7 +108,6 @@ app.post('/sendInvite', auth, async (req, res) => {
     subject: 'Invite to classroom',
     text: 'You have been invited to join our classroom. Please login to your account and follow this link: http://localhost:3000/acceptInvite/' + req.body.classId
   }
-  console.log(req.body);
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       console.log(error);
@@ -118,6 +128,13 @@ app.post('/acceptInvite', auth, async (req, res) => {
     const newClassMember = account.role === 'teacher' ? new ClassTeacher({ teacher_id: account.id, code: newClass.code }) : new ClassStudent({ student_id: account.id, code: newClass.code });
     await newClassMember.save();
   }
+})
+
+app.post('/ChangeStudentClassID', auth, async (req, res) => {
+  const account = res.locals.account;
+  const classroom = await Class.findById(req.body.classId);
+  const rs = await ClassStudent.findOneAndUpdate({ code: classroom.code, student_id: account.id }, { student_class_id: req.body.studentClassID });
+  res.end();
 })
 
 const host = '0.0.0.0';

@@ -4,28 +4,13 @@ import authAxios from "src/utils/authAxios";
 
 import "./Members.css"
 
-const Teachers = () => {
-    const [classData, setClassData] = React.useState({});
-    const { id } = useParams();
-
-    const fetch = async() => {
-        const rs = await authAxios.get(`/class-details/${id}/feed`);
-        console.log(rs);
-        setClassData(rs);
-      }
-    
-    React.useEffect(() => {
-    fetch();
-    }, []);
-
-   
-
-    return(
-        <div className="teachers">
+const Teachers = ({teacher_name}) => {
+    return (
+        <div className="members">
             <span className="avatar">
                 <img src="/static/avatar1.jpg" aria-hidden="true" height="30px" width="30px" alt="" />
             </span>
-            <span className="name">{classData.teacher_name}</span>
+            <span className="name">{teacher_name}</span>
         </div>
     );
 }
