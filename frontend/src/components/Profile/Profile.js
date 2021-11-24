@@ -1,5 +1,4 @@
 import React from 'react';
-import { Navigate  } from 'react-router'
 import { useParams } from "react-router-dom";
 import authAxios from "src/utils/authAxios";
 import { useNavigate } from 'react-router-dom';
