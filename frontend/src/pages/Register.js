@@ -71,6 +71,17 @@ export const Register = () => {
 							<MenuItem value="student">Student</MenuItem>
 						</Select>
 					</FormControl>
+					<FormControl error={!!errors.display_name} variant="standard" fullWidth sx={{ mb: 2 }}>
+						<TextField
+							error={!!errors.display_name}
+							fullWidth
+							label="Name"
+							variant="outlined"
+							{...register('display_name', { required: 'Name is required' })}
+							sx={{ mb: 0 }}
+						/>
+						<FormHelperText>{errors.display_name?.message}</FormHelperText>
+					</FormControl>
 					<Button variant="contained" onClick={handleSubmit(onSubmit)}>
 						Register
 					</Button>

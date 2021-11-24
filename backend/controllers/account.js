@@ -96,6 +96,7 @@ router.post('/login', async (req, res) => {
     jwtAccessToken,
     jwtRefreshToken,
     email: account.email,
+    name: account.display_name
   });
 });
 
