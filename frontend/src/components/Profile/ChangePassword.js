@@ -15,6 +15,7 @@ const ChangePassword = () => {
                 <input className="input1" placeholder="Nhập mật khẩu cũ"></input>
                 <input className="input1" placeholder="Nhập mật khẩu mới"></input>
                 <input className="input1" placeholder="Nhập lại mật khẩu mới"></input>
+
                 <button className="button2" onClick={handleClick}>Đổi mật khẩu</button>
             </div>
         </>
