@@ -52,7 +52,7 @@ app.post('/class-details/feed', auth, async (req, res) => {
   const id = req.body.classId;
   const classroom = await Class.findById(id);
   const owner = await Account.findById(classroom.owner_id);
-  const classData = { 'code': classroom.code, 'teacher_name': owner.email, 'id': id, 'name': classroom.name }
+  const classData = { 'code': classroom.code, 'teacher_name': owner.display_name, 'id': id, 'name': classroom.name }
 
   res.json(classData);
 });
