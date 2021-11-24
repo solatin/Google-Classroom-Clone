@@ -4,6 +4,8 @@ import ClassListLayout from 'src/components/ClassListLayout/ClassListLayout';
 import ClassFeed from 'src/components/ClassDetailLayout/ClassFeed/ClassFeed';
 import ClassAssignments from 'src/components/ClassDetailLayout/ClassAssignments/ClassAssignments';
 import MainLayout from './components/MainLayout';
+import Profile from './components/Profile/Profile';
+import ChangePassword from './components/Profile/ChangePassword';
 import { ClassesPage } from './pages/Classes';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
@@ -39,7 +41,8 @@ export const routes = [
 			}
 		]
 	},
-	{ path: '/profile', element: <ClassListLayout />, children: [{ path: '/', element: <div>profile</div> }] },
+	{ path: '/profile', element: <ClassListLayout />, children: [{ path: '/', element: <Profile /> }] },
+	{ path: '/changePassword', element: <ClassListLayout />, children: [{ path: '/', element: <ChangePassword /> }] },
 	{
 		path: '/',
 		element: <MainLayout />,
