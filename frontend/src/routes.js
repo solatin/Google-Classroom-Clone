@@ -8,6 +8,7 @@ import { ClassesPage } from './pages/Classes';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import ClassMembers from './components/ClassDetailLayout/ClassMembers/ClassMembers';
+import AcceptInvitation from './components/AcceptInvitation/AcceptInvitation';
 
 export const routes = [
 	{
@@ -50,5 +51,5 @@ export const routes = [
 			{ path: '*', element: <Navigate to="/404" replace /> }
 		]
 	},
-	{ path: '/acceptInvite/:id/:email', element: <div></div> }
+	{ path: '/acceptInvite/:id', element: <AcceptInvitation /> }
 ];

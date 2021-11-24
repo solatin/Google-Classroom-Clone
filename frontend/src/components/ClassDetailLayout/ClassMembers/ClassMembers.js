@@ -25,22 +25,23 @@ const ColoredLine = ({ color }) => (
 const ClassMembers = () => {
     const [openTeacherForm, setOpenTeacherForm] = useState(false);
     const [openStudentForm, setOpenStudentForm] = useState(false);
-    const [classData, setClassData] = React.useState({});
+    const [classTeacherData, setClassTeacherData] = React.useState([]);
+    const [classStudentData, setClassStudentData] = React.useState([]);
     const { id } = useParams();
 
     const fetch = async () => {
-        const rs = await authAxios.get(`/class-details/${id}/members`);
-        console.log(rs);
-        setClassData(rs);
+        const classID = { 'classId': id };
+        const rs = await authAxios.post(`/class-details/members`, classID);
+        console.log(rs.listStudent)
+        setClassTeacherData(rs.listTeacher);
+        setClassStudentData(rs.listStudent);
     }
+
+
 
     React.useEffect(() => {
         fetch();
     }, []);
-
-    // const teachers = classData.map((data) => {
-    //     <Teachers key={uuidv4()} value={data.name} />
-    // })
 
     return (
         <div className="container">
@@ -55,8 +56,8 @@ const ClassMembers = () => {
                 </Grid>
                 <ColoredLine color="#1967d2" />
             </Grid>
+            {classTeacherData.map(item => <Teachers teacher_name={item.display_name} />)}
 
-            <Teachers />
             <Grid container className="contain">
                 <Grid item xs='11' className="title">
                     Bạn học
@@ -69,9 +70,7 @@ const ClassMembers = () => {
 
                 <ColoredLine color="#1967d2" />
             </Grid>
-            <Students />
-            <Students />
-            <Students />
+            {classStudentData.map((item) => (<Students name={item.display_name} classId={id} studentClassId={item.student_class_id} canChange={item.can_change} />))}
             <FormInviteModal open={openTeacherForm} handleCloseForm={() => setOpenTeacherForm(false)} teacher={true} classId={id} />
             <FormInviteModal open={openStudentForm} handleCloseForm={() => setOpenStudentForm(false)} teacher={false} classId={id} />
         </div >

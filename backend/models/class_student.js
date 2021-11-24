@@ -9,6 +9,9 @@ const ClassStudentSchema = new Schema(
     },
     student_id: {
       type: String
+    },
+    student_class_id: {
+      type: String
     }
   },
   { collection: "ClassStudent" }

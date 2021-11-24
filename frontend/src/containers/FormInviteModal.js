@@ -9,14 +9,15 @@ import authAxios from 'src/utils/authAxios';
 
 const FormInviteModal = ({ open, handleCloseForm, teacher, classId }) => {
     const [email, setEmail] = useState("");
-    const linkUrl = "Link copy to url"
+    const linkUrl = "http://localhost:3000/acceptInvite/" + classId
     const copyToClipBoard = () => {
         navigator.clipboard.writeText(linkUrl);
     }
 
     const sendInvitation = async () => {
+        handleCloseForm();
         const invitation = { 'email': email, 'classId': classId }
-        teacher ? await authAxios.post('/sendInviteTeacher', invitation) : await authAxios.post('/sendInviteStudent', invitation);
+        await authAxios.post('/sendInvite', invitation);
     }
     return (
         <Dialog open={open} maxWidth="lg" onClose={handleCloseForm} className="form__dialog" aria-labelledby="customized-dialog-title">

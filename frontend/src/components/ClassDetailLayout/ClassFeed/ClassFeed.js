@@ -23,9 +23,9 @@ function ClassFeed() {
   const { id } = useParams();
   // const history = useHistory();
 
-  const fetch = async() => {
-    const rs = await authAxios.get(`/class-details/${id}/feed`);
-    console.log(rs);
+  const fetch = async () => {
+    const classID = { 'classId': id };
+    const rs = await authAxios.post(`/class-details/feed`, classID);
     setClassData(rs);
   }
 
@@ -37,41 +37,41 @@ function ClassFeed() {
     fetch();
   }, []);
 
-//   const createPost = async () => {
-//     try {
-//       const myClassRef = await db.collection("classes").doc(id).get();
-//       const myClassData = await myClassRef.data();
-//       console.log(myClassData);
-//       let tempPosts = myClassData.posts;
-//       tempPosts.push({
-//         authorId: user.uid,
-//         content: announcementContent,
-//         date: moment().format("MMM Do YY"),
-//         image: user.photoURL,
-//         name: user.displayName,
-//       });
-//       myClassRef.ref.update({
-//         posts: tempPosts,
-//       });
-//     } catch (error) {
-//       console.error(error);
-//       alert(`There was an error posting the announcement, please try again!`);
-//     }
-//   };
-//   useEffect(() => {
-//     db.collection("classes")
-//       .doc(id)
-//       .onSnapshot((snapshot) => {
-//         const data = snapshot.data();
-//         if (!data) history.replace("/");
-//         console.log(data);
-//         setClassData(data);
-//       });
-//   }, []);
-//   useEffect(() => {
-//     if (loading) return;
-//     if (!user) history.replace("/");
-//   }, [loading, user]);
+  //   const createPost = async () => {
+  //     try {
+  //       const myClassRef = await db.collection("classes").doc(id).get();
+  //       const myClassData = await myClassRef.data();
+  //       console.log(myClassData);
+  //       let tempPosts = myClassData.posts;
+  //       tempPosts.push({
+  //         authorId: user.uid,
+  //         content: announcementContent,
+  //         date: moment().format("MMM Do YY"),
+  //         image: user.photoURL,
+  //         name: user.displayName,
+  //       });
+  //       myClassRef.ref.update({
+  //         posts: tempPosts,
+  //       });
+  //     } catch (error) {
+  //       console.error(error);
+  //       alert(`There was an error posting the announcement, please try again!`);
+  //     }
+  //   };
+  //   useEffect(() => {
+  //     db.collection("classes")
+  //       .doc(id)
+  //       .onSnapshot((snapshot) => {
+  //         const data = snapshot.data();
+  //         if (!data) history.replace("/");
+  //         console.log(data);
+  //         setClassData(data);
+  //       });
+  //   }, []);
+  //   useEffect(() => {
+  //     if (loading) return;
+  //     if (!user) history.replace("/");
+  //   }, [loading, user]);
 
   return (
     <div className="class">
