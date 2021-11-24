@@ -24,7 +24,8 @@ function ClassFeed() {
   // const history = useHistory();
 
   const fetch = async() => {
-    const rs = await authAxios.get(`/class-details/${id}/feed`);
+    const classID = { 'classId': id };
+    const rs = await authAxios.post(`/class-details/feed`, classID);
     console.log(rs);
     setClassData(rs);
   }
