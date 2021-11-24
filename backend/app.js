@@ -35,13 +35,6 @@ mongoose.connection.once('open', async (ref) => {
 app.use('/auth/', require('./controllers/account'));
 
 app.get('/classes', auth, async (req, res) => {
-  // console.log(res.locals.account);
-
-  const listClass = await Class.find();
-  res.json(listClass);
-});
-
-app.get('/classes', auth, async (req, res) => {
   const account = res.locals.account;
   const listClassMember = account.role === 'teacher' ? await ClassTeacher.find({ 'teacher_id': account.id }) : await ClassStudent.find({ 'student_id': account.id });
   const listClassCode = [];
@@ -52,7 +45,6 @@ app.get('/classes', auth, async (req, res) => {
   const listClass = await Class.find({ 'code': { $in: listClassCode } });
   res.json(listClass);
 });
-
 
 // to do
 app.post('/class-details/feed', auth, async (req, res) => {
