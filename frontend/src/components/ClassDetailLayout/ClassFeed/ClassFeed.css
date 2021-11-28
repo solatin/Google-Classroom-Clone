@@ -1,5 +1,5 @@
 .class {
-    width: 55%;
+    width: 65%;
     margin: auto;
 }
 
@@ -30,10 +30,24 @@
     font-size: x-large;
 }
 
+.class_info {
+    width: 100%;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.class_grade_struc {
+    width: 30%;
+    padding: 10px;
+    border-radius: 15px;
+}
+
 .class__announce {
     display: flex;
     align-items: center;
-    width: 100%;
+    width: 70%;
     padding: 20px;
     margin-bottom: 25px;
     box-shadow: 0px 1px 6px -2px black;

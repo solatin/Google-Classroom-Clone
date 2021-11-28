@@ -11,6 +11,8 @@ import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import ClassMembers from './components/ClassDetailLayout/ClassMembers/ClassMembers';
 import AcceptInvitation from './components/AcceptInvitation/AcceptInvitation';
+import ClassGradeStructure from './components/ClassDetailLayout/ClassGradeStructure/ClassGradeStructure';
+import ClassGradeEdit from './components/ClassDetailLayout/ClassGradeStructure/ClassGradeEdit';
 
 export const routes = [
 	{
@@ -38,6 +40,10 @@ export const routes = [
 			{
 				path: '/members',
 				element: <ClassMembers />
+			},
+			{
+				path: '/grade/structure',
+				element: <ClassGradeEdit />
 			}
 		]
 	},
