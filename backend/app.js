@@ -102,7 +102,6 @@ app.post('/changePassword/', auth, async (req, res) => {
 function changePassword(req, res, next) {
   // Init Variables
   let passwordDetails = req.body;
-
   if (req.user) {
     if (passwordDetails.newPassword) {
       Account.findById(req.user.id, function (err, user) {
