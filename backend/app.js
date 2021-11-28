@@ -91,13 +91,17 @@ app.get('/profile', auth, async (req, res) => {
 })
 
 app.post('/changePassword/', auth, async (req, res) => {
-  changePassword();
+  const account = await Account.findById(res.locals.account.id);
+  if (account.password === req.body.oldPass) {
+    account.password = req.body.newPass;
+    account.save();
+  }
+  res.end()
 })
 
 function changePassword(req, res, next) {
   // Init Variables
   let passwordDetails = req.body;
-  
   if (req.user) {
     if (passwordDetails.newPassword) {
       Account.findById(req.user.id, function (err, user) {
