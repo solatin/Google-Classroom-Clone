@@ -1,15 +1,12 @@
 import { IconButton } from "@material-ui/core";
 import { SendOutlined } from "@material-ui/icons";
-// import moment from "moment";
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-// import { useAuthState } from "react-firebase-hooks/auth";
 import { useParams } from "react-router-dom";
 import authAxios from "src/utils/authAxios";
 import ClassGradeStructure from "../ClassGradeStructure/ClassGradeStructure";
 import Announcement from "./Announcement";
-// import { auth, db } from "../firebase";
 import "./ClassFeed.css";
 
 const handlePostAnnouncement = () => {

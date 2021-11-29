@@ -8,6 +8,7 @@ const Class = require('./models/class.js');
 const Account = require('./models/account.js');
 const ClassStudent = require('./models/class_student');
 const ClassTeacher = require('./models/class_teacher');
+const GradeStructure = require('./models/grade_structure');
 const { generateToken } = require('./utils/jwt.js');
 const auth = require('./middlewares/auth.js');
 const account = require('./models/account.js');
@@ -208,6 +209,75 @@ app.post('/ChangeStudentClassID', auth, async (req, res) => {
   const classroom = await Class.findById(req.body.classId);
   const rs = await ClassStudent.findOneAndUpdate({ code: classroom.code, student_id: account.id }, { student_class_id: req.body.studentClassID });
   res.end();
+})
+
+app.post('/getGradeStructure', auth, async (req, res) => {
+  const listGradeStructure = await GradeStructure.find({ class_id: req.body.classId });
+  listGradeStructure.sort((grade_1, grade_2) => (grade_1.position > grade_2.position) ? 1 : ((grade_2.position > grade_1.position) ? -1 : 0));
+  res.json(listGradeStructure);
+})
+
+app.post('/addGradeStructure', auth, async (req, res) => {
+  const listGradeStructure = await GradeStructure.find({ class_id: req.body.class_id });
+  const newGradeStructure = new GradeStructure({ class_id: req.body.class_id, title: req.body.gradeTitle, grade: req.body.grade, position: listGradeStructure.length });
+  await newGradeStructure.save();
+  res.end();
+})
+
+app.post('/deleteGradeStructure', auth, async (req, res) => {
+  try {
+    await GradeStructure.findByIdAndRemove(req.body.gradeStructureId)
+    const listGradeStrucutre = await GradeStructure.find({ class_id: req.body.classId });
+    listGradeStrucutre.sort((grade_1, grade_2) => (grade_1.position > grade_2.position) ? 1 : ((grade_2.position > grade_1.position) ? -1 : 0));
+    for (let index = 0; index < listGradeStrucutre.length; index++) {
+      listGradeStrucutre[index].position = index;
+      listGradeStrucutre[index].save();
+    }
+    res.end();
+  } catch (error) {
+    res.status(400).send({
+      message: "Delete failed"
+    })
+  }
+
+})
+
+app.post('/updateGradeStructure', auth, async (req, res) => {
+  try {
+    const curGradeStructure = await GradeStructure.findById(req.body.gradeStructure.Id);
+    curGradeStructure.title = req.body.gradeStructure.title;
+    curGradeStructure.grade = req.body.gradeStructure.grade;
+    await curGradeStructure.save();
+    res.end();
+  } catch (error) {
+    res.status(400).send({
+      message: "Update failed"
+    })
+  }
+})
+
+app.post('/arrageGradeStructure', auth, async (req, res) => {
+  try {
+    const listGradeStrucutre = await GradeStructure.find({ class_id: req.body.classId });
+    const newListGradeStructure = req.body.listGradeStructure;
+    for (let i = 0; i < listGradeStrucutre.length; i++) {
+      const gradeStructure = listGradeStrucutre[i];
+      for (let j = 0; j < newListGradeStructure.length; j++) {
+        const newGradeStructure = newListGradeStructure[j];
+        if (gradeStructure._id == newGradeStructure._id) {
+          listGradeStrucutre[i].position = newGradeStructure.position;
+          await listGradeStrucutre[i].save();
+          break;
+        }
+      }
+    }
+    res.end()
+  } catch (error) {
+    res.status(400).send({
+      message: "Arrange failed"
+    })
+  }
+
 })
 
 const host = '0.0.0.0';
