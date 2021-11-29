@@ -34,21 +34,21 @@
     width: 100%;
     margin: auto;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    align-items: start;
 }
 
 .class_grade_struc {
     width: 30%;
-    padding: 10px;
+    padding-top: 10px;
     border-radius: 15px;
+    margin-right: 10px;
 }
 
 .class__announce {
     display: flex;
     align-items: center;
-    width: 70%;
     padding: 20px;
+    width: 90%;
     margin-bottom: 25px;
     box-shadow: 0px 1px 6px -2px black;
     justify-content: space-between;
