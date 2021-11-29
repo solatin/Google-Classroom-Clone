@@ -8,6 +8,7 @@ const Class = require('./models/class.js');
 const Account = require('./models/account.js');
 const ClassStudent = require('./models/class_student');
 const ClassTeacher = require('./models/class_teacher');
+const GradeStructure = require('./models/grade_structure');
 const { generateToken } = require('./utils/jwt.js');
 const auth = require('./middlewares/auth.js');
 const account = require('./models/account.js');
@@ -209,6 +210,35 @@ app.post('/ChangeStudentClassID', auth, async (req, res) => {
   const classroom = await Class.findById(req.body.classId);
   const rs = await ClassStudent.findOneAndUpdate({ code: classroom.code, student_id: account.id }, { student_class_id: req.body.studentClassID });
   res.end();
+})
+
+app.post('/getGradeStructure', auth, async (req, res) => {
+  const listGradeStrucutre = await GradeStructure.find({ class_id: req.body.classId });
+  listGradeStrucutre.sort((grade_1, grade_2) => (grade_1.position > grade_2.position) ? 1 : ((grade_2.position > grade_1.position) ? -1 : 0));
+  res.json(listGradeStrucutre);
+})
+
+app.post('/addGradeStructure', auth, async (req, res) => {
+  const listGradeStrucutre = await GradeStructure.find({ class_id: req.body.classId });
+  const newGradeStructure = new GradeStructure({ class_id: req.body.class_id, title: req.body.gradeTitle, grade: req.body.grade, position: listGradeStrucutre.length + 1 });
+  newGradeStructure.save();
+  res.end();
+})
+
+app.post('/deleteGradeStructure', auth, async (req, res) => {
+  await GradeStructure.findByIdAndRemove(req.body.gradeStructureId, function (err) {
+    if (err) {
+      res.status(400).send({
+        message: 'Delete failed!'
+      });
+    } else {
+      res.end();
+    }
+  })
+})
+
+app.post('/updateGradeStructure', auth, async (req, res) => {
+
 })
 
 const host = '0.0.0.0';
