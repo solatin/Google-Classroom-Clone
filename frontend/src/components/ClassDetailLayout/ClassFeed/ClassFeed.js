@@ -7,6 +7,7 @@ import { useState } from "react";
 // import { useAuthState } from "react-firebase-hooks/auth";
 import { useParams } from "react-router-dom";
 import authAxios from "src/utils/authAxios";
+import ClassGradeStructure from "../ClassGradeStructure/ClassGradeStructure";
 import Announcement from "./Announcement";
 // import { auth, db } from "../firebase";
 import "./ClassFeed.css";
@@ -74,35 +75,42 @@ function ClassFeed() {
   //   }, [loading, user]);
 
   return (
-    <div className="class">
-      <div className="class__nameBox">
-        {/* <div className="class__name">{classData.name}</div> */}
-        <div className="class_code">Mã lớp: {classData.code}</div>
-        <div className="teacher_name">{classData.teacher_name}</div>
-        <div className="class__name">{classData.name}</div>
+    <>
+      <div className="class">
+        <div className="class__nameBox">
+          <div className="class_code">Mã lớp: {classData.code}</div>
+          <div className="teacher_name">{classData.teacher_name}</div>
+          <div className="class__name">{classData.name}</div>
+        </div>
+        <div className="class_info">
+          <div className="class_grade_struc">
+            <ClassGradeStructure/>
+          </div>
+          <div className="class__announce">
+            {/* <img src={user?.photoURL} alt="My image" /> */}
+            <input
+              type="text"
+              value={announcementContent}
+              onChange={(e) => setAnnouncementContent(e.target.value)}
+              placeholder="Thông báo nội dung nào đó cho lớp học của bạn"
+            />
+            <IconButton onClick={handlePostAnnouncement}>
+              <SendOutlined />
+            </IconButton>
+          </div>
+          {posts?.map((post) => (
+            <Announcement
+              authorId={post.authorId}
+              content={post.content}
+              date={post.date}
+              image={post.image}
+              name={post.name}
+            />
+          ))}
+        </div>
+        
       </div>
-      <div className="class__announce">
-        {/* <img src={user?.photoURL} alt="My image" /> */}
-        <input
-          type="text"
-          value={announcementContent}
-          onChange={(e) => setAnnouncementContent(e.target.value)}
-          placeholder="Thông báo nội dung nào đó cho lớp học của bạn"
-        />
-        <IconButton onClick={handlePostAnnouncement}>
-          <SendOutlined />
-        </IconButton>
-      </div>
-      {posts?.map((post) => (
-        <Announcement
-          authorId={post.authorId}
-          content={post.content}
-          date={post.date}
-          image={post.image}
-          name={post.name}
-        />
-      ))}
-    </div>
+    </>
   );
 }
 export default ClassFeed;
