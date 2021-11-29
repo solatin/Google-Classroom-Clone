@@ -17,7 +17,7 @@ const GradeStructureSchema = new Schema(
             type: Number
         }
     },
-    { collection: "ClassStudent" }
+    { collection: "GradeStructure" }
 );
 
-module.exports = mongoose.model("GRadeStructure", GradeStructureSchema);
+module.exports = mongoose.model("GradeStructure", GradeStructureSchema);
