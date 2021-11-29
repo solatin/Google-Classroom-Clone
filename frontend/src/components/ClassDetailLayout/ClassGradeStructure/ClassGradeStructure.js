@@ -40,7 +40,7 @@ const ClassGradeStructure = () => {
 								'&:hover': {
 									textDecoration: 'underline'
 								},
-								fontSize: 16
+								fontSize: 22, fontWeight: 'bold'
 							}}
 							onClick={() => handleClickGradeStruc()}
 						>
