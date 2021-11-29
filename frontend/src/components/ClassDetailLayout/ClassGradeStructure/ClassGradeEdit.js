@@ -1,10 +1,7 @@
 import * as React from 'react';
 import { makeStyles } from '@mui/styles';
 import Paper from '@material-ui/core/Paper';
-import { DropResult } from 'react-beautiful-dnd';
 import DraggableList from './DraggableList';
-import pick from '@cahil/utils/accessors/pick';
-import { useForm } from "react-hook-form";
 import './ClassGradeEdit.css';
 import authAxios from '../../../utils/authAxios';
 import { useParams } from "react-router-dom";
@@ -25,14 +22,6 @@ const reorder = (
   return result;
 };
 
-const getItems = (count) =>
-  Array.from({ length: count }, (v, k) => k).map(k => ({
-    id: `Item ${k + 1}`,
-    // get data from BE
-    primary: 'Final Term',
-    secondary: '10'
-  }));
-
 const useStyles = makeStyles({
   flexPaper: {
     flex: 1,
@@ -49,14 +38,13 @@ const ClassGradeEdit = () => {
   const classes = useStyles();
   const [items, setItems] = React.useState([]);
   const { id } = useParams();
-  const { register, handleSubmit, errors } = useForm();
   const onDragEnd = async ({ destination, source }) => {
     // dropped outside the list
     if (!destination) return;
 
     const newItems = reorder(items, source.index, destination.index);
     setItems(newItems);
-    await authAxios.post('/arrageGradeStructure', { classId: id, listGradeStructure: newItems });
+    await authAxios.post('/arrangeGradeStructure', { classId: id, listGradeStructure: newItems });
   };
 
   const onSubmit = async () => {
