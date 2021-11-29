@@ -108,7 +108,7 @@ const ClassGradeEdit = () => {
           />
         </div>
         <div style={{ display: "flex", justifyContent: "flex-end", paddingRight: '10px', paddingBottom: '10px' }}>
-          <Button variant="outlined" width="100px !important" onClick={onSubmit}>Primary</Button>
+          <Button variant="outlined" width="100px !important" onClick={onSubmit}>Submit</Button>
         </div>
       </Paper>
     </div>
