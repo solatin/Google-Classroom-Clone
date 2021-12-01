@@ -91,12 +91,12 @@ router.post('/login', async (req, res) => {
 
   account.refresh_token = jwtRefreshToken;
   await account.save();
-
   return res.status(201).json({
     jwtAccessToken,
     jwtRefreshToken,
     email: account.email,
-    name: account.display_name
+    name: account.display_name,
+    role: account.role
   });
 });
 
