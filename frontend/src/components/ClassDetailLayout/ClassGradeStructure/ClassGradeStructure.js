@@ -7,8 +7,11 @@ import "./ClassGradeStructure.css";
 import { useNavigate } from 'react-router-dom';
 import { useParams } from "react-router-dom";
 import authAxios from "src/utils/authAxios";
+import { useSelector } from 'react-redux';
+import * as UserSelectors from 'src/selectors/user';
 
 const ClassGradeStructure = () => {
+	const user = useSelector(UserSelectors.getAuthUser);
 	const navigate = useNavigate();
 	const { id } = useParams();
 	const [listGradeStructure, setListGradeStructure] = useState([]);
@@ -25,7 +28,9 @@ const ClassGradeStructure = () => {
 	}, []);
 
 	const handleClickGradeStruc = () => {
-		navigate(`/class-details/${id}/grade/structure`);
+		if (user.role === 'teacher') {
+			navigate(`/class-details/${id}/grade/structure`);
+		}
 	}
 
 	return (
@@ -36,9 +41,9 @@ const ClassGradeStructure = () => {
 						<Typography
 							color="black"
 							sx={{
-								cursor: 'pointer',
+								cursor: user.role === 'teacher'?'pointer' : 'default',
 								'&:hover': {
-									textDecoration: 'underline'
+									textDecoration: user.role === 'teacher'? 'underline' : 'none'
 								},
 								fontSize: 22, fontWeight: 'bold'
 							}}
