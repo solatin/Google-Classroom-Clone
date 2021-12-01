@@ -7,6 +7,9 @@ import authAxios from '../../../utils/authAxios';
 import { useParams } from "react-router-dom";
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import { useSelector } from 'react-redux';
+import * as UserSelectors from 'src/selectors/user';
+import { useNavigate } from 'react-router-dom';
 
 const reorder = (
   list,
@@ -35,9 +38,14 @@ const useStyles = makeStyles({
 });
 
 const ClassGradeEdit = () => {
+  const user = useSelector(UserSelectors.getAuthUser);
   const classes = useStyles();
   const [items, setItems] = React.useState([]);
   const { id } = useParams();
+  const navigate = useNavigate();
+  if (user.role !== 'teacher') {
+    navigate('/classes');
+  }
   const onDragEnd = async ({ destination, source }) => {
     // dropped outside the list
     if (!destination) return;
