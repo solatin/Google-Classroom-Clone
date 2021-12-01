@@ -256,7 +256,7 @@ app.post('/updateGradeStructure', auth, async (req, res) => {
   }
 })
 
-app.post('/arrageGradeStructure', auth, async (req, res) => {
+app.post('/arrangeGradeStructure', auth, async (req, res) => {
   try {
     const listGradeStrucutre = await GradeStructure.find({ class_id: req.body.classId });
     const newListGradeStructure = req.body.listGradeStructure;
