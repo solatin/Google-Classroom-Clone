@@ -40,7 +40,8 @@ router.post("/google", async (req, res) => {
     jwtAccessToken,
     jwtRefreshToken,
     email: account.email,
-    name: account.display_name
+    name: account.display_name,
+    role: account.role
   });
   } catch (e) {
     return res.status(401);
