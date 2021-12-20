@@ -445,7 +445,7 @@ app.get('/getAllGrade/:classId', async (req, res) => {
     const listReturn = [];
     listStudentName.forEach(student => {
       const listStudentGrade = listGrade.filter(grade => grade.student_class_id == student.student_class_id);
-      listReturn.push({ studentId: student.student_class_id, studentName: student.student_namem, studentGrade: listStudentGrade });
+      listReturn.push({ studentId: student.student_class_id, studentName: student.student_name, studentGrade: listStudentGrade });
     });
     res.json(listReturn);
   } catch (error) {

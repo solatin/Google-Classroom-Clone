@@ -3,10 +3,15 @@ import './ClassGrades.css';
 import DataTable from 'react-data-table-component';
 import * as XLSX from 'xlsx';
 import { DataGrid, GridToolbarExport, GridToolbarContainer } from '@mui/x-data-grid';
+import authAxios from "src/utils/authAxios";
+import { useParams } from "react-router-dom";
 
 const ClassGrades = () => {
     const [columns, setColumns] = React.useState([]);
     const [data, setData] = React.useState([]);
+    const { id } = useParams();
+    const [listStudent, setListStudent] = React.useState([]);
+    const [allGrade, setAllGrade] = React.useState([]);
    
     // process CSV/XLSX data
     const processData = dataString => {
@@ -47,6 +52,23 @@ const ClassGrades = () => {
         setData(list);
         setColumns(columns);
     }
+
+    // get data from BE
+	const fetch = async () => {
+		const classId = { 'classId': id };
+		const rs = await authAxios.post(`/getStudentListFile/${classId}`, classId);
+		setListStudent(rs);
+
+        const rs2 = await authAxios.get(`/getAllGrade/${classId}`);
+        setAllGrade(rs2);
+	}
+
+	React.useEffect(() => {
+		fetch();
+	}, []);
+
+    console.log(listStudent);
+    console.log(allGrade);
  
     // handle file upload
     const handleFileUpload = e => {
