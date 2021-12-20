@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import './ClassGrades.css';
 import DataTable from 'react-data-table-component';
 import * as XLSX from 'xlsx';
@@ -13,13 +13,13 @@ const ClassGrades = () => {
     const [listStudent, setListStudent] = React.useState([]);
     const [allGrade, setAllGrade] = React.useState([]);
     const [selectedFile, setSelectedFile] = useState();
-	const [isFilePicked, setIsFilePicked] = useState(false);
-   
+    const [isFilePicked, setIsFilePicked] = useState(false);
+
     // process CSV/XLSX data
     const processData = dataString => {
         const dataStringLines = dataString.split(/\r\n|\n/);
         const headers = dataStringLines[0].split(/,(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/);
-    
+
         const list = [];
         for (let i = 1; i < dataStringLines.length; i++) {
             const row = dataStringLines[i].split(/,(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/);
@@ -29,49 +29,49 @@ const ClassGrades = () => {
                     let d = row[j];
                     if (d.length > 0) {
                         if (d[0] === '"')
-                        d = d.substring(1, d.length - 1);
+                            d = d.substring(1, d.length - 1);
                         if (d[d.length - 1] === '"')
-                        d = d.substring(d.length - 2, 1);
+                            d = d.substring(d.length - 2, 1);
                     }
                     if (headers[j]) {
                         obj[headers[j]] = d;
                     }
                 }
-        
+
                 // remove the blank rows
                 if (Object.values(obj).filter(x => x).length > 0) {
                     list.push(obj);
                 }
             }
         }
- 
+
         // prepare columns list from headers
         const columns = headers.map(c => ({
             name: c,
             selector: c,
         }));
-    
+
         setData(list);
         setColumns(columns);
     }
 
     // get data from BE
-	const fetch = async () => {
-		const classId = { 'classId': id };
-		const rs = await authAxios.post(`/getStudentListFile/${classId}`, classId);
-		setListStudent(rs);
+    // const fetch = async () => {
+    //     const classId = { 'classId': id };
+    //     const rs = await authAxios.post(`/getStudentListFile/${classId}`, classId);
+    //     setListStudent(rs);
 
-        const rs2 = await authAxios.get(`/getAllGrade/${classId}`);
-        setAllGrade(rs2);
-	}
+    //     const rs2 = await authAxios.get(`/getAllGrade/${classId}`);
+    //     setAllGrade(rs2);
+    // }
 
-	React.useEffect(() => {
-		fetch();
-	}, []);
+    // React.useEffect(() => {
+    //     fetch();
+    // }, []);
 
     console.log(listStudent);
     console.log(allGrade);
- 
+
     // handle file upload
     const handleFileUpload = e => {
         const file = e.target.files[0];
@@ -98,9 +98,9 @@ const ClassGrades = () => {
 
     //fake data
     const rowStudentList = [
-        { id: 18120230, name: 'Tran Thanh Quang'},
-        { id: 18120313, name: 'Tran Tuan Dat'},
-        { id: 18120537, name: 'Nguyen Thai Son'},
+        { id: 18120230, name: 'Tran Thanh Quang' },
+        { id: 18120313, name: 'Tran Tuan Dat' },
+        { id: 18120537, name: 'Nguyen Thai Son' },
     ];
 
     //fake data
@@ -111,62 +111,64 @@ const ClassGrades = () => {
 
     //fake data
     const rowStudentGrade = [
-        { id: 18120230, grade: 9},
-        { id: 18120313, grade: 9.5},
-        { id: 18120537, grade: 10},
+        { id: 18120230, grade: 9 },
+        { id: 18120313, grade: 9.5 },
+        { id: 18120537, grade: 10 },
     ];
 
     function MyExportButton() {
         return (
-          <GridToolbarContainer>
-            <GridToolbarExport />
-          </GridToolbarContainer>
+            <GridToolbarContainer>
+                <GridToolbarExport />
+            </GridToolbarContainer>
         );
     }
 
     const changeHandler = (event) => {
-		setSelectedFile(event.target.files[0]);
-		setIsFilePicked(true);
-	};
+        setSelectedFile(event.target.files[0]);
+        setIsFilePicked(true);
+    };
 
-    const handleSubmission = () => {
-		const formData = new FormData();
+    const handleSubmission = async () => {
+        const formData = new FormData();
 
-		formData.append('File', selectedFile);
+        formData.append('excelFile', selectedFile);
 
         const classId = { 'classId': id };
-		// const rs = await authAxios.post(`/getStudentListFile/${classId}`, classId);
-		// setListStudent(rs);
+        console.log(id);
+        // const rs = await authAxios.post(`/getStudentListFile/${classId}`, classId);
+        // setListStudent(rs);
 
-		fetch(
-			`/uploadStudentListFile/${classId}`,
-			{
-				method: 'POST',
-				body: formData,
-			}
-		)
-			.then((response) => response.json())
-			.then((result) => {
-				console.log('Success:', result);
-			})
-			.catch((error) => {
-				console.error('Error:', error);
-			});
-        };
+        fetch(
+            `http://localhost:8080/uploadStudentListFile/619e4715cd40c6dc7eb5ab92`,
+            {
+                method: 'POST',
+                body: formData,
+            }
+        )
+            .then((response) => response.json())
+            .then((result) => {
+                console.log('Success:', result);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    };
 
 
-    return(
+
+    return (
         <div className="grades">
             <div>
                 <h3>Uploads a csv/xlsx file with student list (StudentId, Full name)</h3>
-                
-                <form enctype="multipart/form-data" method="POST"> 
+
+                <form enctype="multipart/form-data" method="POST">
                     <input
                         type="file"
                         accept=".csv,.xlsx,.xls"
                         onChange={handleFileUpload}
                     />
-                    <button onClick={handleSubmission}>Submit</button>
+                    <button type="button" onClick={handleSubmission}>Submit</button>
                 </form>
                 <DataTable
                     pagination
@@ -177,8 +179,8 @@ const ClassGrades = () => {
             </div>
             <div style={{ height: 400, width: '80%' }}>
                 <h3>Download default csv/Excel (xlsx) template for student list (StudentId, FullName)</h3>
-               <DataGrid rows={rowStudentList} columns={columnStudentList} 
-                    pageSize={3} 
+                <DataGrid rows={rowStudentList} columns={columnStudentList}
+                    pageSize={3}
                     components={{
                         Toolbar: MyExportButton,
                     }}
@@ -186,8 +188,8 @@ const ClassGrades = () => {
             </div>
             <div style={{ height: 400, width: '80%' }}>
                 <h3>Download default csv/Excel (xlsx) template for grades for an assignment (StudentId, Grade)</h3>
-               <DataGrid rows={rowStudentGrade} columns={columnStudentGrade} 
-                    pageSize={3} 
+                <DataGrid rows={rowStudentGrade} columns={columnStudentGrade}
+                    pageSize={3}
                     components={{
                         Toolbar: MyExportButton,
                     }}
