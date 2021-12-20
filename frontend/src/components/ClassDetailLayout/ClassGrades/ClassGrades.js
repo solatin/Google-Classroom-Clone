@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import './ClassGrades.css';
 import DataTable from 'react-data-table-component';
 import * as XLSX from 'xlsx';
@@ -12,6 +12,8 @@ const ClassGrades = () => {
     const { id } = useParams();
     const [listStudent, setListStudent] = React.useState([]);
     const [allGrade, setAllGrade] = React.useState([]);
+    const [selectedFile, setSelectedFile] = useState();
+	const [isFilePicked, setIsFilePicked] = useState(false);
    
     // process CSV/XLSX data
     const processData = dataString => {
@@ -122,15 +124,50 @@ const ClassGrades = () => {
         );
     }
 
+    const changeHandler = (event) => {
+		setSelectedFile(event.target.files[0]);
+		setIsFilePicked(true);
+	};
+
+    const handleSubmission = () => {
+		const formData = new FormData();
+
+		formData.append('File', selectedFile);
+
+        const classId = { 'classId': id };
+		// const rs = await authAxios.post(`/getStudentListFile/${classId}`, classId);
+		// setListStudent(rs);
+
+		fetch(
+			`/uploadStudentListFile/${classId}`,
+			{
+				method: 'POST',
+				body: formData,
+			}
+		)
+			.then((response) => response.json())
+			.then((result) => {
+				console.log('Success:', result);
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			});
+        };
+
+
     return(
         <div className="grades">
             <div>
                 <h3>Uploads a csv/xlsx file with student list (StudentId, Full name)</h3>
-                <input
-                    type="file"
-                    accept=".csv,.xlsx,.xls"
-                    onChange={handleFileUpload}
-                />
+                
+                <form enctype="multipart/form-data" method="POST"> 
+                    <input
+                        type="file"
+                        accept=".csv,.xlsx,.xls"
+                        onChange={handleFileUpload}
+                    />
+                    <button onClick={handleSubmission}>Submit</button>
+                </form>
                 <DataTable
                     pagination
                     highlightOnHover
@@ -159,4 +196,5 @@ const ClassGrades = () => {
         </div>
     )
 }
+
 export default ClassGrades;
