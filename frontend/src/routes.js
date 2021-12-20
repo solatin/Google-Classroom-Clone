@@ -13,6 +13,7 @@ import ClassMembers from './components/ClassDetailLayout/ClassMembers/ClassMembe
 import AcceptInvitation from './components/AcceptInvitation/AcceptInvitation';
 import ClassGradeStructure from './components/ClassDetailLayout/ClassGradeStructure/ClassGradeStructure';
 import ClassGradeEdit from './components/ClassDetailLayout/ClassGradeStructure/ClassGradeEdit';
+import ClassGrade from './components/ClassDetailLayout/ClassGrades';
 
 export const routes = [
 	{
@@ -44,6 +45,10 @@ export const routes = [
 			{
 				path: '/grade/structure',
 				element: <ClassGradeEdit />
+			},
+			{
+				path: '/grades',
+				element: <ClassGrade />
 			}
 		]
 	},
