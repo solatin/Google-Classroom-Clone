@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const readXlsxFile = require("read-excel-file/node");
 var nodemailer = require('nodemailer');
+const multer = require('multer');
 const cors = require('cors');
 require('dotenv').config();
 
@@ -9,9 +11,12 @@ const Account = require('./models/account.js');
 const ClassStudent = require('./models/class_student');
 const ClassTeacher = require('./models/class_teacher');
 const GradeStructure = require('./models/grade_structure');
+const ClassStudentId = require('./models/class_student_id');
+const ClassStudentGrade = require('./models/class_student_grade');
 const { generateToken } = require('./utils/jwt.js');
 const auth = require('./middlewares/auth.js');
 const account = require('./models/account.js');
+const { find } = require('./models/class.js');
 
 var transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -20,6 +25,17 @@ var transporter = nodemailer.createTransport({
     pass: '18CNTNWNC'
   }
 })
+
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname)
+  }
+})
+
+var upload = multer({ storage: storage })
 
 const app = express();
 
@@ -279,6 +295,179 @@ app.post('/arrangeGradeStructure', auth, async (req, res) => {
   }
 
 })
+
+var listNewStudentId = async (listCurrentStudentId, listFileStudentId) => {
+  const listNew = [];
+  for (let i = 0; i < listFileStudentId.length; i++) {
+    const fileStudent = listFileStudentId[i];
+    let isExist = false;
+    for (let j = 0; j < listCurrentStudentId.length; j++) {
+      const currentStudent = listCurrentStudentId[j];
+      if (fileStudent[0] == currentStudent.student_class_id) {
+        currentStudent.student_name = fileStudent[1];
+        await currentStudent.save();
+        isExist = true;
+        break;
+      }
+    }
+    if (!isExist) {
+      listNew.push(fileStudent);
+    }
+  }
+  console.log(listNew);
+  return listNew;
+}
+
+app.post('/uploadStudentListFile/:classId', auth, upload.single('excelFile'), async (req, res) => {
+  try {
+    const classId = req.params.classId;
+    if (req.file == undefined) {
+      return res.status(400).send("Please upload an excel file!");
+    }
+    const listCurrent = await ClassStudentId.find({ status: true, class_id: classId, });
+
+    await readXlsxFile('uploads/' + req.file.filename).then(async (rows) => {
+      const listNew = await listNewStudentId(listCurrent, rows);
+      const listStudentId = listNew.map(item => new ClassStudentId({
+        class_id: classId,
+        student_class_id: item[0],
+        student_name: item[1],
+        status: true
+      }));
+      ClassStudentId.insertMany(listStudentId);
+    })
+    res.json(listStudentId);
+  } catch (error) {
+    res.status(500).send({
+      message: "Could not upload the file: " + req.file.originalname,
+    });
+  }
+})
+
+app.post('/getStudentListFile/:classId', auth, async (req, res) => {
+  try {
+    const classId = req.params.classId;
+    const listStudentId = await ClassStudentId.find({ status: true, class_id: classId, status: true });
+
+    res.json(listStudentId);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: "Could not send info",
+    });
+  }
+})
+
+app.post('/updateStudentGrade/:classId/:studentClassId/:gradeStructureId', auth, async (req, res) => {
+  try {
+    const classId = req.params.classId;
+    const studentClassId = req.params.studentClassId;
+    const gradeStructureId = req.params.gradeStructureId;
+    const grade = req.body.grade;
+    await ClassStudentGrade.findOne({
+      class_id: classId,
+      student_class_id: studentClassId,
+      grade_structure_id: gradeStructureId
+    }, function (err, obj) {
+      if (err) {
+        res.status(400).send({
+          message: "Error in updating"
+        })
+      } else if (obj) {
+        obj.student_grade = grade;
+        obj.save();
+        res.status(200).send();
+      }
+    })
+  } catch (error) {
+    res.status(400).send({
+      message: "Error in updating"
+    })
+  }
+})
+
+var listNewStudentGrade = async (listCurrentStudentGrade, listFileStudentGrade) => {
+  const listNew = [];
+  for (let i = 0; i < listFileStudentGrade.length; i++) {
+    const fileStudent = listFileStudentGrade[i];
+    let isExist = false;
+    for (let j = 0; j < listCurrentStudentGrade.length; j++) {
+      const currentStudent = listCurrentStudentGrade[j];
+      if (fileStudent[0] == currentStudent.student_class_id) {
+        currentStudent.student_grade = fileStudent[1];
+        await currentStudent.save();
+        isExist = true;
+        break;
+      }
+    }
+    if (!isExist) {
+      listNew.push(fileStudent);
+    }
+  }
+  console.log(listNew);
+  return listNew;
+}
+
+app.post('/uploadStudentGradeListFile/:classId/:gradeStructureId', auth, upload.single('excelFile'), async (req, res) => {
+  try {
+    const classId = req.params.classId;
+    const gradeStructureId = req.params.gradeStructureId;
+    if (req.file == undefined) {
+      return res.status(400).send("Please upload an excel file!");
+    }
+    const listCurrent = await ClassStudentGrade.find({ status: true, class_id: classId, grade_structure_id: gradeStructureId });
+
+    await readXlsxFile('uploads/' + req.file.filename).then(async (rows) => {
+      const listNew = await listNewStudentGrade(listCurrent, rows);
+      const listStudentGrade = listNew.map(item => new ClassStudentGrade({
+        class_id: classId,
+        student_class_id: item[0],
+        student_grade: item[1],
+        grade_structure_id: gradeStructureId,
+        status: true
+      }));
+      ClassStudentGrade.insertMany(listStudentGrade);
+    })
+    res.json(listStudentGrade);
+  } catch (error) {
+    res.status(500).send({
+      message: "Could not upload the file: " + req.file.originalname,
+    });
+  }
+})
+
+app.get('/getAllGrade/:classId', async (req, res) => {
+  try {
+    const classId = req.params.classId;
+    const listStudentName = await ClassStudentId.find({ status: true, class_id: classId, });
+    const listGrade = await ClassStudentGrade.find({ status: true, class_id: classId });
+
+    const listReturn = [];
+    listStudentName.forEach(student => {
+      const listStudentGrade = listGrade.filter(grade => grade.student_class_id == student.student_class_id);
+      listReturn.push({ studentId: student.student_class_id, studentName: student.student_name, studentGrade: listStudentGrade });
+    });
+    res.json(listReturn);
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      message: "Could not get grade.",
+    });
+  }
+})
+
+app.get('/hello', async (req, res) => {
+  var result = [];
+  await readXlsxFile('uploads/hello.xlsx').then((rows) => {
+    result = rows.map((item) => { return { student_class_id: item[0], student_name: item[1], status: true } });
+  })
+  res.json(result);
+})
+
+app.get('/a', function (req, res) {
+  res.sendFile(__dirname + '/upload.html');
+
+});
 
 const host = '0.0.0.0';
 const port = process.env.PORT || 8080;

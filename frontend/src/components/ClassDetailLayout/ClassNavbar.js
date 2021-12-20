@@ -37,6 +37,7 @@ export default function NavBar({ openSideBar, onClickTab, tab }) {
 							<Tab label="Bảng tin" value="feed" />
 							<Tab label="Bài tập trên lớp" value="assignments" />
 							<Tab label="Mọi người" value="members" />
+							<Tab label="Số điểm" value="grades"/>
 						</Tabs>
 					</Box>
 					<AccountPopover sx={{ ml: 'auto' }} />
