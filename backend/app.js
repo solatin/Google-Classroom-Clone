@@ -334,9 +334,10 @@ app.post('/uploadStudentListFile/:classId', auth, upload.single('excelFile'), as
         student_name: item[1],
         status: true
       }));
-      ClassStudentId.insertMany(listStudentId);
+      await ClassStudentId.insertMany(listStudentId);
+      res.json(listStudentId);
+
     })
-    res.json(listStudentId);
   } catch (error) {
     res.status(500).send({
       message: "Could not upload the file: " + req.file.originalname,
