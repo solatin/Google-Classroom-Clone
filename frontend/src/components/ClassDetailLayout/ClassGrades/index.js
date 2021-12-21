@@ -1,149 +1,176 @@
-import React, { useEffect, useState } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
-import { TextField } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
+import { useParams } from 'react-router-dom';
+import { Box, TextField, Typography } from '@mui/material';
+import { makeStyles, styled } from '@mui/styles';
+import { DataGrid } from '@mui/x-data-grid';
+import authAxios from 'src/utils/authAxios';
+import { useNotify } from 'src/hooks/useNotify';
 import './index.css';
 
-const useStyles = makeStyles({
-	root: {
-		'& .MuiDataGrid-cell--editing:focus-within': {
-			padding: '0 !important',
-			backgroundColor: 'inherit !important',
-			boxShadow: 'none',
-			outline: 'noset !important',
-			border: 'solid 0.0625rem #9e9e9e'
-		},
-		'& .MuiDataGrid-cell--editing:focus': {
-			outline: 'noset !important'
-		},
-		'& .MuiDataGrid-cell': {
-			padding: '0'
-		}
-	}
-});
-
-const RenderScore = (params) => {
-	const [editable, setEditable] = useState(false);
-	const [editValue, setEditValue] = useState(params.value);
-	return (
-		<TextField
-			sx={{	width: '100px', p: 0 }}
-			onClick={(evt) => {
-				setEditable(true);
-				evt.target.focus();
-			}}
-			onBlur={() => setEditable(false)}
-			disabled={!editable}
-			value={editable ? editValue : params.value}
-			variant={editable ? 'standard' : 'outlined'}
-			inputProps={{ style: { textAlign: 'right' } }}
-			InputProps={{
-				endAdornment: '/100'
-			}}
-			onChange={(event) => setEditValue(event.target.value)}
-		/>
-	);
-};
-
-RenderScore.propTypes = {
-	value: PropTypes.string.isRequired
-};
-
-function ScoreEditInputCell(props) {
-	const { id, value, api, field } = props;
-	const handleChange = async (event) => {
-		api.setEditCellValue({ id, field, value: event.target.value }, event);
-	};
-
-	const handleRef = (element) => {
-		if (element) {
-			element.querySelector(`input[value="${value}"]`)?.focus();
-		}
-	};
-	return (
-		<Box sx={{ display: 'flex', alignItems: 'center', px: 2 }}>
-			<TextField
-				ref={handleRef}
-				onBlur={async () => {
-					await api.commitCellChange({ id, field });
-					api.setCellMode(id, field, 'view');
-				}}
-				name="score"
-				variant="standard"
-				inputProps={{ style: { textAlign: 'right' } }}
-				InputProps={{
-					endAdornment: '/100'
-				}}
-				value={value}
-				onChange={handleChange}
-			/>
-		</Box>
-	);
-}
-
-ScoreEditInputCell.propTypes = {
-	api: PropTypes.object.isRequired,
-	/**
-	 * The column field of the cell that triggered the event.
-	 */
-	field: PropTypes.string.isRequired,
-	/**
-	 * The grid row id.
-	 */
-	id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-	/**
-	 * The cell value, but if the column has valueGetter, use getValue.
-	 */
-	value: PropTypes.string.isRequired
-};
-
-function renderScoreEditInputCell(params) {
-	return <ScoreEditInputCell {...params} />;
-}
-
-const columns = [
-	{
-		align: 'left',
-		cellClassName: 'dataGrid-cell-studentName',
-		field: 'places',
-		headerName: 'Places',
-		width: 120
+const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
+	border: 0,
+	color: 'rgba(0,0,0,.85)',
+	fontFamily: [
+		'-apple-system',
+		'BlinkMacSystemFont',
+		'"Segoe UI"',
+		'Roboto',
+		'"Helvetica Neue"',
+		'Arial',
+		'sans-serif',
+		'"Apple Color Emoji"',
+		'"Segoe UI Emoji"',
+		'"Segoe UI Symbol"'
+	].join(','),
+	WebkitFontSmoothing: 'auto',
+	letterSpacing: 'normal',
+	'& .MuiDataGrid-columnsContainer': {
+		backgroundColor: '#fafafa'
 	},
-	{
-		field: 'score',
-		headerName: 'Score',
-		renderCell: RenderScore,
-		// renderEditCell: renderScoreEditInputCell,
-		editable: false,
-		width: 100
+	'& .MuiDataGrid-iconSeparator': {
+		display: 'none'
+	},
+	'& .MuiDataGrid-columnHeader, .MuiDataGrid-cell': {
+		borderRight: `1px solid #e0e0e0`
+	},
+	'& .MuiDataGrid-columnsContainer, .MuiDataGrid-cell': {
+		borderBottom: `1px solid #e0e0e0`
+	},
+	'& .MuiDataGrid-cell': {
+		color: 'rgba(0,0,0,.85)'
+	},
+	'& .MuiPaginationItem-root': {
+		borderRadius: 0
 	}
-];
+}));
 
-const rows = [
-	{ id: 1, places: 'Barcelona', score: '3' },
-	{ id: 2, places: 'Rio de Janeiro', score: '4' },
-	{ id: 3, places: 'London', score: '9' },
-	{ id: 4, places: 'New York', score: '10' }
-];
+const renderHeader = (params) => {
+  console.log(params);
+  return( <Box>
+    <Typography sx={{ color: '#4285f4'}}>{params.field}</Typography>
+  </Box>);
+}
+export default function RenderRatingEditCellGrid() {
+	const { error } = useNotify();
+	const [grades, setGrades] = useState([]);
+	// const { id } = useParams();
+	const id = 'classid';
+	const fetch = async () => {
+		const rs = await authAxios.get(`/getAllGrade/${id}`);
+		setGrades(rs);
+	};
+	const update = async ({ studentID, gradeStructureID, grade }) => {
+		await authAxios.post(`/updateStudentGrade/${id}/${studentID}/${gradeStructureID}`, { grade });
+		fetch();
+	};
 
-const ClassGrade = () => {
-	const classes = useStyles();
+	const getColumns = useCallback(() => {
+		if (grades.length) {
+			return [
+				{
+					field: 'name',
+					headerName: 'Họ tên học sinh',
+          cellClassName: 'student-name',
+					width: 180
+				},
+				...grades[0].studentGrade.map((el) => ({
+					field: el.grade_structure_id,
+					headerName: el.grade_structure_id,
+					renderCell: renderGrade,
+					renderEditCell: renderGradeEditInputCell,
+          renderHeader: renderHeader,
+					editable: true,
+					width: 100,
+					align: 'right'
+				}))
+			];
+		}
+		return [];
+	}, [grades]);
+	const getRows = useCallback(() => {
+		if (grades.length) {
+			return grades.map((student) => ({
+				id: student.studentId,
+				name: student.studentName,
+				...student.studentGrade.reduce((prev, cur) => ({ ...prev, [cur.grade_structure_id]: cur.student_grade }), {})
+			}));
+		}
+		return [];
+	}, [grades]);
+
+	const renderGrade = (params) => {
+		return <Typography align="right">{params.value}</Typography>;
+	};
+
+	const GradeEditInputCell = (props) => {
+		const { id, value, api, field, row } = props;
+		const [editValue, setEditValue] = useState(value);
+		const handleSubmit = async () => {
+			if (isNaN(editValue)) {
+				error('Grade must be a number');
+				api.setEditCellValue({ id, field, value });
+				await api.commitCellChange({ id, field });
+				api.setCellMode(id, field, 'view');
+				return;
+			}
+			api.setEditCellValue({ id, field, value: editValue });
+			await api.commitCellChange({ id, field });
+			if (editValue !== value) {
+				await update({ studentID: row.id, gradeStructureID: field, grade: editValue });
+			}
+			api.setCellMode(id, field, 'view');
+		};
+
+		const handleRef = (element) => {
+			if (element) {
+				try {
+					element.querySelector(`input[value="${editValue}"]`).focus();
+				} catch {
+					return;
+				}
+			}
+		};
+
+		return (
+			<Box sx={{ position: 'relative', display: 'flex', alignItems: 'center', p: 2 }}>
+				<TextField
+					ref={handleRef}
+					value={editValue}
+					inputProps={{ style: { textAlign: 'right' } }}
+					InputProps={{
+						endAdornment: '/100'
+					}}
+					onBlur={handleSubmit}
+					onKeyDown={(evt) => {
+						if (evt.key === 'Enter') {
+							handleSubmit();
+						}
+					}}
+					variant="standard"
+					onChange={(event) => setEditValue(event.target.value)}
+				/>
+			</Box>
+		);
+	};
+
+	const renderGradeEditInputCell = (params) => {
+		return <GradeEditInputCell {...params} />;
+	};
+
+	useEffect(() => {
+		fetch();
+	}, []);
 
 	return (
-		<div style={{ height: 400, width: '100%' }}>
-			<DataGrid
-				classes={classes}
-				rows={rows}
-				columns={columns}
-				pageSize={5}
-				rowsPerPageOptions={[5]}
+		<div style={{ minHeight: '90vh', width: '100%' }}>
+			<StyledDataGrid
+				headerHeight={124}
 				disableSelectionOnClick
-				onCellEditCommit={(params) => console.log('commit', params)}
+				hideFooterPagination
+				rows={getRows()}
+				columns={getColumns()}
 			/>
 		</div>
 	);
-};
-
-export default ClassGrade;
+}
