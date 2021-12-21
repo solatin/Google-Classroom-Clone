@@ -8,190 +8,195 @@ import { useParams } from 'react-router-dom';
 
 //fake data
 const columnStudentList = [
-	{ field: 'id', headerName: 'StudentID', width: 170 },
-	{ field: 'name', headerName: 'Full Name', width: 170 }
+    { field: 'id', headerName: 'StudentID', width: 170 },
+    { field: 'name', headerName: 'Full Name', width: 170 }
 ];
 
 //fake data
 const rowStudentList = [
-	{ id: 18120230, name: 'Tran Thanh Quang' },
-	{ id: 18120313, name: 'Tran Tuan Dat' },
-	{ id: 18120537, name: 'Nguyen Thai Son' }
+    { id: 18120230, name: 'Tran Thanh Quang' },
+    { id: 18120313, name: 'Tran Tuan Dat' },
+    { id: 18120537, name: 'Nguyen Thai Son' }
 ];
 
 //fake data
 const columnStudentGrade = [
-	{ field: 'id', headerName: 'StudentID', width: 170 },
-	{ field: 'grade', headerName: 'Grade', width: 170 }
+    { field: 'id', headerName: 'StudentID', width: 170 },
+    { field: 'grade', headerName: 'Grade', width: 170 }
 ];
 
 //fake data
 const rowStudentGrade = [
-	{ id: 18120230, grade: 9 },
-	{ id: 18120313, grade: 9.5 },
-	{ id: 18120537, grade: 10 }
+    { id: 18120230, grade: 9 },
+    { id: 18120313, grade: 9.5 },
+    { id: 18120537, grade: 10 }
 ];
 
 const ClassGrades = () => {
-	const [columns, setColumns] = React.useState([]);
-	const [data, setData] = React.useState([]);
-	const { id } = useParams();
-	const [listStudent, setListStudent] = React.useState([]);
-	const [allGrade, setAllGrade] = React.useState([]);
-	const [selectedFile, setSelectedFile] = useState();
-	const [isFilePicked, setIsFilePicked] = useState(false);
+    const [columns, setColumns] = React.useState([]);
+    const [data, setData] = React.useState([]);
+    const { id } = useParams();
+    const [studentList, setStudentList] = React.useState([]);
+    const [allGrade, setAllGrade] = React.useState([]);
+    const [selectedFile, setSelectedFile] = useState();
+    const [isFilePicked, setIsFilePicked] = useState(false);
 
-	// process CSV/XLSX data
-	const processData = (dataString) => {
-		const dataStringLines = dataString.split(/\r\n|\n/);
-		const headers = dataStringLines[0].split(/,(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/);
+    // process CSV/XLSX data
+    const processData = (dataString) => {
+        const dataStringLines = dataString.split(/\r\n|\n/);
+        const headers = dataStringLines[0].split(/,(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/);
 
-		const list = [];
-		for (let i = 1; i < dataStringLines.length; i++) {
-			const row = dataStringLines[i].split(/,(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/);
-			if (headers && row.length === headers.length) {
-				const obj = {};
-				for (let j = 0; j < headers.length; j++) {
-					let d = row[j];
-					if (d.length > 0) {
-						if (d[0] === '"') d = d.substring(1, d.length - 1);
-						if (d[d.length - 1] === '"') d = d.substring(d.length - 2, 1);
-					}
-					if (headers[j]) {
-						obj[headers[j]] = d;
-					}
-				}
+        const list = [];
+        for (let i = 1; i < dataStringLines.length; i++) {
+            const row = dataStringLines[i].split(/,(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/);
+            if (headers && row.length === headers.length) {
+                const obj = {};
+                for (let j = 0; j < headers.length; j++) {
+                    let d = row[j];
+                    if (d.length > 0) {
+                        if (d[0] === '"') d = d.substring(1, d.length - 1);
+                        if (d[d.length - 1] === '"') d = d.substring(d.length - 2, 1);
+                    }
+                    if (headers[j]) {
+                        obj[headers[j]] = d;
+                    }
+                }
 
-				// remove the blank rows
-				if (Object.values(obj).filter((x) => x).length > 0) {
-					list.push(obj);
-				}
-			}
-		}
+                // remove the blank rows
+                if (Object.values(obj).filter((x) => x).length > 0) {
+                    list.push(obj);
+                }
+            }
+        }
 
-		// prepare columns list from headers
-		const columns = headers.map((c) => ({
-			name: c,
-			selector: c
-		}));
+        // prepare columns list from headers
+        const columns = headers.map((c) => ({
+            name: c,
+            selector: c
+        }));
 
-		setData(list);
-		setColumns(columns);
-	};
+        setData(list);
+        setColumns(columns);
+    };
 
-	// get data from BE
-	// const fetch = async () => {
-	//     const classId = { 'classId': id };
-	//     const rs = await authAxios.post(`/getStudentListFile/${classId}`, classId);
-	//     setListStudent(rs);
+    // get data from BE
+    const fetch = async () => {
+        const studentListFile = await authAxios.post(`/getStudentListFile/${id}`);
+        setStudentList(studentListFile);
 
-	//     const rs2 = await authAxios.get(`/getAllGrade/${classId}`);
-	//     setAllGrade(rs2);
-	// }
+        const grade = await authAxios.get(`/getAllGrade/${id}`);
+        setAllGrade(grade);
+    }
 
-	// React.useEffect(() => {
-	//     fetch();
-	// }, []);
+    React.useEffect(() => {
+        fetch();
 
-	// handle file upload
-	const handleFileUpload = (e) => {
-		const file = e.target.files[0];
+    }, []);
+
+    // handle file upload
+    const handleFileUpload = (e) => {
+        const file = e.target.files[0];
         setSelectedFile(file);
-		setIsFilePicked(true);
+        setIsFilePicked(true);
 
-		const reader = new FileReader();
-		reader.onload = (evt) => {
-			/* Parse data */
-			const bstr = evt.target.result;
-			const wb = XLSX.read(bstr, { type: 'binary' });
-			/* Get first worksheet */
-			const wsname = wb.SheetNames[0];
-			const ws = wb.Sheets[wsname];
-			/* Convert array of arrays */
-			const data = XLSX.utils.sheet_to_csv(ws, { header: 1 });
-			processData(data);
-		};
-		reader.readAsBinaryString(file);
-	};
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            /* Parse data */
+            const bstr = evt.target.result;
+            const wb = XLSX.read(bstr, { type: 'binary' });
+            /* Get first worksheet */
+            const wsname = wb.SheetNames[0];
+            const ws = wb.Sheets[wsname];
+            /* Convert array of arrays */
+            const data = XLSX.utils.sheet_to_csv(ws, { header: 1 });
+            processData(data);
+        };
+        reader.readAsBinaryString(file);
+    };
 
-	function MyExportButton() {
-		return (
-			<GridToolbarContainer>
-				<GridToolbarExport />
-			</GridToolbarContainer>
-		);
-	}
+    function MyExportButton() {
+        return (
+            <GridToolbarContainer>
+                <GridToolbarExport />
+            </GridToolbarContainer>
+        );
+    }
 
-	const changeHandler = (event) => {
-		setSelectedFile(event.target.files[0]);
-		setIsFilePicked(true);
-	};
-
-	const handleSubmission = async () => {
-		const formData = new FormData();
-        console.log(selectedFile);
-		formData.append('excelFile', selectedFile);
+    const handleSubmissionStudentList = async () => {
+        const formData = new FormData();
+        // console.log(selectedFile);
+        formData.append('excelFile', selectedFile);
 
         try {
             await authAxios.post(`/uploadStudentListFile/${id}`, formData);
         } catch (e) {
             console.log(e);
         }
+    };
 
-		// const classId = { classId: id };
-		// const rs = await authAxios.post(`/getStudentListFile/${classId}`, classId);
-		// setListStudent(rs);
+    const handleSubmissionGrade = async ({ gradeId }) => {
+        const formData = new FormData();
+        // console.log(selectedFile);
+        formData.append('excelFile', selectedFile);
 
-		// fetch(`http://localhost:8080/uploadStudentListFile/619e4715cd40c6dc7eb5ab92`, {
-		// 	method: 'POST',
-		// 	body: formData
-		// })
-		// 	.then((response) => response.json())
-		// 	.then((result) => {
-		// 		console.log('Success:', result);
-		// 	})
-		// 	.catch((error) => {
-		// 		console.error('Error:', error);
-		// 	});
-	};
+        try {
+            await authAxios.post(`/uploadStudentGradeListFile/${id}/${gradeId}`, formData);
+        } catch (e) {
+            console.log(e);
+        }
+    };
 
-	return (
-		<div className="grades">
-			<div>
-				<h3>Uploads a csv/xlsx file with student list (StudentId, Full name)</h3>
+    //console.log(studentList);
+    console.log(allGrade);
 
-				<form enctype="multipart/form-data" method="POST">
-					<input type="file" accept=".csv,.xlsx,.xls" onChange={handleFileUpload} />
-					<button type="button" onClick={handleSubmission}>
-						Submit
-					</button>
-				</form>
-				<DataTable pagination highlightOnHover columns={columns} data={data} />
-			</div>
-			<div style={{ height: 400, width: '80%' }}>
-				<h3>Download default csv/Excel (xlsx) template for student list (StudentId, FullName)</h3>
-				<DataGrid
-					rows={rowStudentList}
-					columns={columnStudentList}
-					pageSize={3}
-					components={{
-						Toolbar: MyExportButton
-					}}
-				/>
-			</div>
-			<div style={{ height: 400, width: '80%' }}>
-				<h3>Download default csv/Excel (xlsx) template for grades for an assignment (StudentId, Grade)</h3>
-				<DataGrid
-					rows={rowStudentGrade}
-					columns={columnStudentGrade}
-					pageSize={3}
-					components={{
-						Toolbar: MyExportButton
-					}}
-				/>
-			</div>
-		</div>
-	);
+    return (
+        <div className="grades">
+            <div>
+                <h3>Uploads a csv/xlsx file with student list (StudentId, Full name)</h3>
+
+                <form enctype="multipart/form-data" method="POST">
+                    <input type="file" accept=".csv,.xlsx,.xls" onChange={handleFileUpload} />
+                    <button type="button" onClick={handleSubmissionStudentList}>
+                        Submit
+                    </button>
+                </form>
+                <DataTable pagination highlightOnHover columns={columns} data={data} />
+            </div>
+            <div>
+                <h3>Uploads a csv/xlsx file for grades of all students for a specific assignment</h3>
+
+                <form enctype="multipart/form-data" method="POST">
+                    <input type="file" accept=".csv,.xlsx,.xls" onChange={handleFileUpload} />
+                    <button type="button" onClick={handleSubmissionGrade}>
+                        Submit
+                    </button>
+                </form>
+                <DataTable pagination highlightOnHover columns={columns} data={data} />
+            </div>
+            <div style={{ height: 400, width: '80%' }}>
+                <h3>Download default csv/Excel (xlsx) template for student list (StudentId, FullName)</h3>
+                <DataGrid
+                    rows={rowStudentList}
+                    columns={columnStudentList}
+                    pageSize={3}
+                    components={{
+                        Toolbar: MyExportButton
+                    }}
+                />
+            </div>
+            <div style={{ height: 400, width: '80%' }}>
+                <h3>Download default csv/Excel (xlsx) template for grades for an assignment (StudentId, Grade)</h3>
+                <DataGrid
+                    rows={rowStudentGrade}
+                    columns={columnStudentGrade}
+                    pageSize={3}
+                    components={{
+                        Toolbar: MyExportButton
+                    }}
+                />
+            </div>
+        </div>
+    );
 };
 
 export default ClassGrades;
