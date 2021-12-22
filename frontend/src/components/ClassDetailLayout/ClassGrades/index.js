@@ -47,25 +47,6 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 	}
 }));
 
-const renderHeader = (params) => {
-	return (
-		<Box
-			sx={{
-				display: 'flex',
-				alignItems: 'flex-start',
-				flexFlow: 'column',
-				width: '120px',
-				position: 'relative'
-			}}
-		>
-			<Typography sx={{ color: '#4285f4' }}>
-				{params.colDef.headerName}
-				<br />
-				Trong tổng số {params.grade}
-			</Typography>
-		</Box>
-	);
-};
 export default function RenderRatingEditCellGrid() {
 	const { error } = useNotify();
 	const [columns, setColumns] = useState([]);
@@ -79,29 +60,72 @@ export default function RenderRatingEditCellGrid() {
 		setRows(getRows(rs1.listStudent, rs1.listTotalGrade));
 	};
 
-	const getColumns = useCallback(
-		(rs) => {
-			return [
-				{
-					field: 'name',
-					headerName: 'Họ tên học sinh',
-					cellClassName: 'student-name',
-					width: 180
-				},
-				...rs.map((gradeStructure) => ({
-					field: gradeStructure._id,
-					headerName: gradeStructure.title,
-					renderCell: renderGrade,
-					renderEditCell: renderGradeEditInputCell,
-					renderHeader: (params) => renderHeader({ ...params, grade: gradeStructure.grade }),
-					editable: true,
-					width: 180,
-					align: 'right'
-				}))
-			];
-		},
-		[]
-	);
+	const RenderHeader = (params) => {
+		const [file, setFile] = useState(null);
+		const ref = useRef(null);
+		const onClick = async () => {
+			if (!file) {
+				ref.current.click();
+			} else {
+				try {
+					const formData = new FormData();
+					formData.append('excelFile', file);
+					await authAxios.post(`/uploadStudentGradeListFile/${id}/${params.field}`, formData);
+					fetch();
+				} catch (e) {
+					console.log(e);
+				}
+				setFile(null);
+			}
+		};
+		return (
+			<Box
+				sx={{
+					display: 'flex',
+					alignItems: 'flex-start',
+					flexFlow: 'column',
+					width: '120px',
+					top: '-1px',
+					position: 'relative'
+				}}
+			>
+				<Typography sx={{ color: '#4285f4' }}>
+					{params.colDef.headerName}
+					<br />
+					Trong tổng số {params.grade}
+				</Typography>
+				<Button variant="contained" onClick={onClick}>
+					{file ? 'Upload' : 'Choose File'}
+				</Button>
+				<input ref={ref} hidden type="file" accept=".csv,.xlsx,.xls" onChange={(e) => setFile(e.target.files[0])} />
+			</Box>
+		);
+	};
+
+	const getColumns = useCallback((rs) => {
+		return [
+			{
+				field: 'name',
+				headerName: 'Họ tên học sinh',
+				cellClassName: 'student-name',
+				width: 180
+			},
+			...rs.map((gradeStructure) => ({
+				field: gradeStructure._id,
+				headerName: gradeStructure.title,
+				renderCell: renderGrade,
+				renderEditCell: renderGradeEditInputCell,
+				renderHeader: (params) => RenderHeader({ ...params, grade: gradeStructure.grade }),
+				editable: true,
+				width: 180,
+				align: 'right'
+			})),
+			{
+				field: 'average',
+				headerName: 'Điểm tổng',
+			}
+		];
+	}, []);
 	const update = async ({ studentID, gradeStructureID, grade }) => {
 		await authAxios.post(`/updateStudentGrade/${id}/${studentID}/${gradeStructureID}`, { grade });
 		fetch();
@@ -109,17 +133,18 @@ export default function RenderRatingEditCellGrid() {
 
 	const getRows = useCallback((listStudent, listGrade) => {
 		const averageGradeRow = {
-			id: 'average',
+			id: 'total',
 			name: 'Điểm trung bình của lớp',
-			...listGrade.reduce((prev, cur) => ({...prev, [cur.grade._id]: cur.totalGrade}), {})
+			...listGrade.reduce((prev, cur) => ({ ...prev, [cur.grade._id]: cur.totalGrade }), {})
 		};
-		const studentRows =  listStudent.map((student) => ({
-				id: student.studentId,
-				name: student.studentName,
-				...student.studentGrade.reduce((prev, cur) => ({ ...prev, [cur.grade_structure_id]: cur.student_grade }), {})
-			}));
-		return [averageGradeRow, ...studentRows];
+		const studentRows = listStudent.map((student) => ({
+			id: student.studentId,
+			name: student.studentName,
+			...student.studentGrade.reduce((prev, cur) => ({ ...prev, [cur.grade_structure_id]: cur.student_grade }), {}),
+			average: student.averageGrade
 
+		}));
+		return [averageGradeRow, ...studentRows];
 	}, []);
 	console.log(rows);
 
@@ -203,28 +228,35 @@ export default function RenderRatingEditCellGrid() {
 
 	return (
 		<Box style={{ minHeight: '90vh', width: '100%' }}>
-			<StyledDataGrid
-				headerHeight={124}
-				disableSelectionOnClick
-				hideFooterPagination
-				rows={rows}
-				columns={columns}
-			/>
+			<StyledDataGrid headerHeight={124} disableSelectionOnClick hideFooterPagination rows={rows} columns={columns} />
 			{user.role === 'teacher' && (
 				<>
-					<Link
-						component={Button}
-						variant="contained"
-						href="/templates/Template-import-student.xlsx"
-						download="Template-import-student.xlsx"
-					>
-						<DownloadIcon fontSize="small" />
-						Download template
-					</Link>
-					<input type="file" accept=".csv,.xlsx,.xls" onChange={onChangeFile} />
-					<Button variant="contained" onClick={handleUpload}>
-						Upload list student
-					</Button>
+					<Box>
+						<Link
+							component={Button}
+							variant="contained"
+							href="/templates/Template-import-student.xlsx"
+							download="Template-import-student.xlsx"
+						>
+							<DownloadIcon fontSize="small" />
+							Download template list student
+						</Link>
+						<input type="file" accept=".csv,.xlsx,.xls" onChange={onChangeFile} />
+						<Button variant="contained" onClick={handleUpload}>
+							Upload list student
+						</Button>
+					</Box>
+					<Box>
+						<Link
+							component={Button}
+							variant="contained"
+							href="/templates/Template-import-assignment-grade.xlsx"
+							download="Template-import-assignment-grade.xlsx"
+						>
+							<DownloadIcon fontSize="small" />
+							Download template assignment grade
+						</Link>
+					</Box>
 				</>
 			)}
 		</Box>

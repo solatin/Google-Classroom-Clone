@@ -400,15 +400,16 @@ app.post('/updateStudentGrade/:classId/:studentClassId/:gradeStructureId', auth,
     const obj = await ClassStudentGrade.findOne({
       class_id: classId,
       student_class_id: studentClassId,
-      grade_structure_id: gradeStructureId
+      grade_structure_id: gradeStructureId,
     });
-    if (obj) {
+    if (!obj) {
       const newGrade = new ClassStudentGrade(
         {
           class_id: classId,
           student_class_id: studentClassId,
           grade_structure_id: gradeStructureId,
-          student_grade: grade
+          student_grade: grade,
+          status: true
         });
       await newGrade.save();
     } else {
@@ -464,6 +465,7 @@ app.post(
       });
 
       await readXlsxFile('uploads/' + req.file.filename).then(async (rows) => {
+        rows.shift();
         const listNew = await listNewStudentGrade(listCurrent, rows);
         const listStudentGrade = listNew.map(
           (item) =>
@@ -475,7 +477,7 @@ app.post(
               status: true
             })
         );
-        ClassStudentGrade.insertMany(listStudentGrade);
+        await ClassStudentGrade.insertMany(listStudentGrade);
       });
       res.json(listStudentGrade);
     } catch (error) {
@@ -498,14 +500,14 @@ app.get('/getAllGrade/:classId', async (req, res) => {
       const listStudentGrade = listGrade.filter((grade) => grade.student_class_id == student.student_class_id);
       const averageGrade = listStudentGrade.map((value) => {
         const baseVal = gradeStructure.find(element => element._id.toString());
-        const result = parseFloat(baseVal.grade) * parseFloat(value.student_grade) / totalSum;
+        const result = parseFloat(baseVal.grade) * parseFloat(value.student_grade);
         return result;
       }).reduce((a, b) => a + b, 0);
       listReturn.push({
         studentId: student.student_class_id,
         studentName: student.student_name,
         studentGrade: listStudentGrade,
-        averageGrade: averageGrade * 10,
+        averageGrade: averageGrade,
       });
     });
 
