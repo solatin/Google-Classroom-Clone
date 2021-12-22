@@ -402,8 +402,19 @@ app.post('/updateStudentGrade/:classId/:studentClassId/:gradeStructureId', auth,
       student_class_id: studentClassId,
       grade_structure_id: gradeStructureId
     });
-    obj.student_grade = grade;
-    await obj.save();
+    if (obj) {
+      const newGrade = new ClassStudentGrade(
+        {
+          class_id: classId,
+          student_class_id: studentClassId,
+          grade_structure_id: gradeStructureId,
+          student_grade: grade
+        });
+      await newGrade.save();
+    } else {
+      obj.student_grade = grade;
+      await obj.save();
+    }
     res.status(200).send();
   } catch (error) {
     console.log(error);
