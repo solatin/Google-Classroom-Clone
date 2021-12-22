@@ -22,6 +22,7 @@
     "generate-avatar": "^1.4.10",
     "history": "5",
     "lorem-ipsum": "^2.0.4",
+    "notistack": "^2.0.3",
     "prop-types": "^15.7.2",
     "react": "^17.0.1",
     "react-app-polyfill": "^2.0.0",
