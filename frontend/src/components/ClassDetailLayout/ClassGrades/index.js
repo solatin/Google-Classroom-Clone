@@ -51,47 +51,48 @@ const renderHeader = (params) => {
 	return (
 		<Box>
 			<Typography sx={{ color: '#4285f4' }}>{params.field}</Typography>
+			<Typography variant="subtitle">Trong tổng số {params.grade}</Typography>
 		</Box>
 	);
 };
 export default function RenderRatingEditCellGrid() {
 	const { error } = useNotify();
+	const [columns, setColumns] = useState([]);
 	const { user } = useAuth();
 	const [grades, setGrades] = useState([]);
-	// const { id } = useParams();
-	const id = 'classid';
+	const { id } = useParams();
 	const fetch = async () => {
-		const rs = await authAxios.get(`/getAllGrade/${id}`);
-		setGrades(rs);
+		const rs1 = await authAxios.get(`/getAllGrade/${id}`);
+		const rs2 = await authAxios.post('/getGradeStructure', { classId: id });
+		setColumns(getColumns(rs2));
+		setGrades(rs1);
 	};
+
+	const getColumns = useCallback((rs) => {
+		return [
+			{
+				field: 'name',
+				headerName: 'Họ tên học sinh',
+				cellClassName: 'student-name',
+				width: 180
+			},
+			...rs.map((gradeStructure) => ({
+				field: gradeStructure._id,
+				headerName: gradeStructure.title,
+				renderCell: renderGrade,
+				renderEditCell: renderGradeEditInputCell,
+				renderHeader: (params) => renderHeader({...params, grade: gradeStructure.grade}),
+				editable: true,
+				width: 150,
+				align: 'right'
+			}))
+		];
+	}, [grades]);
 	const update = async ({ studentID, gradeStructureID, grade }) => {
 		await authAxios.post(`/updateStudentGrade/${id}/${studentID}/${gradeStructureID}`, { grade });
 		fetch();
 	};
 
-	const getColumns = useCallback(() => {
-		if (grades.length) {
-			return [
-				{
-					field: 'name',
-					headerName: 'Họ tên học sinh',
-					cellClassName: 'student-name',
-					width: 180
-				},
-				...grades[0].studentGrade.map((el) => ({
-					field: el.grade_structure_id,
-					headerName: el.grade_structure_id,
-					renderCell: renderGrade,
-					renderEditCell: renderGradeEditInputCell,
-					renderHeader: renderHeader,
-					editable: true,
-					width: 100,
-					align: 'right'
-				}))
-			];
-		}
-		return [];
-	}, [grades]);
 	const getRows = useCallback(() => {
 		if (grades.length) {
 			return grades.map((student) => ({
@@ -180,7 +181,7 @@ export default function RenderRatingEditCellGrid() {
 		console.log('zo', e);
 		setFile(e.target.files[0]);
 	};
-	console.log(file);
+
 	return (
 		<Box style={{ minHeight: '90vh', width: '100%' }}>
 			{user.role === 'teacher' && (
@@ -206,7 +207,7 @@ export default function RenderRatingEditCellGrid() {
 				disableSelectionOnClick
 				hideFooterPagination
 				rows={getRows()}
-				columns={getColumns()}
+				columns={columns}
 			/>
 		</Box>
 	);
