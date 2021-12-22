@@ -69,14 +69,14 @@ const renderHeader = (params) => {
 export default function RenderRatingEditCellGrid() {
 	const { error } = useNotify();
 	const [columns, setColumns] = useState([]);
+	const [rows, setRows] = useState([]);
 	const { user } = useAuth();
-	const [grades, setGrades] = useState([]);
 	const { id } = useParams();
 	const fetch = async () => {
 		const rs1 = await authAxios.get(`/getAllGrade/${id}`);
 		const rs2 = await authAxios.post('/getGradeStructure', { classId: id });
 		setColumns(getColumns(rs2));
-		setGrades(rs1);
+		setRows(getRows(rs1.listStudent, rs1.listTotalGrade));
 	};
 
 	const getColumns = useCallback(
@@ -107,16 +107,21 @@ export default function RenderRatingEditCellGrid() {
 		fetch();
 	};
 
-	const getRows = useCallback(() => {
-		if (grades.length) {
-			return grades.map((student) => ({
+	const getRows = useCallback((listStudent, listGrade) => {
+		const averageGradeRow = {
+			id: 'average',
+			name: 'Điểm trung bình của lớp',
+			...listGrade.reduce((prev, cur) => ({...prev, [cur.grade._id]: cur.totalGrade}), {})
+		};
+		const studentRows =  listStudent.map((student) => ({
 				id: student.studentId,
 				name: student.studentName,
 				...student.studentGrade.reduce((prev, cur) => ({ ...prev, [cur.grade_structure_id]: cur.student_grade }), {})
 			}));
-		}
-		return [];
-	}, [grades]);
+		return [averageGradeRow, ...studentRows];
+
+	}, []);
+	console.log(rows);
 
 	const renderGrade = (params) => {
 		return <Typography align="right">{params.value}</Typography>;
@@ -202,7 +207,7 @@ export default function RenderRatingEditCellGrid() {
 				headerHeight={124}
 				disableSelectionOnClick
 				hideFooterPagination
-				rows={getRows()}
+				rows={rows}
 				columns={columns}
 			/>
 			{user.role === 'teacher' && (
