@@ -341,7 +341,6 @@ var listNewStudentId = async (listCurrentStudentId, listFileStudentId) => {
 			listNew.push(fileStudent);
 		}
 	}
-	console.log(listNew);
 	return listNew;
 };
 
@@ -354,6 +353,10 @@ app.post('/uploadStudentListFile/:classId', auth, upload.single('excelFile'), as
 		const listCurrent = await ClassStudentId.find({ status: true, class_id: classId });
 
 		await readXlsxFile('uploads/' + req.file.filename).then(async (rows) => {
+			// remove first row ['MMSV', 'Ten']
+			rows.shift();
+			console.log(rows);
+
 			const listNew = await listNewStudentId(listCurrent, rows);
 			const listStudentId = listNew.map(
 				(item) =>

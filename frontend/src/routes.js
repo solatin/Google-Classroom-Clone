@@ -52,13 +52,9 @@ export const routes = [
 				element: <ClassGrade />
 			},
 			{
-				path: '/grades-old',
-				element: <ClassGradeOld />
+				path: '/upload',
+				element: <ClassGrade />
 			},
-			{
-				path: '/rating',
-				element: <Rating />
-			}
 		]
 	},
 	{ path: '/profile', element: <ClassListLayout />, children: [{ path: '/', element: <Profile /> }] },
