@@ -123,6 +123,7 @@ export default function RenderRatingEditCellGrid() {
 			{
 				field: 'average',
 				headerName: 'Điểm tổng',
+				align: 'right'
 			}
 		];
 	}, []);
@@ -142,7 +143,6 @@ export default function RenderRatingEditCellGrid() {
 			name: student.studentName,
 			...student.studentGrade.reduce((prev, cur) => ({ ...prev, [cur.grade_structure_id]: cur.student_grade }), {}),
 			average: student.averageGrade
-
 		}));
 		return [averageGradeRow, ...studentRows];
 	}, []);
@@ -227,11 +227,10 @@ export default function RenderRatingEditCellGrid() {
 	};
 
 	return (
-		<Box style={{ minHeight: '90vh', width: '100%' }}>
-			<StyledDataGrid headerHeight={124} disableSelectionOnClick hideFooterPagination rows={rows} columns={columns} />
+		<Box style={{ minHeight: '90vh', width: '100%', pt: 2 }}>
 			{user.role === 'teacher' && (
 				<>
-					<Box>
+					<Box sx={{mt: 2}}>
 						<Link
 							component={Button}
 							variant="contained"
@@ -246,7 +245,7 @@ export default function RenderRatingEditCellGrid() {
 							Upload list student
 						</Button>
 					</Box>
-					<Box>
+					<Box sx={{mt: 2}}>
 						<Link
 							component={Button}
 							variant="contained"
@@ -259,6 +258,7 @@ export default function RenderRatingEditCellGrid() {
 					</Box>
 				</>
 			)}
+			<StyledDataGrid headerHeight={124} disableSelectionOnClick hideFooterPagination rows={rows} columns={columns} />
 		</Box>
 	);
 }
