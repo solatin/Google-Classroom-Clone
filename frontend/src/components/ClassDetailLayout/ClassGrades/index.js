@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
-import { Box, TextField, Typography } from '@mui/material';
+import { Box, TextField, Typography, Button, Link } from '@mui/material';
 import { makeStyles, styled } from '@mui/styles';
 import { DataGrid } from '@mui/x-data-grid';
 import authAxios from 'src/utils/authAxios';
 import { useNotify } from 'src/hooks/useNotify';
+import DownloadIcon from '@mui/icons-material/Download';
 import './index.css';
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
@@ -46,11 +47,12 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 }));
 
 const renderHeader = (params) => {
-  console.log(params);
-  return( <Box>
-    <Typography sx={{ color: '#4285f4'}}>{params.field}</Typography>
-  </Box>);
-}
+	return (
+		<Box>
+			<Typography sx={{ color: '#4285f4' }}>{params.field}</Typography>
+		</Box>
+	);
+};
 export default function RenderRatingEditCellGrid() {
 	const { error } = useNotify();
 	const [grades, setGrades] = useState([]);
@@ -71,7 +73,7 @@ export default function RenderRatingEditCellGrid() {
 				{
 					field: 'name',
 					headerName: 'Họ tên học sinh',
-          cellClassName: 'student-name',
+					cellClassName: 'student-name',
 					width: 180
 				},
 				...grades[0].studentGrade.map((el) => ({
@@ -79,7 +81,7 @@ export default function RenderRatingEditCellGrid() {
 					headerName: el.grade_structure_id,
 					renderCell: renderGrade,
 					renderEditCell: renderGradeEditInputCell,
-          renderHeader: renderHeader,
+					renderHeader: renderHeader,
 					editable: true,
 					width: 100,
 					align: 'right'
@@ -161,9 +163,37 @@ export default function RenderRatingEditCellGrid() {
 	useEffect(() => {
 		fetch();
 	}, []);
+	const [file, setFile] = useState(null);
+	const handleUpload = async () => {
+		const formData = new FormData();
+		formData.append('excelFile', file);
 
+		try {
+			await authAxios.post(`/uploadStudentListFile/${id}`, formData);
+		} catch (e) {
+			console.log(e);
+		}
+	};
+	const onChangeFile = (e) => {
+		console.log('zo', e);
+		setFile(e.target.files[0]);
+	};
+	console.log(file);
 	return (
-		<div style={{ minHeight: '90vh', width: '100%' }}>
+		<Box style={{ minHeight: '90vh', width: '100%' }}>
+			<Link
+				component={Button}
+				variant="contained"
+				href="/templates/Template-import-student.xlsx"
+				download="Template-import-student.xlsx"
+			>
+				<DownloadIcon fontSize="small" />
+				Download template
+			</Link>
+			<input type="file" accept=".csv,.xlsx,.xls" onChange={onChangeFile} />
+			<Button variant="contained" onClick={handleUpload}>
+				Upload list student
+			</Button>
 			<StyledDataGrid
 				headerHeight={124}
 				disableSelectionOnClick
@@ -171,6 +201,6 @@ export default function RenderRatingEditCellGrid() {
 				rows={getRows()}
 				columns={getColumns()}
 			/>
-		</div>
+		</Box>
 	);
 }
