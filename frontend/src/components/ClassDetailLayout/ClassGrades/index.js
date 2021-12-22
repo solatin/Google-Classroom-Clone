@@ -47,61 +47,106 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 	}
 }));
 
-const renderHeader = (params) => {
-	return (
-		<Box>
-			<Typography sx={{ color: '#4285f4' }}>{params.field}</Typography>
-		</Box>
-	);
-};
 export default function RenderRatingEditCellGrid() {
 	const { error } = useNotify();
+	const [columns, setColumns] = useState([]);
+	const [rows, setRows] = useState([]);
 	const { user } = useAuth();
-	const [grades, setGrades] = useState([]);
-	// const { id } = useParams();
-	const id = 'classid';
+	const { id } = useParams();
 	const fetch = async () => {
-		const rs = await authAxios.get(`/getAllGrade/${id}`);
-		setGrades(rs);
+		const rs1 = await authAxios.get(`/getAllGrade/${id}`);
+		const rs2 = await authAxios.post('/getGradeStructure', { classId: id });
+		setColumns(getColumns(rs2));
+		setRows(getRows(rs1.listStudent, rs1.listTotalGrade));
 	};
+
+	const RenderHeader = (params) => {
+		const [file, setFile] = useState(null);
+		const ref = useRef(null);
+		const onClick = async () => {
+			if (!file) {
+				ref.current.click();
+			} else {
+				try {
+					const formData = new FormData();
+					formData.append('excelFile', file);
+					await authAxios.post(`/uploadStudentGradeListFile/${id}/${params.field}`, formData);
+					fetch();
+				} catch (e) {
+					console.log(e);
+				}
+				setFile(null);
+			}
+		};
+		return (
+			<Box
+				sx={{
+					display: 'flex',
+					alignItems: 'flex-start',
+					flexFlow: 'column',
+					width: '120px',
+					top: '-1px',
+					position: 'relative'
+				}}
+			>
+				<Typography sx={{ color: '#4285f4' }}>
+					{params.colDef.headerName}
+					<br />
+					Trong tổng số {params.grade}
+				</Typography>
+				<Button variant="contained" onClick={onClick}>
+					{file ? 'Upload' : 'Choose File'}
+				</Button>
+				<input ref={ref} hidden type="file" accept=".csv,.xlsx,.xls" onChange={(e) => setFile(e.target.files[0])} />
+			</Box>
+		);
+	};
+
+	const getColumns = useCallback((rs) => {
+		return [
+			{
+				field: 'name',
+				headerName: 'Họ tên học sinh',
+				cellClassName: 'student-name',
+				width: 180
+			},
+			...rs.map((gradeStructure) => ({
+				field: gradeStructure._id,
+				headerName: gradeStructure.title,
+				renderCell: renderGrade,
+				renderEditCell: renderGradeEditInputCell,
+				renderHeader: (params) => RenderHeader({ ...params, grade: gradeStructure.grade }),
+				editable: true,
+				width: 180,
+				align: 'right'
+			})),
+			{
+				field: 'average',
+				headerName: 'Điểm tổng',
+				align: 'right'
+			}
+		];
+	}, []);
 	const update = async ({ studentID, gradeStructureID, grade }) => {
 		await authAxios.post(`/updateStudentGrade/${id}/${studentID}/${gradeStructureID}`, { grade });
 		fetch();
 	};
 
-	const getColumns = useCallback(() => {
-		if (grades.length) {
-			return [
-				{
-					field: 'name',
-					headerName: 'Họ tên học sinh',
-					cellClassName: 'student-name',
-					width: 180
-				},
-				...grades[0].studentGrade.map((el) => ({
-					field: el.grade_structure_id,
-					headerName: el.grade_structure_id,
-					renderCell: renderGrade,
-					renderEditCell: renderGradeEditInputCell,
-					renderHeader: renderHeader,
-					editable: true,
-					width: 100,
-					align: 'right'
-				}))
-			];
-		}
-		return [];
-	}, [grades]);
-	const getRows = useCallback(() => {
-		if (grades.length) {
-			return grades.map((student) => ({
-				id: student.studentId,
-				name: student.studentName,
-				...student.studentGrade.reduce((prev, cur) => ({ ...prev, [cur.grade_structure_id]: cur.student_grade }), {})
-			}));
-		}
-		return [];
-	}, [grades]);
+	const getRows = useCallback((listStudent, listGrade) => {
+		const averageGradeRow = {
+			id: 'total',
+			name: 'Điểm trung bình của lớp',
+			...listGrade.reduce((prev, cur) => ({ ...prev, [cur.grade._id]: cur.totalGrade }), {})
+		};
+		const studentRows = listStudent.map((student) => ({
+			id: student.studentId,
+			name: student.studentName,
+			...student.studentGrade.reduce((prev, cur) => ({ ...prev, [cur.grade_structure_id]: cur.student_grade }), {}),
+			average: student.averageGrade
+		}));
+		return [averageGradeRow, ...studentRows];
+	}, []);
+	console.log(rows);
 
 	const renderGrade = (params) => {
 		return <Typography align="right">{params.value}</Typography>;
@@ -180,34 +225,40 @@ export default function RenderRatingEditCellGrid() {
 		console.log('zo', e);
 		setFile(e.target.files[0]);
 	};
-	console.log(file);
+
 	return (
-		<Box style={{ minHeight: '90vh', width: '100%' }}>
+		<Box style={{ minHeight: '90vh', width: '100%', pt: 2 }}>
 			{user.role === 'teacher' && (
 				<>
-					<Link
-						component={Button}
-						variant="contained"
-						href="/templates/Template-import-student.xlsx"
-						download="Template-import-student.xlsx"
-					>
-						<DownloadIcon fontSize="small" />
-						Download template
-					</Link>
-					<input type="file" accept=".csv,.xlsx,.xls" onChange={onChangeFile} />
-					<Button variant="contained" onClick={handleUpload}>
-						Upload list student
-					</Button>
+					<Box sx={{mt: 2}}>
+						<Link
+							component={Button}
+							variant="contained"
+							href="/templates/Template-import-student.xlsx"
+							download="Template-import-student.xlsx"
+						>
+							<DownloadIcon fontSize="small" />
+							Download template list student
+						</Link>
+						<input type="file" accept=".csv,.xlsx,.xls" onChange={onChangeFile} />
+						<Button variant="contained" onClick={handleUpload}>
+							Upload list student
+						</Button>
+					</Box>
+					<Box sx={{mt: 2}}>
+						<Link
+							component={Button}
+							variant="contained"
+							href="/templates/Template-import-assignment-grade.xlsx"
+							download="Template-import-assignment-grade.xlsx"
+						>
+							<DownloadIcon fontSize="small" />
+							Download template assignment grade
+						</Link>
+					</Box>
 				</>
 			)}
-
-			<StyledDataGrid
-				headerHeight={124}
-				disableSelectionOnClick
-				hideFooterPagination
-				rows={getRows()}
-				columns={getColumns()}
-			/>
+			<StyledDataGrid headerHeight={124} disableSelectionOnClick hideFooterPagination rows={rows} columns={columns} />
 		</Box>
 	);
 }
