@@ -49,9 +49,20 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 
 const renderHeader = (params) => {
 	return (
-		<Box>
-			<Typography sx={{ color: '#4285f4' }}>{params.field}</Typography>
-			<Typography variant="subtitle">Trong tổng số {params.grade}</Typography>
+		<Box
+			sx={{
+				display: 'flex',
+				alignItems: 'flex-start',
+				flexFlow: 'column',
+				width: '120px',
+				position: 'relative'
+			}}
+		>
+			<Typography sx={{ color: '#4285f4' }}>
+				{params.colDef.headerName}
+				<br />
+				Trong tổng số {params.grade}
+			</Typography>
 		</Box>
 	);
 };
@@ -68,26 +79,29 @@ export default function RenderRatingEditCellGrid() {
 		setGrades(rs1);
 	};
 
-	const getColumns = useCallback((rs) => {
-		return [
-			{
-				field: 'name',
-				headerName: 'Họ tên học sinh',
-				cellClassName: 'student-name',
-				width: 180
-			},
-			...rs.map((gradeStructure) => ({
-				field: gradeStructure._id,
-				headerName: gradeStructure.title,
-				renderCell: renderGrade,
-				renderEditCell: renderGradeEditInputCell,
-				renderHeader: (params) => renderHeader({...params, grade: gradeStructure.grade}),
-				editable: true,
-				width: 150,
-				align: 'right'
-			}))
-		];
-	}, [grades]);
+	const getColumns = useCallback(
+		(rs) => {
+			return [
+				{
+					field: 'name',
+					headerName: 'Họ tên học sinh',
+					cellClassName: 'student-name',
+					width: 180
+				},
+				...rs.map((gradeStructure) => ({
+					field: gradeStructure._id,
+					headerName: gradeStructure.title,
+					renderCell: renderGrade,
+					renderEditCell: renderGradeEditInputCell,
+					renderHeader: (params) => renderHeader({ ...params, grade: gradeStructure.grade }),
+					editable: true,
+					width: 180,
+					align: 'right'
+				}))
+			];
+		},
+		[]
+	);
 	const update = async ({ studentID, gradeStructureID, grade }) => {
 		await authAxios.post(`/updateStudentGrade/${id}/${studentID}/${gradeStructureID}`, { grade });
 		fetch();
@@ -184,6 +198,13 @@ export default function RenderRatingEditCellGrid() {
 
 	return (
 		<Box style={{ minHeight: '90vh', width: '100%' }}>
+			<StyledDataGrid
+				headerHeight={124}
+				disableSelectionOnClick
+				hideFooterPagination
+				rows={getRows()}
+				columns={columns}
+			/>
 			{user.role === 'teacher' && (
 				<>
 					<Link
@@ -201,14 +222,6 @@ export default function RenderRatingEditCellGrid() {
 					</Button>
 				</>
 			)}
-
-			<StyledDataGrid
-				headerHeight={124}
-				disableSelectionOnClick
-				hideFooterPagination
-				rows={getRows()}
-				columns={columns}
-			/>
 		</Box>
 	);
 }

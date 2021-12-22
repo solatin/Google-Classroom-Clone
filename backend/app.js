@@ -499,7 +499,7 @@ app.get('/getAllGrade/:classId', async (req, res) => {
     });
 
     const listTotalGrade = [];
-    gradeStructure.forEach((grade) => {
+    gradeStructure.forEach( async (grade) => {
       const listStudent = await ClassStudentGrade.find({ status: true, class_id: classId, grade_structure_id: grade._id.toString() });
       const totalSumOfGrade = listStudent.map(student => parseFloat(student.student_grade)).reduce((a, b) => a + b, 0);
       listTotalGrade.push({ grade: grade, totalGrade: totalSumOfGrade });
