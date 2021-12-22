@@ -13,8 +13,6 @@ import ClassMembers from './components/ClassDetailLayout/ClassMembers/ClassMembe
 import AcceptInvitation from './components/AcceptInvitation/AcceptInvitation';
 import ClassGradeEdit from './components/ClassDetailLayout/ClassGradeStructure/ClassGradeEdit';
 import ClassGrade from './components/ClassDetailLayout/ClassGrades/index';
-import ClassGradeOld from './components/ClassDetailLayout/ClassGrades/index_old';
-import Rating from './components/ClassDetailLayout/ClassGrades/rating';
 
 export const routes = [
 	{
