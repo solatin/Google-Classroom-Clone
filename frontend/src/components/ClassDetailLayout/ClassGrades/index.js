@@ -8,6 +8,7 @@ import authAxios from 'src/utils/authAxios';
 import { useNotify } from 'src/hooks/useNotify';
 import DownloadIcon from '@mui/icons-material/Download';
 import './index.css';
+import { useAuth } from 'src/hooks/useAuth';
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 	border: 0,
@@ -55,6 +56,7 @@ const renderHeader = (params) => {
 };
 export default function RenderRatingEditCellGrid() {
 	const { error } = useNotify();
+	const { user } = useAuth();
 	const [grades, setGrades] = useState([]);
 	// const { id } = useParams();
 	const id = 'classid';
@@ -181,19 +183,24 @@ export default function RenderRatingEditCellGrid() {
 	console.log(file);
 	return (
 		<Box style={{ minHeight: '90vh', width: '100%' }}>
-			<Link
-				component={Button}
-				variant="contained"
-				href="/templates/Template-import-student.xlsx"
-				download="Template-import-student.xlsx"
-			>
-				<DownloadIcon fontSize="small" />
-				Download template
-			</Link>
-			<input type="file" accept=".csv,.xlsx,.xls" onChange={onChangeFile} />
-			<Button variant="contained" onClick={handleUpload}>
-				Upload list student
-			</Button>
+			{user.role === 'teacher' && (
+				<>
+					<Link
+						component={Button}
+						variant="contained"
+						href="/templates/Template-import-student.xlsx"
+						download="Template-import-student.xlsx"
+					>
+						<DownloadIcon fontSize="small" />
+						Download template
+					</Link>
+					<input type="file" accept=".csv,.xlsx,.xls" onChange={onChangeFile} />
+					<Button variant="contained" onClick={handleUpload}>
+						Upload list student
+					</Button>
+				</>
+			)}
+
 			<StyledDataGrid
 				headerHeight={124}
 				disableSelectionOnClick
