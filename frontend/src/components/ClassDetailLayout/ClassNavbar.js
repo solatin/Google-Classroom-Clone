@@ -15,32 +15,32 @@ export default function NavBar({ openSideBar, onClickTab, tab }) {
 		<Box sx={{ minWidth: '100%' }}>
 			<AppBar position="static" sx={{ backgroundColor: 'white' }}>
 				<Toolbar>
-					<IconButton size="large" edge="start" aria-label="menu" sx={{ mr: 2, mb: '4px' }} onClick={openSideBar}>
-						<MenuIcon />
-					</IconButton>
-					<Link to="/">
-						<Box sx={{ mt: 1 }}>
-							<img src="/static/google_logo.svg" alt="" />
-						</Box>
-					</Link>
+					<Box sx={{ flex: '1 1 0.0625rem', display: 'flex', alignItems: 'center' }}>
+						<IconButton size="large" edge="start" aria-label="menu" sx={{ mr: 2, mb: '4px' }} onClick={openSideBar}>
+							<MenuIcon />
+						</IconButton>
+						<Link to="/">
+							<Box sx={{ mt: 1 }}>
+								<img src="/static/google_logo.svg" alt="" />
+							</Box>
+						</Link>
 
-					<Typography variant="h6" sx={{ mr: 3, ml: 1, color: 'black' }}>
-						Classroom
-					</Typography>
+						<Typography variant="h6" sx={{ mr: 3, ml: 1, color: 'black' }}>
+							Classroom
+						</Typography>
+					</Box>
 
-					<Box sx={{ ml: 30, mr: 'auto' }}>
-						<Tabs
-							value={tab}
-							onChange={(_, tab) => onClickTab(tab)}
-							aria-label="basic tabs example"
-						>
+					<Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
+						<Tabs value={tab} onChange={(_, tab) => onClickTab(tab)} aria-label="basic tabs example">
 							<Tab label="Bảng tin" value="feed" />
 							<Tab label="Bài tập trên lớp" value="assignments" />
 							<Tab label="Mọi người" value="members" />
-							<Tab label="Số điểm" value="grades"/>
+							<Tab label="Số điểm" value="grades" />
 						</Tabs>
 					</Box>
-					<AccountPopover sx={{ ml: 'auto' }} />
+					<Box sx={{ flex: '1 1 0.0625rem', display: 'flex', justifyContent: 'flex-end' }}>
+						<AccountPopover />
+					</Box>
 				</Toolbar>
 			</AppBar>
 		</Box>
@@ -50,5 +50,5 @@ export default function NavBar({ openSideBar, onClickTab, tab }) {
 NavBar.propTypes = {
 	openSideBar: PropTypes.func.isRequired,
 	onClickTab: PropTypes.func.isRequired,
-	tab: PropTypes.string.isRequired,
+	tab: PropTypes.string.isRequired
 };
