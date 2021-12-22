@@ -481,7 +481,6 @@ app.get('/getAllGrade/:classId', async (req, res) => {
     const gradeStructure = await GradeStructure.find({ class_id: classId });
     const listStudentName = await ClassStudentId.find({ status: true, class_id: classId });
     const listGrade = await ClassStudentGrade.find({ status: true, class_id: classId });
-
     const listReturn = [];
     const totalSum = gradeStructure.map(value => parseFloat(value.grade)).reduce((a, b) => a + b, 0);
     listStudentName.forEach((student) => {
@@ -498,7 +497,14 @@ app.get('/getAllGrade/:classId', async (req, res) => {
         averageGrade: averageGrade * 10,
       });
     });
-    res.json(listReturn);
+
+    const listTotalGrade = [];
+    gradeStructure.forEach((grade) => {
+      const listStudent = await ClassStudentGrade.find({ status: true, class_id: classId, grade_structure_id: grade._id.toString() });
+      const totalSumOfGrade = listStudent.map(student => parseFloat(student.student_grade)).reduce((a, b) => a + b, 0);
+      listTotalGrade.push({ grade: grade, totalGrade: totalSumOfGrade });
+    });
+    res.json({ listStudent: listReturn, listTotalGrade: listTotalGrade, });
   } catch (error) {
     console.log(error);
     res.status(400).send({
@@ -506,6 +512,8 @@ app.get('/getAllGrade/:classId', async (req, res) => {
     });
   }
 });
+
+
 
 app.get('/hello', async (req, res) => {
   var result = [];
