@@ -500,7 +500,7 @@ app.get('/getAllGrade/:classId', async (req, res) => {
       const listStudentGrade = listGrade.filter((grade) => grade.student_class_id == student.student_class_id);
       const averageGrade = listStudentGrade.map((value) => {
         const baseVal = gradeStructure.find(element => element._id.toString() == value.grade_structure_id);
-        const result = parseFloat(baseVal.grade) * parseFloat(value.student_grade);
+        const result = parseFloat(value.student_grade);
         return result;
       }).reduce((a, b) => a + b, 0);
       listReturn.push({
