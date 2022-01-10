@@ -15,6 +15,9 @@ const GradeStructureSchema = new Schema(
         },
         position: {
             type: Number
+        },
+        finalized: {
+            type: Boolean
         }
     },
     { collection: "GradeStructure" }
