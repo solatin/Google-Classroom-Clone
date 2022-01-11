@@ -78,15 +78,15 @@ export default function Grades() {
 	const { user } = useAuth();
 	const { id } = useParams();
 	const fetch = async () => {
-		const rs1 = await authAxios.get(`/getAllGrade/${id}`);
-		const rs2 = await authAxios.post('/getGradeStructure', { classId: id });
+		const rs1 = await authAxios.get(`/studentGrade/getAllGrade/${id}`);
+		const rs2 = await authAxios.post('/gradeStructure/get', { classId: id });
 		setColumns(getColumns(rs2));
 		setRows(getRows(rs1.listStudent, rs1.listTotalGrade));
 	};
 
 	const uploadAssignmentGrade = async ({ assignmentID, formData }) => {
 		setLoading(true);
-		await authAxios.post(`/uploadStudentGradeListFile/${id}/${assignmentID}`, formData);
+		await authAxios.post(`/studentGrade/uploadStudentGradeListFile/${id}/${assignmentID}`, formData);
 		await fetch();
 		success('Upload success');
 		setLoading(false);
@@ -94,7 +94,7 @@ export default function Grades() {
 
 	const update = async ({ studentID, gradeStructureID, grade }) => {
 		setLoading(true);
-		await authAxios.post(`/updateStudentGrade/${id}/${studentID}/${gradeStructureID}`, { grade });
+		await authAxios.post(`/studentGrade/update/${id}/${studentID}/${gradeStructureID}`, { grade });
 		await fetch();
 		success('Update grade success');
 		setLoading(false);
@@ -102,7 +102,7 @@ export default function Grades() {
 
 	const finalizeAssignment = async ({ assignmentID }) => {
 		setLoading(true);
-		await authAxios.post('/finalized', { gradeStructureId: assignmentID });
+		await authAxios.post('/gradeStructure/finalized', { gradeStructureId: assignmentID });
 		success('Finalize success');
 		setLoading(false);
 	};
@@ -114,7 +114,7 @@ export default function Grades() {
 		setLoading(true);
 
 		try {
-			await authAxios.post(`/uploadStudentListFile/${id}`, formData);
+			await authAxios.post(`/studentClass/uploadStudentListFile/${id}`, formData);
 			await fetch();
 			setFile(null);
 			listStudentFileRef.current.value = null;

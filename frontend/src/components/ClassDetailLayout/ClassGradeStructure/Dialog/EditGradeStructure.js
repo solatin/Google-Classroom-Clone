@@ -12,7 +12,7 @@ export default function EditGradeStructureDialog({ open, handleCloseDialog, curT
     const [grade, setGrade] = React.useState(curGrade);
 
     const handleEditDialog = async () => {
-        await authAxios.post('/updateGradeStructure', { 'gradeStructure': { 'title': title, 'grade': grade, 'Id': gradeId } })
+        await authAxios.post('/gradeStructure/update', { 'gradeStructure': { 'title': title, 'grade': grade, 'Id': gradeId } })
         handleCloseDialog();
         loadData()
     }

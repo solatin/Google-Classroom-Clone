@@ -52,7 +52,7 @@ const ClassGradeEdit = () => {
 
     const newItems = reorder(items, source.index, destination.index);
     setItems(newItems);
-    await authAxios.post('/arrangeGradeStructure', { classId: id, listGradeStructure: newItems });
+    await authAxios.post('/gradeStructure/arrange', { classId: id, listGradeStructure: newItems });
   };
 
   const onSubmit = async () => {
@@ -60,13 +60,13 @@ const ClassGradeEdit = () => {
     const grade = document.getElementById("grade").value;
     document.getElementById("title").value = "";
     document.getElementById("grade").value = "";
-    await authAxios.post('/addGradeStructure', { class_id: id, gradeTitle: title, grade: grade });
+    await authAxios.post('/gradeStructure/add', { class_id: id, gradeTitle: title, grade: grade });
     fetch();
   };
 
   const fetch = async () => {
     const classID = { 'classId': id };
-    const rs = await authAxios.post(`/getGradeStructure`, classID);
+    const rs = await authAxios.post(`/gradeStructure/get`, classID);
     console.log(rs);
     setItems(rs);
   }

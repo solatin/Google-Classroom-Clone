@@ -11,7 +11,7 @@ import { useParams } from "react-router-dom";
 export default function DeleteGradeStructureDialog({ open, handleCloseDialog, gradeId, loadData }) {
     const { id } = useParams();
     const handleAcceptDialog = async () => {
-        await authAxios.post('/deleteGradeStructure', { 'gradeStructureId': gradeId, 'classId': id })
+        await authAxios.post('/gradeStructure/delete', { 'gradeStructureId': gradeId, 'classId': id })
         handleCloseDialog();
         loadData();
     }
