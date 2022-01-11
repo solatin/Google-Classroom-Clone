@@ -55,36 +55,6 @@ app.use('/studentClass/', require('./controllers/student-class/student-class'));
 
 app.use('/studentGrade/', require('./controllers/student-grade/student-grade'));
 
-app.post('/finalized', auth, async (req, res) => {
-  try {
-    const gradeStructureId = req.body.gradeStructureId;
-    const gradeStructure = await GradeStructure.findById(gradeStructureId);
-    gradeStructure.finalized = true;
-    await gradeStructure.save();
-    res.end();
-  } catch (error) {
-    console.log(error);
-    res.status(400).send({
-      message: 'Could not finalized.'
-    });
-  }
-})
-
-app.post('/unfinalized', auth, async (req, res) => {
-  try {
-    const gradeStructureId = req.body.gradeStructureId;
-    const gradeStructure = await GradeStructure.findById(gradeStructureId);
-    gradeStructure.finalized = false;
-    await gradeStructure.save();
-    res.end();
-  } catch (error) {
-    console.log(error);
-    res.status(400).send({
-      message: 'Could not unfinalized.'
-    });
-  }
-})
-
 app.get('/hello', async (req, res) => {
   var result = [];
   await readXlsxFile('uploads/hello.xlsx').then((rows) => {
