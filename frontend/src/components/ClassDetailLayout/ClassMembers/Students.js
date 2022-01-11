@@ -7,7 +7,7 @@ const Students = ({ name, classId, studentClassId, canChange }) => {
     const [studentClassID, setStudentClassID] = useState(studentClassId);
     const submitField = async () => {
         const infoChange = { 'classId': classId, 'studentClassID': studentClassID };
-        await authAxios.post(`/ChangeStudentClassID`, infoChange);
+        await authAxios.post(`/studentClass/ChangeStudentClassID`, infoChange);
     }
     return (
         <div className='student'>

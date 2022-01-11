@@ -14,7 +14,7 @@ const AcceptInvite = () => {
 
     const acceptInvite = async () => {
         const classID = { 'classId': id };
-        await authAxios.post('/acceptInvite/', classID);
+        await authAxios.post('/class/acceptInvite/', classID);
     }
     useEffect(() => {
         acceptInvite();

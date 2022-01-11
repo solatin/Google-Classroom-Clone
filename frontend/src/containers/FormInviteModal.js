@@ -17,7 +17,7 @@ const FormInviteModal = ({ open, handleCloseForm, teacher, classId }) => {
     const sendInvitation = async () => {
         handleCloseForm();
         const invitation = { 'email': email, 'classId': classId }
-        await authAxios.post('/sendInvite', invitation);
+        await authAxios.post('/class/sendInvite', invitation);
     }
     return (
         <Dialog open={open} maxWidth="lg" onClose={handleCloseForm} className="form__dialog" aria-labelledby="customized-dialog-title">
