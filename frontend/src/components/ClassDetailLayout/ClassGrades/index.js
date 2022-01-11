@@ -100,6 +100,12 @@ export default function Grades() {
 		setLoading(false);
 	};
 
+	const finalizeAssignment = async ({ assignmentID }) => {
+		setLoading(true);
+		await authAxios.post('/finalized', { gradeStructureId: assignmentID });
+		success('Finalize success');
+		setLoading(false);
+	};
 	const listStudentFileRef = useRef(null);
 	const [file, setFile] = useState(null);
 	const handleUpload = async () => {
@@ -147,6 +153,10 @@ export default function Grades() {
 			uploadRef.current.click();
 			handleCloseMenu();
 		};
+		const onClickFinalize = () => {
+			finalizeAssignment({ assignmentID: params.field });
+			handleCloseMenu();
+		};
 		return (
 			<Box
 				sx={{
@@ -185,7 +195,7 @@ export default function Grades() {
 					}}
 				>
 					<MenuItem onClick={onClickUpload}>Upload file</MenuItem>
-					<MenuItem onClick={handleCloseMenu}>Finalize</MenuItem>
+					<MenuItem onClick={onClickFinalize}>Finalize</MenuItem>
 				</Menu>
 
 				<input ref={uploadRef} hidden type="file" accept=".csv,.xlsx,.xls" onChange={handleUpload} />
@@ -199,7 +209,7 @@ export default function Grades() {
 				field: 'studentID',
 				headerName: 'MSSV',
 				cellClassName: 'student-name',
-				width: 80
+				width: 120
 			},
 			{
 				field: 'name',
@@ -329,7 +339,13 @@ export default function Grades() {
 									</Link>
 								</Box>
 								<Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1, alignItems: 'center' }}>
-									<input ref={listStudentFileRef} type="file" accept=".csv,.xlsx,.xls" onChange={onChangeFile} style={{ width: '100%' }} />
+									<input
+										ref={listStudentFileRef}
+										type="file"
+										accept=".csv,.xlsx,.xls"
+										onChange={onChangeFile}
+										style={{ width: '100%' }}
+									/>
 									<Button variant="contained" onClick={handleUpload}>
 										Upload
 									</Button>
@@ -339,7 +355,13 @@ export default function Grades() {
 						<Grid item md={6} xs={12}>
 							<Paper
 								elevation={2}
-								sx={{ p: 2, height: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}
+								sx={{
+									p: 2,
+									height: '100%',
+									display: 'flex',
+									justifyContent: 'space-between',
+									alignItems: 'flex-start'
+								}}
 								variant="outlined"
 							>
 								<Typography variant="h6">Assignment Grades</Typography>
