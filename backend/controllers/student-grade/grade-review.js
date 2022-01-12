@@ -29,9 +29,9 @@ router.post('/add', auth, async (req, res) => {
     const classroom = await Class.findById(req.body.classId);
     const student = await ClassStudent.findOne({ code: classroom.code, student_id: account.id });
     const gradeStructure = await GradeStructure.findById(gradeStructureId);
-    if (gradeStructure.finalized == 'Done') {
+    if (gradeStructure.finalized !== 'finalized') {
       res.status(402).send({
-        message: 'This grade structure has been done, no more review.'
+        message: "This grade structure hasn't been done, no review."
       });
       return;
     }
