@@ -35,6 +35,17 @@ router.post('/add', auth, async (req, res) => {
       });
       return;
     }
+    const currentGradeReview = await GradeReview.findOne({
+      student_class_id: student.student_class_id,
+      grade_structure_id: gradeStructureId,
+    });
+    if (currentGradeReview) {
+      res.status(403).send({
+        message: "This has been initialized before.",
+        review: currentGradeReview,
+      });
+      return;
+    }
     const gradeReview = new GradeReview({
       student_class_id: student.student_class_id,
       student_grade: expectGrade,
@@ -111,7 +122,7 @@ router.get('/forStudent', auth, async (req, res) => {
     const classroom = await Class.findById(classId);
     const student = await ClassStudent.findOne({ code: classroom.code, student_id: account.id });
     if (gradeStructureId) {
-      const gradeReview = await GradeReview.find({ student_class_id: student.student_class_id, grade_structure_id: gradeStructureId });
+      const gradeReview = await GradeReview.findOne({ student_class_id: student.student_class_id, grade_structure_id: gradeStructureId });
       res.status(200).json(gradeReview);
       return;
     } else {
@@ -119,7 +130,7 @@ router.get('/forStudent', auth, async (req, res) => {
       const listResult = [];
       for (let index = 0; index < gradeStructure.length; index++) {
         const element = gradeStructure[index];
-        const listReview = await GradeReview.find({ grade_structure_id: element._id, student_class_id: student.student_class_id });
+        const listReview = await GradeReview.findOne({ grade_structure_id: element._id, student_class_id: student.student_class_id });
         listResult.push({ gradeStructure: element, listReview: listReview });
       }
       res.status(200).json(listResult);
