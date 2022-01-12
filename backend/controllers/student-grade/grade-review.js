@@ -29,9 +29,9 @@ router.post('/add', auth, async (req, res) => {
     const classroom = await Class.findById(req.body.classId);
     const student = await ClassStudent.findOne({ code: classroom.code, student_id: account.id });
     const gradeStructure = await GradeStructure.findById(gradeStructureId);
-    if (gradeStructure.finalized == 'Done') {
+    if (gradeStructure.finalized !== 'finalized') {
       res.status(402).send({
-        message: 'This grade structure has been done, no more review.'
+        message: "This grade structure hasn't been done, no review."
       });
       return;
     }
@@ -164,7 +164,7 @@ router.get('/byId', auth, async (req, res) => {
   }
 })
 
-router.get('/markAsDone', async (req, res) => {
+router.get('/markAsDone', auth, async (req, res) => {
   try {
     const review = await GradeReview.findById(req.query.id);
     review.status = 'solved';
@@ -174,6 +174,26 @@ router.get('/markAsDone', async (req, res) => {
     console.log(error);
     res.status(400).send({
       message: 'Mark as done failed.'
+    });
+  }
+})
+
+router.get('/detail', auth, async (req, res) => {
+  try {
+    var review = await GradeReview.findById(req.query.id);
+    const currentGrade = await ClassStudentGrade.findOne({ student_class_id: review.student_class_id, grade_structure_id: review.grade_structure_id });
+    res.status(200).json({
+      id: review.id,
+      student_class_id: review.student_class_id,
+      student_expect_grade: review.student_grade,
+      grade_structure_id: review.grade_structure_id,
+      comment: review.comment,
+      current_grade: currentGrade.student_grade,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      message: 'Get failed.'
     });
   }
 })
