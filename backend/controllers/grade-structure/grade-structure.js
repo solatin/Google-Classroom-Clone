@@ -34,7 +34,7 @@ router.post('/add', async (req, res) => {
             title: req.body.gradeTitle,
             grade: req.body.grade,
             position: listGradeStructure.length,
-            finalized: false
+            finalized: 'unfinalized'
         });
         await newGradeStructure.save();
         res.end();
@@ -106,7 +106,7 @@ router.post('/finalized', auth, async (req, res) => {
     try {
         const gradeStructureId = req.body.gradeStructureId;
         const gradeStructure = await GradeStructure.findById(gradeStructureId);
-        gradeStructure.finalized = true;
+        gradeStructure.finalized = 'finalized';
         await gradeStructure.save();
         res.end();
     } catch (error) {
@@ -121,7 +121,7 @@ router.post('/unfinalized', auth, async (req, res) => {
     try {
         const gradeStructureId = req.body.gradeStructureId;
         const gradeStructure = await GradeStructure.findById(gradeStructureId);
-        gradeStructure.finalized = false;
+        gradeStructure.finalized = 'unfinalized';
         await gradeStructure.save();
         res.end();
     } catch (error) {
