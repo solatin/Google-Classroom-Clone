@@ -164,7 +164,7 @@ router.get('/byId', auth, async (req, res) => {
   }
 })
 
-router.get('/markAsDone', async (req, res) => {
+router.get('/markAsDone', auth, async (req, res) => {
   try {
     const review = await GradeReview.findById(req.query.id);
     review.status = 'solved';
@@ -174,6 +174,26 @@ router.get('/markAsDone', async (req, res) => {
     console.log(error);
     res.status(400).send({
       message: 'Mark as done failed.'
+    });
+  }
+})
+
+router.get('/detail', auth, async (req, res) => {
+  try {
+    var review = await GradeReview.findById(req.query.id);
+    const currentGrade = await ClassStudentGrade.findOne({ student_class_id: review.student_class_id, grade_structure_id: review.grade_structure_id });
+    res.status(200).json({
+      id: review.id,
+      student_class_id: review.student_class_id,
+      student_expect_grade: review.student_grade,
+      grade_structure_id: review.grade_structure_id,
+      comment: review.comment,
+      current_grade: currentGrade.student_grade,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      message: 'Get failed.'
     });
   }
 })
