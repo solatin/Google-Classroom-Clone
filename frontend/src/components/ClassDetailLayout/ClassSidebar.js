@@ -32,7 +32,7 @@ const ClassSidebar = ({ closeSideBar, isSideBarOpen }) => {
 
 ClassSidebar.propTypes = {
 	closeSideBar: PropTypes.func.isRequired,
-	isSideBarOpen: PropTypes.bool.isRequired
+	isSideBarOpen: PropTypes.bool.isRequired,
 }
 
 export default ClassSidebar;

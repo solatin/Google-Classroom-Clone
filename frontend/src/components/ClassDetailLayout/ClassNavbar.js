@@ -10,7 +10,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import AccountPopover from '../AccountPopover';
 
-export default function NavBar({ openSideBar, onClickTab, tab }) {
+export default function NavBar({ openSideBar, onClickTab, tab, isTeacher }) {
 	return (
 		<Box sx={{ minWidth: '100%' }}>
 			<AppBar position="static" sx={{ backgroundColor: 'white' }}>
@@ -33,9 +33,9 @@ export default function NavBar({ openSideBar, onClickTab, tab }) {
 					<Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
 						<Tabs value={tab} onChange={(_, tab) => onClickTab(tab)} aria-label="basic tabs example">
 							<Tab label="Bảng tin" value="feed" />
-							<Tab label="Bài tập trên lớp" value="assignments" />
+							{!isTeacher && <Tab label="Bài tập trên lớp" value="assignments" />}
 							<Tab label="Mọi người" value="members" />
-							<Tab label="Số điểm" value="grades" />
+							{isTeacher && <Tab label="Số điểm" value="grades" />}
 						</Tabs>
 					</Box>
 					<Box sx={{ flex: '1 1 0.0625rem', display: 'flex', justifyContent: 'flex-end' }}>
@@ -50,5 +50,6 @@ export default function NavBar({ openSideBar, onClickTab, tab }) {
 NavBar.propTypes = {
 	openSideBar: PropTypes.func.isRequired,
 	onClickTab: PropTypes.func.isRequired,
-	tab: PropTypes.string.isRequired
+	tab: PropTypes.string.isRequired,
+	isTeacher: PropTypes.bool.isRequired
 };
