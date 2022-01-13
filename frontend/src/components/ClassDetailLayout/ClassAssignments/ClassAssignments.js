@@ -12,6 +12,13 @@ const ClassAssignments = () => {
 	const [list, setList] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const user = useAuth();
+	const onReviewClick = (item) => {
+		if (item.review) {
+			console.log('open review');
+		} else {
+			console.log('create new review');
+		}
+	}
 	useEffect(() => {
 		const fetch = async () => {
 			setLoading(true);
@@ -36,19 +43,25 @@ const ClassAssignments = () => {
 						{list.map((item) => (
 							<ListItem
 								className={styles.listItem}
-								secondaryAction={
-									<IconButton edge="end" aria-label="delete">
-										<RateReviewIcon />
-									</IconButton>
-								}
+								{...(item.gradeStructure.finalized === 'finalized'
+									? {
+											secondaryAction: (
+												<IconButton edge="end" aria-label="delete" onClick={() => onReviewClick(item)}>
+													<RateReviewIcon />
+												</IconButton>
+											)
+									  }
+									: {})}
 							>
 								<ListItemText
 									primary={item.gradeStructure.title}
 									primaryTypographyProps={{ variant: 'subtitle1' }}
-									sx={{ width: '140px' }}
+									sx={{ minWidth: '440px', maxWidth: '440px' }}
 								/>
 								<Typography sx={{ flex: '1 1 auto' }} variant="subtitle2">
-									Da giao
+									{item.gradeStructure.finalized !== 'unfinalized'
+										? `${item.studentGrade}/${item.gradeStructure.grade}`
+										: 'Đã giao'}
 								</Typography>
 							</ListItem>
 						))}
