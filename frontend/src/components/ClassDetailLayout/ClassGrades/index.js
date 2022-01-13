@@ -11,7 +11,8 @@ import {
 	IconButton,
 	LinearProgress,
 	Paper,
-	Grid
+	Grid,
+	Tooltip
 } from '@mui/material';
 import { styled } from '@mui/styles';
 import { DataGrid, GridOverlay } from '@mui/x-data-grid';
@@ -128,6 +129,7 @@ export default function Grades() {
 		setFile(e.target.files[0]);
 	};
 	const RenderHeader = (params) => {
+		console.log(params);
 		const uploadRef = useRef(null);
 		const handleUpload = async (e) => {
 			const file = e.target.files[0];
@@ -161,19 +163,36 @@ export default function Grades() {
 			<Box
 				sx={{
 					display: 'flex',
-					alignItems: 'center',
+					alignItems: 'flex-start',
 					justifyContent: 'center',
-					// width: '120px',
+					flexFlow: 'column',
 					height: 80,
+					width: '90%',
 					top: '-1px',
 					position: 'relative'
 				}}
 			>
-				<Box sx={{ flexGrow: 1 }}>
-					<Typography sx={{ color: '#4285f4' }}>{params.colDef.headerName}</Typography>
-					<Typography variant="subtitle2">Trong tổng số {params.grade}</Typography>
-				</Box>
-				<Box sx={{ position: 'relative', left: 10 }}>
+				<Tooltip title={params.colDef.headerName}>
+				<Typography sx={{ color: '#4285f4', maxWidth: 150 }} noWrap>
+					{params.colDef.headerName}
+				</Typography>
+				</Tooltip>
+
+				<Typography variant="subtitle2">Trong tổng số {params.grade}</Typography>
+				<Typography
+					variant="caption"
+					sx={{
+						fontStyle: 'italic',
+						color: params.finalized === 'finalized' ? 'green' : 'red',
+						position: 'absolute',
+						bottom: 0,
+						left: 0,
+						textTransform: 'capitalize'
+					}}
+				>
+					{params.finalized}
+				</Typography>
+				<Box sx={{ position: 'absolute', right: '-26px' }}>
 					<IconButton
 						id="basic-button"
 						aria-controls={open ? 'basic-menu' : undefined}
@@ -222,7 +241,8 @@ export default function Grades() {
 				headerName: gradeStructure.title,
 				renderCell: renderGrade,
 				renderEditCell: renderGradeEditInputCell,
-				renderHeader: (params) => RenderHeader({ ...params, grade: gradeStructure.grade }),
+				renderHeader: (params) =>
+					RenderHeader({ ...params, grade: gradeStructure.grade, finalized: gradeStructure.finalized }),
 				sortable: false,
 				editable: true,
 				width: 180,
