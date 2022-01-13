@@ -10,18 +10,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import AccountPopover from '../AccountPopover';
 
-export default function NavBar({ openSideBar, onClickAddButton }) {
+export default function NavBar({ openSideBar, onClickAddButton, isTeacher }) {
 	return (
 		<Box sx={{ minWidth: '100%' }}>
 			<AppBar position="static" sx={{ backgroundColor: 'white' }}>
 				<Toolbar>
-					<IconButton
-						size="large"
-						edge="start"
-						aria-label="menu"
-						sx={{ mr: 2, mb: '4px' }}
-						onClick={openSideBar}
-					>
+					<IconButton size="large" edge="start" aria-label="menu" sx={{ mr: 2, mb: '4px' }} onClick={openSideBar}>
 						<MenuIcon />
 					</IconButton>
 					<Link to="/">
@@ -32,9 +26,12 @@ export default function NavBar({ openSideBar, onClickAddButton }) {
 					<Typography variant="h6" sx={{ flexGrow: 1, ml: 1, color: 'black' }}>
 						Classroom
 					</Typography>
-					<IconButton onClick={onClickAddButton} sx={{ mr: 2 }}>
-						<AddIcon />
-					</IconButton>
+					{isTeacher && (
+						<IconButton onClick={onClickAddButton} sx={{ mr: 2 }}>
+							<AddIcon />
+						</IconButton>
+					)}
+
 					<AccountPopover />
 				</Toolbar>
 			</AppBar>
@@ -43,5 +40,6 @@ export default function NavBar({ openSideBar, onClickAddButton }) {
 }
 
 NavBar.propTypes = {
-	openSideBar: PropTypes.func.isRequired
+	openSideBar: PropTypes.func.isRequired,
+	isTeacher: PropTypes.bool.isRequired
 };
