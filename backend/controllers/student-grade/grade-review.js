@@ -9,6 +9,7 @@ const GradeStructure = require('../../models/grade_structure');
 const ClassStudentId = require('../../models/class_student_id');
 const ClassStudentGrade = require('../../models/class_student_grade');
 const GradeReview = require('../../models/grade_review');
+const Notification = require('../../models/notification');
 
 const auth = require('../../middlewares/auth');
 
@@ -54,6 +55,33 @@ router.post('/add', auth, async (req, res) => {
       status: "unsolved"
     });
     await gradeReview.save();
+
+    //Notification
+    const listTeacher = await ClassTeacher.find({ code: classroom.code });
+    const listNotification = [];
+    for (let index = 0; index < listTeacher.length; index++) {
+      const teacher = listTeacher[index];
+      if (teacher.teacher_id !== account.id) {
+        listNotification.push(
+          new Notification({
+            user_id: teacher.teacher_id,
+            content: user.display_name + ' need a review at ' + gradeStructure.title,
+            link: 'http://localhost:3000/', //link to review
+            status: 'unread'
+          })
+        );
+      }
+    }
+
+    await Notification.insertMany(listNotification).then(function () {
+      console.log("Notification Inserted")  // Success
+    }).catch(function (error) {
+      console.log(error);     // Failure
+      res.status(402).send({
+        message: 'Insert Notification failed.'
+      });
+    });
+
     res.end();
   } catch (error) {
     console.log(error);
@@ -71,6 +99,46 @@ router.post('/comment', auth, async (req, res) => {
     const gradeReview = await GradeReview.findById(req.body.id);
     gradeReview.comment.push({ comment: req.body.comment, user: user });
     await gradeReview.save();
+
+    //Notification
+    const gradeStructure = await GradeReview.findById(gradeReview.grade_structure_id);
+    const classroom = await Class.findById(gradeStructure.class_id);
+    const listTeacher = await ClassTeacher.find({ code: classroom.code });
+    const listNotification = [];
+    for (let index = 0; index < listTeacher.length; index++) {
+      const teacher = listTeacher[index];
+      if (teacher.teacher_id !== account.id) {
+        listNotification.push(
+          new Notification({
+            user_id: teacher.teacher_id,
+            content: user.display_name + ' comment at review.',
+            link: 'http://localhost:3000/', //link to review
+            status: 'unread'
+          })
+        );
+      }
+    }
+    if (account.role === 'teacher') {
+      const student = gradeReview.comment[0].user;
+      listNotification.push(
+        new Notification({
+          user_id: student._id,
+          content: user.display_name + ' comment at your review.',
+          link: 'http://localhost:3000/', //link to review
+          status: 'unread'
+        })
+      );
+    }
+
+    await Notification.insertMany(listNotification).then(function () {
+      console.log("Notification Inserted")  // Success
+    }).catch(function (error) {
+      console.log(error);     // Failure
+      res.status(402).send({
+        message: 'Insert Notification failed.'
+      });
+    });
+
     res.end();
   } catch (error) {
     console.log(error);
