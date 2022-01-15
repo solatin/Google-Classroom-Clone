@@ -9,6 +9,7 @@ const ClassTeacher = require('../../models/class_teacher');
 const GradeStructure = require('../../models/grade_structure');
 const ClassStudentId = require('../../models/class_student_id');
 const ClassStudentGrade = require('../../models/class_student_grade');
+const Notification = require('../../models/notification');
 
 const auth = require('../../middlewares/auth');
 
@@ -110,6 +111,36 @@ router.post(
 			);
 			await ClassStudentGrade.insertMany(listStudentGrade);
 			res.json(listStudentGrade);
+
+			//Notification
+			const account = res.locals.account;
+			const user = await Account.findById(account.id);
+			const listNotification = [];
+
+			const listTeacher = await ClassTeacher.find({ code: classroom.code });
+			for (let index = 0; index < listTeacher.length; index++) {
+				const teacher = listTeacher[index];
+				if (teacher.teacher_id !== account.id) {
+					listNotification.push(
+						new Notification({
+							user_id: teacher.teacher_id,
+							content: user.display_name + ' has uploaded a grade file',
+							link: 'http://localhost:3000/', //link to review
+							status: 'unread'
+						})
+					);
+				}
+			}
+
+			await Notification.insertMany(listNotification).then(function () {
+				console.log("Notification Inserted")  // Success
+			}).catch(function (error) {
+				console.log(error);     // Failure
+				res.status(402).send({
+					message: 'Insert Notification failed.'
+				});
+			});
+
 		} catch (error) {
 			console.log(error);
 			res.status(500).send({

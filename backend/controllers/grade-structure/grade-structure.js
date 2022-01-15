@@ -8,6 +8,7 @@ const ClassTeacher = require('../../models/class_teacher');
 const GradeStructure = require('../../models/grade_structure');
 const ClassStudentId = require('../../models/class_student_id');
 const ClassStudentGrade = require('../../models/class_student_grade');
+const Notification = require('../../models/notification');
 
 const auth = require('../../middlewares/auth');
 
@@ -38,6 +39,33 @@ router.post('/add', async (req, res) => {
     });
     await newGradeStructure.save();
     res.end();
+
+    //Notification
+    const classroom = await Class.findById(req.body.class_id);
+    const listStudent = await ClassStudent.find({ code: classroom.code });
+    const listNotification = [];
+    const account = res.locals.account;
+    const user = await Account.findById(account.id);
+    for (let index = 0; index < listStudent.length; index++) {
+      const student = listStudent[index];
+      listNotification.push(
+        new Notification({
+          user_id: student.student_id,
+          content: user.display_name + ' has add ' + req.body.gradeTitle + 'at grade structure.',
+          link: 'http://localhost:3000/', //link to review
+          status: 'unread'
+        })
+      );
+    }
+
+    await Notification.insertMany(listNotification).then(function () {
+      console.log("Notification Inserted")  // Success
+    }).catch(function (error) {
+      console.log(error);     // Failure
+      res.status(402).send({
+        message: 'Insert Notification failed.'
+      });
+    });
   } catch (error) {
     console.log(error);
     res.status(400).send({
@@ -109,6 +137,32 @@ router.post('/finalized', auth, async (req, res) => {
     gradeStructure.finalized = 'finalized';
     await gradeStructure.save();
     res.end();
+    //Notification
+    const classroom = await Class.findById(gradeStructure.class_id);
+    const listStudent = await ClassStudent.find({ code: classroom.code });
+    const listNotification = [];
+    const account = res.locals.account;
+    const user = await Account.findById(account.id);
+    for (let index = 0; index < listStudent.length; index++) {
+      const student = listStudent[index];
+      listNotification.push(
+        new Notification({
+          user_id: student.student_id,
+          content: user.display_name + ' has finalized ' + gradeStructure.title,
+          link: 'http://localhost:3000/', //link to review
+          status: 'unread'
+        })
+      );
+    }
+
+    await Notification.insertMany(listNotification).then(function () {
+      console.log("Notification Inserted")  // Success
+    }).catch(function (error) {
+      console.log(error);     // Failure
+      res.status(402).send({
+        message: 'Insert Notification failed.'
+      });
+    });
   } catch (error) {
     console.log(error);
     res.status(400).send({
