@@ -261,7 +261,8 @@ app.post('/addGradeStructure', auth, async (req, res) => {
     class_id: req.body.class_id,
     title: req.body.gradeTitle,
     grade: req.body.grade,
-    position: listGradeStructure.length
+    position: listGradeStructure.length,
+    finalized: false
   });
   await newGradeStructure.save();
   res.end();
@@ -352,25 +353,26 @@ app.post('/uploadStudentListFile/:classId', auth, upload.single('excelFile'), as
     }
     const listCurrent = await ClassStudentId.find({ status: true, class_id: classId });
 
-    await readXlsxFile('uploads/' + req.file.filename).then(async (rows) => {
-      // remove first row ['MMSV', 'Ten']
-      rows.shift();
-      console.log(rows);
+    const rows = await readXlsxFile('uploads/' + req.file.filename);
 
-      const listNew = await listNewStudentId(listCurrent, rows);
-      const listStudentId = listNew.map(
-        (item) =>
-          new ClassStudentId({
-            class_id: classId,
-            student_class_id: item[0],
-            student_name: item[1],
-            status: true
-          })
-      );
-      ClassStudentId.insertMany(listStudentId);
-    });
+    // remove first row ['MMSV', 'Ten']
+    rows.shift();
+
+    const listNew = await listNewStudentId(listCurrent, rows);
+    const listStudentId = listNew.map(
+      (item) =>
+        new ClassStudentId({
+          class_id: classId,
+          student_class_id: item[0],
+          student_name: item[1],
+          status: true
+        })
+    );
+    await ClassStudentId.insertMany(listStudentId);
     res.json(listStudentId);
+
   } catch (error) {
+    console.log(error);
     res.status(500).send({
       message: 'Could not upload the file: ' + req.file.originalname
     });
@@ -400,17 +402,16 @@ app.post('/updateStudentGrade/:classId/:studentClassId/:gradeStructureId', auth,
     const obj = await ClassStudentGrade.findOne({
       class_id: classId,
       student_class_id: studentClassId,
-      grade_structure_id: gradeStructureId,
+      grade_structure_id: gradeStructureId
     });
     if (!obj) {
-      const newGrade = new ClassStudentGrade(
-        {
-          class_id: classId,
-          student_class_id: studentClassId,
-          grade_structure_id: gradeStructureId,
-          student_grade: grade,
-          status: true
-        });
+      const newGrade = new ClassStudentGrade({
+        class_id: classId,
+        student_class_id: studentClassId,
+        grade_structure_id: gradeStructureId,
+        student_grade: grade,
+        status: true
+      });
       await newGrade.save();
     } else {
       obj.student_grade = grade;
@@ -464,23 +465,23 @@ app.post(
         grade_structure_id: gradeStructureId
       });
 
-      await readXlsxFile('uploads/' + req.file.filename).then(async (rows) => {
-        rows.shift();
-        const listNew = await listNewStudentGrade(listCurrent, rows);
-        const listStudentGrade = listNew.map(
-          (item) =>
-            new ClassStudentGrade({
-              class_id: classId,
-              student_class_id: item[0],
-              student_grade: item[1],
-              grade_structure_id: gradeStructureId,
-              status: true
-            })
-        );
-        await ClassStudentGrade.insertMany(listStudentGrade);
-      });
+      const rows = await readXlsxFile('uploads/' + req.file.filename);
+      rows.shift();
+      const listNew = await listNewStudentGrade(listCurrent, rows);
+      const listStudentGrade = listNew.map(
+        (item) =>
+          new ClassStudentGrade({
+            class_id: classId,
+            student_class_id: item[0],
+            student_grade: item[1],
+            grade_structure_id: gradeStructureId,
+            status: true
+          })
+      );
+      await ClassStudentGrade.insertMany(listStudentGrade);
       res.json(listStudentGrade);
     } catch (error) {
+      console.log(error);
       res.status(500).send({
         message: 'Could not upload the file: ' + req.file.originalname
       });
@@ -495,30 +496,38 @@ app.get('/getAllGrade/:classId', async (req, res) => {
     const listStudentName = await ClassStudentId.find({ status: true, class_id: classId });
     const listGrade = await ClassStudentGrade.find({ status: true, class_id: classId });
     const listReturn = [];
-    const totalSum = gradeStructure.map(value => parseFloat(value.grade)).reduce((a, b) => a + b, 0);
+    const totalSum = gradeStructure.map((value) => parseFloat(value.grade)).reduce((a, b) => a + b, 0);
     listStudentName.forEach((student) => {
       const listStudentGrade = listGrade.filter((grade) => grade.student_class_id == student.student_class_id);
-      const averageGrade = listStudentGrade.map((value) => {
-        const baseVal = gradeStructure.find(element => element._id.toString() == value.grade_structure_id);
-        const result = parseFloat(value.student_grade);
-        return result;
-      }).reduce((a, b) => a + b, 0);
+      const averageGrade = listStudentGrade
+        .map((value) => {
+          const baseVal = gradeStructure.find((element) => element._id.toString() == value.grade_structure_id);
+          const result = parseFloat(value.student_grade);
+          return result;
+        })
+        .reduce((a, b) => a + b, 0);
       listReturn.push({
         studentId: student.student_class_id,
         studentName: student.student_name,
         studentGrade: listStudentGrade,
-        averageGrade: averageGrade,
+        averageGrade: averageGrade
       });
     });
 
     const listTotalGrade = [];
     for (let index = 0; index < gradeStructure.length; index++) {
       const grade = gradeStructure[index];
-      const listStudent = await ClassStudentGrade.find({ status: true, class_id: classId, grade_structure_id: grade._id.toString() });
-      const totalSumOfGrade = listStudent.map(student => parseFloat(student.student_grade)).reduce((a, b) => a + b, 0);
+      const listStudent = await ClassStudentGrade.find({
+        status: true,
+        class_id: classId,
+        grade_structure_id: grade._id.toString()
+      });
+      const totalSumOfGrade = listStudent
+        .map((student) => parseFloat(student.student_grade))
+        .reduce((a, b) => a + b, 0);
       listTotalGrade.push({ grade: grade, totalGrade: totalSumOfGrade });
     }
-    res.json({ listStudent: listReturn, listTotalGrade: listTotalGrade, });
+    res.json({ listStudent: listReturn, listTotalGrade: listTotalGrade });
   } catch (error) {
     console.log(error);
     res.status(400).send({
@@ -527,7 +536,35 @@ app.get('/getAllGrade/:classId', async (req, res) => {
   }
 });
 
+app.post('/finalized', auth, async (req, res) => {
+  try {
+    const gradeStructureId = req.body.gradeStructureId;
+    const gradeStructure = await GradeStructure.findById(gradeStructureId);
+    gradeStructure.finalized = true;
+    await gradeStructure.save();
+    res.end();
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      message: 'Could not finalized.'
+    });
+  }
+})
 
+app.post('/unfinalized', auth, async (req, res) => {
+  try {
+    const gradeStructureId = req.body.gradeStructureId;
+    const gradeStructure = await GradeStructure.findById(gradeStructureId);
+    gradeStructure.finalized = false;
+    await gradeStructure.save();
+    res.end();
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      message: 'Could not unfinalized.'
+    });
+  }
+})
 
 app.get('/hello', async (req, res) => {
   var result = [];
