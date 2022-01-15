@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import AccountPopover from '../AccountPopover';
+import NotifPopover from '../NotifPopover';
 
 export default function NavBar({ openSideBar, onClickAddButton, isTeacher }) {
 	return (
@@ -31,7 +32,7 @@ export default function NavBar({ openSideBar, onClickAddButton, isTeacher }) {
 							<AddIcon />
 						</IconButton>
 					)}
-
+					<NotifPopover sx={{ mr: 2}}/>
 					<AccountPopover />
 				</Toolbar>
 			</AppBar>
