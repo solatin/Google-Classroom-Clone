@@ -57,6 +57,8 @@ app.use('/studentGrade/', require('./controllers/student-grade/student-grade'));
 
 app.use('/gradeReview/', require('./controllers/student-grade/grade-review'));
 
+app.use('/notification/', require('./controllers/notification/notification'));
+
 app.get('/hello', async (req, res) => {
   var result = [];
   await readXlsxFile('uploads/hello.xlsx').then((rows) => {
