@@ -59,7 +59,7 @@ const ClassAssignments = () => {
 									sx={{ minWidth: '440px', maxWidth: '440px' }}
 								/>
 								<Typography sx={{ flex: '1 1 auto' }} variant="subtitle2">
-									{item.gradeStructure.finalized !== 'unfinalized'
+									{item.gradeStructure.finalized === 'finalized' || item.gradeStructure.finalized === 'done'
 										? `${item.studentGrade}/${item.gradeStructure.grade}`
 										: 'Đã giao'}
 								</Typography>

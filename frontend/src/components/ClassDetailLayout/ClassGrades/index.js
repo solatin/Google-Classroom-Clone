@@ -73,11 +73,13 @@ function CustomLoadingOverlay() {
 
 export default function Grades() {
 	const { error, success } = useNotify();
+	const [firstLoading, setFirstLoading] = useState(false);
 	const [columns, setColumns] = useState([]);
 	const [rows, setRows] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const { user } = useAuth();
 	const { id } = useParams();
+
 	const fetch = async () => {
 		const rs1 = await authAxios.get(`/studentGrade/getAllGrade/${id}`);
 		const rs2 = await authAxios.post('/gradeStructure/get', { classId: id });
@@ -104,6 +106,7 @@ export default function Grades() {
 	const finalizeAssignment = async ({ assignmentID }) => {
 		setLoading(true);
 		await authAxios.post('/gradeStructure/finalized', { gradeStructureId: assignmentID });
+		await fetch();
 		success('Finalize success');
 		setLoading(false);
 	};
@@ -129,7 +132,6 @@ export default function Grades() {
 		setFile(e.target.files[0]);
 	};
 	const RenderHeader = (params) => {
-		console.log(params);
 		const uploadRef = useRef(null);
 		const handleUpload = async (e) => {
 			const file = e.target.files[0];
@@ -190,7 +192,7 @@ export default function Grades() {
 						textTransform: 'capitalize'
 					}}
 				>
-					{params.finalized}
+					{params.finalized || 'unfinalized'}
 				</Typography>
 				<Box sx={{ position: 'absolute', right: '-26px' }}>
 					<IconButton
@@ -334,11 +336,18 @@ export default function Grades() {
 	};
 
 	useEffect(() => {
-		fetch();
+		const firstFetch = async () => {
+			setFirstLoading(true);
+			await fetch();
+			setFirstLoading(false);
+		}
+		firstFetch();	
+
 	}, []);
 
 	return (
-		<Box style={{ minHeight: '90vh', width: '100%', pt: 2 }}>
+		<Box style={{ minHeight: '90vh', width: '100%', pt: 2, position: 'relative' }}>
+			{firstLoading && <LinearProgress sx={{ width: '100%', position: 'absolute', top: 0, left: 0 }} />}
 			{user.role === 'teacher' && (
 				<>
 					<Grid container sx={{ my: 1, ml: 2, maxWidth: '95vw' }} rowSpacing={1} columnSpacing={2}>
