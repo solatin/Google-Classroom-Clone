@@ -25,4 +25,17 @@ router.get('/', auth, async (req, res) => {
 	}
 })
 
+router.get('/count', auth, async (req, res) => {
+	try {
+		const account = res.locals.account;
+		const listNotification = await Notification.find({ user_id: account.id, status: 'unread' });
+		res.status(200).json({count: listNotification.length});
+	} catch (error) {
+		console.error(error);
+		res.status(400).send({
+			message: 'Get notification count failed.'
+		});
+	}
+})
+
 module.exports = router;
