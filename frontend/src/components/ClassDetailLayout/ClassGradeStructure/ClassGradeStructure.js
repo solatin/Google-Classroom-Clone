@@ -19,7 +19,7 @@ const ClassGradeStructure = () => {
 	// get data from BE
 	const fetch = async () => {
 		const classID = { 'classId': id };
-		const rs = await authAxios.post(`/getGradeStructure`, classID);
+		const rs = await authAxios.post(`/gradeStructure/get`, classID);
 		setListGradeStructure(rs);
 	}
 
@@ -41,9 +41,9 @@ const ClassGradeStructure = () => {
 						<Typography
 							color="black"
 							sx={{
-								cursor: user.role === 'teacher'?'pointer' : 'default',
+								cursor: user.role === 'teacher' ? 'pointer' : 'default',
 								'&:hover': {
-									textDecoration: user.role === 'teacher'? 'underline' : 'none'
+									textDecoration: user.role === 'teacher' ? 'underline' : 'none'
 								},
 								fontSize: 22, fontWeight: 'bold'
 							}}

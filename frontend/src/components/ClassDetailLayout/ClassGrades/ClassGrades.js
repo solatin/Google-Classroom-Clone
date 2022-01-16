@@ -56,10 +56,10 @@ const ClassGrades = () => {
     // get data from BE
     const fetch = async () => {
         const classId = { 'classId': id };
-        const rs = await authAxios.post(`/getStudentListFile/${classId}`, classId);
+        const rs = await authAxios.post(`/studentClass/getStudentListFile/${classId}`, classId);
         setListStudent(rs);
 
-        const rs2 = await authAxios.get(`/getAllGrade/${classId}`);
+        const rs2 = await authAxios.get(`/studentGrade/getAllGrade/${classId}`);
         setAllGrade(rs2);
     }
 

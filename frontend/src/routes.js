@@ -30,6 +30,10 @@ export const routes = [
 		element: <ClassLayout />,
 		children: [
 			{
+				path: '/',
+				element: <Navigate to={`/classes`} />
+			},
+			{
 				path: '/feed',
 				element: <ClassFeed />
 			},
@@ -48,11 +52,7 @@ export const routes = [
 			{
 				path: '/grades',
 				element: <ClassGrade />
-			},
-			{
-				path: '/upload',
-				element: <ClassGrade />
-			},
+			}
 		]
 	},
 	{ path: '/profile', element: <ClassListLayout />, children: [{ path: '/', element: <Profile /> }] },
@@ -68,5 +68,6 @@ export const routes = [
 			{ path: '*', element: <Navigate to="/404" replace /> }
 		]
 	},
+
 	{ path: '/acceptInvite/:id', element: <AcceptInvitation /> }
 ];

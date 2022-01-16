@@ -17,7 +17,7 @@ const GradeStructureSchema = new Schema(
             type: Number
         },
         finalized: {
-            type: Boolean
+            type: String
         }
     },
     { collection: "GradeStructure" }

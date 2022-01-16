@@ -26,7 +26,7 @@ export const fetchFailure = (error) => ({
 export const fetchRequest = () => async (dispatch) => {
   try {
     dispatch({ type: ClassListTypes.LIST_CLASS_FETCH_REQUEST });
-    const rs = await authAxios.get('/classes');
+    const rs = await authAxios.get('/class');
     dispatch(fetchSuccess(rs));
   } catch (e) {
     console.log(e);
@@ -44,7 +44,7 @@ export const createFailure = (error) => ({
 export const createRequest = (newClass) => async (dispatch) => {
   try {
     dispatch({ type: ClassListTypes.LIST_CLASS_CREATE_REQUEST });
-    await authAxios.post('/classes', newClass);
+    await authAxios.post('/class', newClass);
     dispatch(fetchRequest());
   } catch (e) {
     dispatch(createFailure(e));

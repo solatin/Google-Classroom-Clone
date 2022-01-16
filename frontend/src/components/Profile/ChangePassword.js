@@ -7,15 +7,15 @@ import './ChangePassword.css'
 const ChangePassword = () => {
     const navigate = useNavigate();
     const handleClick = async () => {
-    	const oldPass = document.getElementById("oldPass").value;
-    	const newPass = document.getElementById('newPass').value;
-    	const info = {
-        	'oldPass': oldPass,
-        	'newPass': newPass,
-    	}
+        const oldPass = document.getElementById("oldPass").value;
+        const newPass = document.getElementById('newPass').value;
+        const info = {
+            'oldPass': oldPass,
+            'newPass': newPass,
+        }
 
-    	await authAxios.post("/changePassword", info);
-    	navigate('/classes');
+        await authAxios.post("/profile/changePassword", info);
+        navigate('/classes');
     }
     return (
         <>
