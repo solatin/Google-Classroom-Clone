@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo } from 'react';
+import { useRef, useState, useMemo, useEffect } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import NotifIcon from '@mui/icons-material/Notifications';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -8,6 +8,7 @@ import {
 	Box,
 	Button,
 	ButtonBase,
+	CircularProgress,
 	Divider,
 	IconButton,
 	ListItemIcon,
@@ -18,13 +19,29 @@ import {
 	Typography
 } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
+import authAxios from 'src/utils/authAxios';
 
 const NotifPopover = ({ ...props }) => {
 	const navigate = useNavigate();
+	const [numOfNotif, setNumOfNotif] = useState(0);
+	const [loading, setLoading] = useState(0);
+	const [listNotif, setListNotif] = useState([]);
 	const [anchorEl, setAnchorEl] = useState(null);
 	const open = useMemo(() => Boolean(anchorEl), [anchorEl]);
-	const handleOpen = (event) => {
+	useEffect(() => {
+		const fetchCount = async () => {
+			const rs = await authAxios.get('/notification/count');
+			setNumOfNotif(rs.count);
+		};
+		fetchCount();
+	}, []);
+	const handleOpen = async (event) => {
 		setAnchorEl(event.currentTarget);
+		setLoading(true);
+		const rs = await authAxios.get('notification');
+		setLoading(false);
+		setNumOfNotif(0);
+		setListNotif(rs);
 	};
 
 	const handleClose = () => {
@@ -34,13 +51,8 @@ const NotifPopover = ({ ...props }) => {
 	return (
 		<Box {...props}>
 			<IconButton onClick={handleOpen} sx={{ backgroundColor: open ? '#bdbdbd' : '' }}>
-				<Badge badgeContent={4} color="primary">
-					<NotifIcon
-						sx={{
-							fontSize: 28
-							// color: open ? '#1976D2' : 'primary'
-						}}
-					/>
+				<Badge badgeContent={numOfNotif} color="primary">
+					<NotifIcon sx={{ fontSize: 28 }} />
 				</Badge>
 			</IconButton>
 
@@ -58,29 +70,34 @@ const NotifPopover = ({ ...props }) => {
 				onClose={handleClose}
 				open={open}
 				PaperProps={{
-					sx: { width: 440 }
+					sx: { width: 400, minHeight: loading ? '20vh' : 0, maxHeight: '80vh' }
 				}}
 				sx={{ mt: 0.5 }}
 			>
-				<MenuList>
-					{[1, 2, 3].map((e) => (
-						<MenuItem sx={{ whiteSpace: 'normal', borderRadius: '8px', marginLeft: 0.5 }}>
-							<ListItemIcon sx={{ mr: 1 }}>
-								<Avatar>
-									<AssignmentIcon />
-								</Avatar>
-							</ListItemIcon>
-							<ListItemText
-								primary={
-									<Typography color="textPrimary" variant="subtitle2">
-										<strong>Huy Popper</strong>&nbsp; đang phát trực tiếp: "Caster Đại Chiến Showmatch 10 Bình Luận Viên
-										Liên Quân!".
-									</Typography>
-								}
-							/>
-						</MenuItem>
-					))}
-				</MenuList>
+				{loading ? (
+					<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: 4}}>
+						<CircularProgress />
+					</Box>
+				) : (
+					<MenuList>
+						{listNotif.map((notif) => (
+							<MenuItem sx={{ whiteSpace: 'normal', borderRadius: '8px', marginLeft: 0.5 }}>
+								<ListItemIcon sx={{ mr: 1.5 }}>
+									<Avatar>
+										<AssignmentIcon />
+									</Avatar>
+								</ListItemIcon>
+								<ListItemText
+									primary={
+										<Typography color="textPrimary" variant="subtitle2">
+											{notif.content}
+										</Typography>
+									}
+								/>
+							</MenuItem>
+						))}
+					</MenuList>
+				)}
 			</Popover>
 		</Box>
 	);

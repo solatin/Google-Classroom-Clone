@@ -27,7 +27,7 @@ router.post('/get', async (req, res) => {
   }
 });
 
-router.post('/add', async (req, res) => {
+router.post('/add', auth, async (req, res) => {
   try {
     const listGradeStructure = await GradeStructure.find({ class_id: req.body.class_id });
     const newGradeStructure = new GradeStructure({
@@ -38,7 +38,6 @@ router.post('/add', async (req, res) => {
       finalized: 'unfinalized'
     });
     await newGradeStructure.save();
-    res.end();
 
     //Notification
     const classroom = await Class.findById(req.body.class_id);
