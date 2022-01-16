@@ -366,6 +366,7 @@ export default function Grades() {
 		XLSX.utils.book_append_sheet(wb, ws, 'output');
 		XLSX.writeFile(wb, `class_grades_${id}.xlsx`);
 	};
+	
 	return (
 		<Box style={{ minHeight: '90vh', width: '100%', pt: 2, position: 'relative' }}>
 			{firstLoading && <LinearProgress sx={{ width: '100%', position: 'absolute', top: 0, left: 0 }} />}
