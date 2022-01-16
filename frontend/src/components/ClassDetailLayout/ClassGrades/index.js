@@ -1,5 +1,6 @@
 import DownloadIcon from '@mui/icons-material/Download';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 import {
 	Box,
 	Button,
@@ -21,6 +22,7 @@ import { useParams } from 'react-router-dom';
 import { useAuth } from 'src/hooks/useAuth';
 import { useNotify } from 'src/hooks/useNotify';
 import authAxios from 'src/utils/authAxios';
+import * as XLSX from 'xlsx';
 
 import './index.css';
 
@@ -84,7 +86,7 @@ export default function Grades() {
 		const rs1 = await authAxios.get(`/studentGrade/getAllGrade/${id}`);
 		const rs2 = await authAxios.post('/gradeStructure/get', { classId: id });
 		setColumns(getColumns(rs2));
-		setRows(getRows(rs1.listStudent, rs1.listTotalGrade));
+		setRows(getRows(rs1.listStudent, rs2));
 	};
 
 	const uploadAssignmentGrade = async ({ assignmentID, formData }) => {
@@ -175,9 +177,9 @@ export default function Grades() {
 				}}
 			>
 				<Tooltip title={params.colDef.headerName}>
-				<Typography sx={{ color: '#4285f4', maxWidth: 150 }} noWrap>
-					{params.colDef.headerName}
-				</Typography>
+					<Typography sx={{ color: '#4285f4', maxWidth: 150 }} noWrap>
+						{params.colDef.headerName}
+					</Typography>
 				</Tooltip>
 
 				<Typography variant="subtitle2">Trong tổng số {params.grade}</Typography>
@@ -260,16 +262,26 @@ export default function Grades() {
 		];
 	}, []);
 
-	const getRows = useCallback((listStudent, listGrade) => {
-		const studentRows = listStudent.map((student) => ({
-			id: student.studentId,
-			studentID: student.studentId,
-			name: student.studentName,
-			...student.studentGrade.reduce((prev, cur) => ({ ...prev, [cur.grade_structure_id]: cur.student_grade }), {}),
-			average: student.averageGrade
-		}));
+	const getRows = useCallback((listStudent, rs2) => {
+		const listAsgmnID = rs2.map((gradeStructure) => gradeStructure._id);
+
+		const studentRows = listStudent.map((student) => {
+			let listStGrades = {};
+			listAsgmnID.forEach((assID) => {
+				const stGrade = student.studentGrade.find((e) => e.grade_structure_id === assID);
+				listStGrades = { ...listStGrades, [assID]: stGrade?.student_grade || 0 };
+			});
+			return {
+				id: student.studentId,
+				studentID: student.studentId,
+				name: student.studentName,
+				// ...student.studentGrade.reduce((prev, cur) => ({ ...prev, [cur.grade_structure_id]: cur.student_grade }), {}),
+				...listStGrades,
+				average: student.averageGrade
+			};
+		});
 		return [...studentRows];
-	}, []);	
+	}, []);
 
 	const renderGrade = (params) => {
 		return <Typography align="right">{params.value}</Typography>;
@@ -335,76 +347,92 @@ export default function Grades() {
 			setFirstLoading(true);
 			await fetch();
 			setFirstLoading(false);
-		}
-		firstFetch();	
-
+		};
+		firstFetch();
 	}, []);
 
+	const onExport = () => {
+		const data = [];
+		rows.forEach((e) => {
+			const { id, ...newEl } = e;
+			data.push(newEl);
+		});
+
+		let header = columns.map((e) => e.headerName);
+		const ws = XLSX.utils.book_new();
+		XLSX.utils.sheet_add_aoa(ws, [header]);
+		XLSX.utils.sheet_add_json(ws, data, { origin: 'A2', skipHeader: true });
+		const wb = XLSX.utils.book_new();
+		XLSX.utils.book_append_sheet(wb, ws, 'output');
+		XLSX.writeFile(wb, `class_grades_${id}.xlsx`);
+	};
 	return (
 		<Box style={{ minHeight: '90vh', width: '100%', pt: 2, position: 'relative' }}>
 			{firstLoading && <LinearProgress sx={{ width: '100%', position: 'absolute', top: 0, left: 0 }} />}
-			{user.role === 'teacher' && (
-				<>
-					<Grid container sx={{ my: 1, ml: 2, maxWidth: '95vw' }} rowSpacing={1} columnSpacing={2}>
-						<Grid item md={6} xs={12}>
-							<Paper elevation={2} sx={{ p: 2, height: '100%', pb: 0 }} variant="outlined">
-								<Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-									<Typography variant="h6">Class Student List</Typography>
-									<Link
-										component={Button}
-										variant="contained"
-										href="/templates/Template-import-student.xlsx"
-										download="Template-import-student.xlsx"
-									>
-										<DownloadIcon fontSize="small" />
-										<Typography variant="subtitle2" sx={{ textTransform: 'none' }}>
-											Template
-										</Typography>
-									</Link>
-								</Box>
-								<Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1, alignItems: 'center' }}>
-									<input
-										ref={listStudentFileRef}
-										type="file"
-										accept=".csv,.xlsx,.xls"
-										onChange={onChangeFile}
-										style={{ width: '100%' }}
-									/>
-									<Button variant="contained" onClick={handleUpload}>
-										Upload
-									</Button>
-								</Box>
-							</Paper>
-						</Grid>
-						<Grid item md={6} xs={12}>
-							<Paper
-								elevation={2}
-								sx={{
-									p: 2,
-									height: '100%',
-									display: 'flex',
-									justifyContent: 'space-between',
-									alignItems: 'flex-start'
-								}}
-								variant="outlined"
+			<Grid container sx={{ my: 1, ml: 2, maxWidth: '95vw' }} rowSpacing={1} columnSpacing={2}>
+				<Grid item md={6} xs={12}>
+					<Paper elevation={2} sx={{ p: 2, height: '100%', pb: 0 }} variant="outlined">
+						<Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+							<Typography variant="h6">Class Student List</Typography>
+							<Link
+								component={Button}
+								variant="contained"
+								href="/templates/Template-import-student.xlsx"
+								download="Template-import-student.xlsx"
 							>
-								<Typography variant="h6">Assignment Grades</Typography>
-								<Link
-									component={Button}
-									variant="contained"
-									href="/templates/Template-import-assignment-grade.xlsx"
-									download="Template-import-assignment-grade.xlsx"
-								>
-									<DownloadIcon fontSize="small" />
-									<Typography variant="subtitle2" sx={{ textTransform: 'none' }}>
-										Template
-									</Typography>
-								</Link>
-							</Paper>
-						</Grid>
-					</Grid>
-				</>
-			)}
+								<DownloadIcon fontSize="small" />
+								<Typography variant="subtitle2" sx={{ textTransform: 'none' }}>
+									Template
+								</Typography>
+							</Link>
+						</Box>
+						<Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1, alignItems: 'center' }}>
+							<input
+								ref={listStudentFileRef}
+								type="file"
+								accept=".csv,.xlsx,.xls"
+								onChange={onChangeFile}
+								style={{ width: '100%' }}
+							/>
+							<Button variant="contained" onClick={handleUpload}>
+								Upload
+							</Button>
+						</Box>
+					</Paper>
+				</Grid>
+				<Grid item md={6} xs={12}>
+					<Paper
+						elevation={2}
+						sx={{
+							p: 2,
+							height: '100%',
+							display: 'flex',
+							justifyContent: 'space-between',
+							alignItems: 'flex-start'
+						}}
+						variant="outlined"
+					>
+						<Typography variant="h6">Assignment Grades</Typography>
+						<Link
+							component={Button}
+							variant="contained"
+							href="/templates/Template-import-assignment-grade.xlsx"
+							download="Template-import-assignment-grade.xlsx"
+						>
+							<DownloadIcon fontSize="small" />
+							<Typography variant="subtitle2" sx={{ textTransform: 'none' }}>
+								Template
+							</Typography>
+						</Link>
+					</Paper>
+				</Grid>
+			</Grid>
+			<Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+				<Button variant="contained" onClick={onExport}>
+					Export
+					<SystemUpdateAltIcon sx={{ fontSize: 16, ml: 1 }} />
+				</Button>
+			</Box>
 			<StyledDataGrid
 				headerHeight={80}
 				components={{
