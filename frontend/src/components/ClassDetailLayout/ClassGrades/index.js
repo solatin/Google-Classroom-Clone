@@ -248,7 +248,8 @@ export default function Grades() {
 				sortable: false,
 				editable: true,
 				width: 180,
-				align: 'right'
+				align: 'right',
+				maxGrade: gradeStructure.grade
 			})),
 			{
 				field: 'average',
@@ -260,12 +261,6 @@ export default function Grades() {
 	}, []);
 
 	const getRows = useCallback((listStudent, listGrade) => {
-		const averageGradeRow = {
-			id: 'total',
-			name: 'Điểm trung bình của lớp',
-			editable: false,
-			...listGrade.reduce((prev, cur) => ({ ...prev, [cur.grade._id]: cur.totalGrade }), {})
-		};
 		const studentRows = listStudent.map((student) => ({
 			id: student.studentId,
 			studentID: student.studentId,
@@ -273,15 +268,15 @@ export default function Grades() {
 			...student.studentGrade.reduce((prev, cur) => ({ ...prev, [cur.grade_structure_id]: cur.student_grade }), {}),
 			average: student.averageGrade
 		}));
-		return [averageGradeRow, ...studentRows];
-	}, []);
+		return [...studentRows];
+	}, []);	
 
 	const renderGrade = (params) => {
 		return <Typography align="right">{params.value}</Typography>;
 	};
 
 	const GradeEditInputCell = (props) => {
-		const { id, value, api, field, row } = props;
+		const { id, value, api, field, row, colDef } = props;
 		const [editValue, setEditValue] = useState(value);
 		const handleSubmit = async () => {
 			if (isNaN(editValue)) {
@@ -316,7 +311,7 @@ export default function Grades() {
 					value={editValue}
 					inputProps={{ style: { textAlign: 'right' } }}
 					InputProps={{
-						endAdornment: '/100'
+						endAdornment: `/${colDef.maxGrade}`
 					}}
 					onBlur={handleSubmit}
 					onKeyDown={(evt) => {
