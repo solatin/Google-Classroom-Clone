@@ -38,6 +38,7 @@ const NotifPopover = ({ ...props }) => {
 	const handleOpen = async (event) => {
 		setAnchorEl(event.currentTarget);
 		setLoading(true);
+		setListNotif([]);
 		const rs = await authAxios.get('notification');
 		setLoading(false);
 		setNumOfNotif(0);
@@ -70,15 +71,22 @@ const NotifPopover = ({ ...props }) => {
 				onClose={handleClose}
 				open={open}
 				PaperProps={{
-					sx: { width: 400, minHeight: loading ? '20vh' : 0, maxHeight: '80vh' }
+					sx: {
+						width: 400,
+						minHeight: !listNotif.length ? '20vh' : 0,
+						maxHeight: '80vh',
+						height: !listNotif.length ? '20vh' : 'noset',
+						overflow: 'auto'
+					}
 				}}
 				sx={{ mt: 0.5 }}
 			>
-				{loading ? (
-					<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: 4}}>
+				{loading && (
+					<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: 4 }}>
 						<CircularProgress />
 					</Box>
-				) : (
+				)}
+				{!loading && !!listNotif.length && (
 					<MenuList>
 						{listNotif.map((notif) => (
 							<MenuItem sx={{ whiteSpace: 'normal', borderRadius: '8px', marginLeft: 0.5 }}>
@@ -97,6 +105,11 @@ const NotifPopover = ({ ...props }) => {
 							</MenuItem>
 						))}
 					</MenuList>
+				)}
+				{!loading && !listNotif.length && (
+					<Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+						<Typography>No new notification</Typography>
+					</Box>
 				)}
 			</Popover>
 		</Box>
