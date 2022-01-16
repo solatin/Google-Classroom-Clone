@@ -6,16 +6,28 @@ import { useParams } from 'react-router';
 import { useAuth } from 'src/hooks/useAuth';
 import authAxios from 'src/utils/authAxios';
 import styles from './ClassAssignments.module.css';
+import CreateReviewModal from './CreateReviewModal'
+import CreateCommentModal from './CreateCommentModal'
 
 const ClassAssignments = () => {
 	const { id: classID } = useParams();
 	const [list, setList] = useState([]);
 	const [loading, setLoading] = useState(false);
+	const [openCreateReviewModal, setOpenCreateReviewModal] = useState(false);
+	const [openCreateCommentModal, setOpenCreateCommentModal] = useState(false);
+	const [currentAssignment, setCurrentAssignment] = useState(null);
+	const [currentComment, setCurrentComment] = useState(null);
 	const user = useAuth();
+
+
 	const onReviewClick = (item) => {
 		if (item.review) {
+			setCurrentAssignment(item);
+			setOpenCreateCommentModal(true);
 			console.log('open review');
 		} else {
+			setCurrentAssignment(item);
+			setOpenCreateReviewModal(true);
 			console.log('create new review');
 		}
 	}
@@ -41,6 +53,8 @@ const ClassAssignments = () => {
 					</Box>
 					<List>
 						{list.map((item) => (
+
+
 							<ListItem
 								className={styles.listItem}
 								{...(item.gradeStructure.finalized === 'finalized'
@@ -64,10 +78,13 @@ const ClassAssignments = () => {
 										: 'Đã giao'}
 								</Typography>
 							</ListItem>
+
 						))}
 					</List>
 				</Box>
 			</Box>
+			<CreateReviewModal open={openCreateReviewModal} handleClose={() => setOpenCreateReviewModal(false)} assignment={currentAssignment} />
+			<CreateCommentModal open={openCreateCommentModal} handleClose={() => setOpenCreateCommentModal(false)} assignment={currentAssignment} />
 		</>
 	);
 };

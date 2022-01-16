@@ -48,12 +48,12 @@ export const Login = () => {
 					<Typography variant="h4" sx={{ mb: 3 }}>
 						Login
 					</Typography>
-					<FormControl error={!!errors.email}  variant="standard" fullWidth sx={{mb: 2}}>
+					<FormControl error={!!errors.email} variant="standard" fullWidth sx={{ mb: 2 }}>
 						<TextField error={!!errors.email} fullWidth label="Email" variant="outlined" {...register('email', { required: 'Email is required' })} sx={{ mb: 0 }} />
 						<FormHelperText>{errors.email?.message}</FormHelperText>
 					</FormControl>
-					
-					<FormControl error={!!errors.password}  variant="standard" fullWidth sx={{mb: 2}}>
+
+					<FormControl error={!!errors.password} variant="standard" fullWidth sx={{ mb: 2 }}>
 						<TextField error={!!errors.password} fullWidth label="Password" variant="outlined" {...register('password', { required: 'Password is required' })} sx={{ mb: 0 }} />
 						<FormHelperText>{errors.password?.message}</FormHelperText>
 					</FormControl>
