@@ -106,7 +106,7 @@ router.post('/acceptInvite', auth, async (req, res) => {
 router.post('/joinByCode', auth, async (req, res) => {
 	try {
 		const account = res.locals.account;
-		const classroom = await Class.findOne({ code: req.boy.code });
+		const classroom = await Class.findOne({ code: req.body.code });
 		const result = await (account.role === 'teacher'
 			? await ClassTeacher.find({ teacher_id: account.id, code: classroom.code })
 			: await ClassStudent.find({ student_id: account.id, code: classroom.code }));
