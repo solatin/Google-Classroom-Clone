@@ -96,7 +96,43 @@ router.post('/acceptInvite', auth, async (req, res) => {
 				? new ClassTeacher({ teacher_id: account.id, code: newClass.code })
 				: new ClassStudent({ student_id: account.id, code: newClass.code });
 		await newClassMember.save();
+	} else {
+		res.status(401).send({
+			message: "You have already been in this class."
+		})
 	}
 });
+
+router.post('/joinByCode', auth, async (req, res) => {
+	try {
+		const account = res.locals.account;
+		const classroom = await Class.findOne({ code: req.boy.code });
+		const result = await (account.role === 'teacher'
+			? await ClassTeacher.find({ teacher_id: account.id, code: classroom.code })
+			: await ClassStudent.find({ student_id: account.id, code: classroom.code }));
+
+		const checkExist = result.length !== 0;
+		if (checkExist === false) {
+			const newClassMember =
+				account.role === 'teacher'
+					? new ClassTeacher({ teacher_id: account.id, code: classroom.code })
+					: new ClassStudent({ student_id: account.id, code: classroom.code });
+			await newClassMember.save();
+			res.status(200).send({
+				message: "Succeed."
+			})
+		} else {
+			res.status(401).send({
+				message: "You have already been in this class."
+			})
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(400).send({
+			message: "Cannot join this class."
+		})
+	}
+
+})
 
 module.exports = router;
