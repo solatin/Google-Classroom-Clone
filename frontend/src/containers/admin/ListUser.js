@@ -52,7 +52,6 @@ export const ListUser = () => {
 	useEffect(() => {
 		fetch();
 	}, []);
-  console.log(userDetails);
 	return (
 		<Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
 			<Table sx={{ minWidth: 600, width: 'auto' }} aria-label="caption table">
