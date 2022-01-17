@@ -16,6 +16,8 @@ import ClassGrade from './components/ClassDetailLayout/ClassGrades/index';
 import AdminMainLayout from 'src/components/AdminLayout/MainLayout';
 import { ListAdmin } from 'src/containers/admin/ListAdmin';
 import { ListUser } from './containers/admin/ListUser';
+import { ListClass } from './containers/admin/ListClass';
+
 const routes = [
 	{
 		path: '/classes',
@@ -93,7 +95,7 @@ const adminRoutes = [
 			},
 			{
 				path: '/manage-classes',
-				element: <>Manage class</>
+				element: <ListClass />
 			},
 			{ path: '/', element: <Navigate to="/manage-admins" /> },
 
