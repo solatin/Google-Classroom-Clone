@@ -21,7 +21,7 @@ export const Login = () => {
 			navigate('/');
 		} catch (e) {
 			console.log(e);
-			error("Email or password is not correct");
+			error(e.message);
 		}
 	};
 
@@ -37,7 +37,7 @@ export const Login = () => {
 			navigate('/');
 		} catch (e) {
 			console.log(e);
-			error('Login failed. Please try again!');
+			error(e.message);
 		}
 	};
 	return (
