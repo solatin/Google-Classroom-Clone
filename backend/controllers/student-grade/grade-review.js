@@ -101,7 +101,7 @@ router.post('/comment', auth, async (req, res) => {
     await gradeReview.save();
 
     //Notification
-    const gradeStructure = await GradeReview.findById(gradeReview.grade_structure_id);
+    const gradeStructure = await GradeStructure.findById(gradeReview.grade_structure_id);
     const classroom = await Class.findById(gradeStructure.class_id);
     const listTeacher = await ClassTeacher.find({ code: classroom.code });
     const listNotification = [];
@@ -202,6 +202,7 @@ router.get('/forStudent', auth, async (req, res) => {
         const review = await GradeReview.findOne({ grade_structure_id: element._id, student_class_id: student.student_class_id });
         const currentGrade = await ClassStudentGrade.findOne({ student_class_id: student.student_class_id, grade_structure_id: element._id });
         if (currentGrade) listResult.push({ gradeStructure: element, review: review, studentGrade: currentGrade.student_grade });
+        else listResult.push({ gradeStructure: element, review: review, studentGrade: 0 });
         if (currentGrade && (element.finalized === 'finalized' || element.finalized === 'done')) {
           overall = overall + parseFloat('0' + currentGrade.student_grade);
         }
