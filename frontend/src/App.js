@@ -1,10 +1,12 @@
 import { useRoutes } from 'react-router-dom';
 import { CssBaseline, ThemeProvider } from '@mui/material';
-import { routes } from './routes';
+import { getRoutes, routes } from './routes';
 import theme from 'src/theme';
+import { useAuth } from './hooks/useAuth';
 
 function App() {
-	const routing = useRoutes(routes);
+	const { user } = useAuth();
+	const routing = useRoutes(getRoutes(user?.role));
 	return (
 		<ThemeProvider theme={theme}>
 			<CssBaseline />

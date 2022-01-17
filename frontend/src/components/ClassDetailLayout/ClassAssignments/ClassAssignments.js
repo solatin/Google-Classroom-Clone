@@ -11,7 +11,7 @@ import CreateCommentModal from './CreateCommentModal'
 
 const ClassAssignments = () => {
 	const { id: classID } = useParams();
-	const [list, setList] = useState([]);
+	const [data, setData] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [openCreateReviewModal, setOpenCreateReviewModal] = useState(false);
 	const [openCreateCommentModal, setOpenCreateCommentModal] = useState(false);
@@ -39,7 +39,7 @@ const ClassAssignments = () => {
 		setLoading(true);
 		const rs = await authAxios.get(`/gradeReview/forStudent?classId=${classID}`);
 		setLoading(false);
-		setList(rs);
+		setData(rs);
 	};
 
 	return (
@@ -53,10 +53,12 @@ const ClassAssignments = () => {
 						</Avatar>
 						<Typography variant="h5">{user.user.name}</Typography>
 					</Box>
+					<Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mt: 1 }}>
+						<Typography variant="subtitle2" display="inline" sx={{ fontWeight: 600, mr: 1 }}>Overall:</Typography>
+						{data?.overall}
+					</Box>
 					<List>
-						{list.map((item) => (
-
-
+						{data && data.listGrade.map((item) => (
 							<ListItem
 								className={styles.listItem}
 								{...(item.gradeStructure.finalized === 'finalized'
@@ -85,7 +87,7 @@ const ClassAssignments = () => {
 					</List>
 				</Box>
 			</Box>
-			<CreateReviewModal open={openCreateReviewModal} handleClose={() => setOpenCreateReviewModal(false)} assignment={currentAssignment} reFetch={fetch}/>
+			<CreateReviewModal open={openCreateReviewModal} handleClose={() => setOpenCreateReviewModal(false)} assignment={currentAssignment} reFetch={fetch} />
 			<CreateCommentModal open={openCreateCommentModal} handleClose={() => setOpenCreateCommentModal(false)} assignment={currentAssignment} reFetch={fetch} />
 		</>
 	);
