@@ -6,24 +6,22 @@ import authAxios from 'src/utils/authAxios';
 import { useNotify } from 'src/hooks/useNotify';
 import React, { useEffect, useState } from 'react';
 
-const CreateReviewModal = ({ open, handleClose, assignment }) => {
+const CreateReviewModal = ({ open, handleClose, assignment, reFetch }) => {
     const { register, handleSubmit } = useForm();
     const [loading, setLoading] = useState(false);
     const user = useAuth();
     const { error, success } = useNotify();
 
-    const onSubmit = () => {
-        const fetch = async () => {
-            setLoading(true);
-            await authAxios.post(`/gradeReview/add`, { id: assignment?.gradeStructure._id }, { grade: register.grade }, { explain: register.explain }, { classId: assignment.gradeStructure.class_id });
-            console.log(assignment?.gradeStructure._id);
-            success('Upload review success');
-            setLoading(false);
-
-        };
-        fetch();
+    const onSubmit = async (data) => {
+        setLoading(true);
+        await authAxios.post(`/gradeReview/add`, { gradeStructureId: assignment?.gradeStructure._id, grade: data.grade, explanation: data.explain, classId: assignment?.gradeStructure.class_id });
+        console.log(assignment?.gradeStructure._id);
+        success('Upload review success');
+        setLoading(false);
+        reFetch();
     }
     console.log(assignment);
+
     return (
         <Dialog
             open={open}

@@ -32,14 +32,16 @@ const ClassAssignments = () => {
 		}
 	}
 	useEffect(() => {
-		const fetch = async () => {
-			setLoading(true);
-			const rs = await authAxios.get(`/gradeReview/forStudent?classId=${classID}`);
-			setLoading(false);
-			setList(rs);
-		};
 		fetch();
 	}, []);
+
+	const fetch = async () => {
+		setLoading(true);
+		const rs = await authAxios.get(`/gradeReview/forStudent?classId=${classID}`);
+		setLoading(false);
+		setList(rs);
+	};
+
 	return (
 		<>
 			<Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', position: 'relative' }}>
@@ -83,8 +85,8 @@ const ClassAssignments = () => {
 					</List>
 				</Box>
 			</Box>
-			<CreateReviewModal open={openCreateReviewModal} handleClose={() => setOpenCreateReviewModal(false)} assignment={currentAssignment} />
-			<CreateCommentModal open={openCreateCommentModal} handleClose={() => setOpenCreateCommentModal(false)} assignment={currentAssignment} />
+			<CreateReviewModal open={openCreateReviewModal} handleClose={() => setOpenCreateReviewModal(false)} assignment={currentAssignment} reFetch={fetch}/>
+			<CreateCommentModal open={openCreateCommentModal} handleClose={() => setOpenCreateCommentModal(false)} assignment={currentAssignment} reFetch={fetch} />
 		</>
 	);
 };
