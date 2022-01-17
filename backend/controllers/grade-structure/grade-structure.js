@@ -56,15 +56,8 @@ router.post('/add', auth, async (req, res) => {
         })
       );
     }
-
-    await Notification.insertMany(listNotification).then(function () {
-      console.log("Notification Inserted")  // Success
-    }).catch(function (error) {
-      console.log(error);     // Failure
-      res.status(402).send({
-        message: 'Insert Notification failed.'
-      });
-    });
+    await Notification.insertMany(listNotification);
+    res.status(201).json(newGradeStructure);
   } catch (error) {
     console.log(error);
     res.status(400).send({
