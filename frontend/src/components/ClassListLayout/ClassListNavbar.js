@@ -1,17 +1,23 @@
 import AddIcon from '@mui/icons-material/Add';
 import MenuIcon from '@mui/icons-material/Menu';
+import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import AccountPopover from '../AccountPopover';
 import NotifPopover from '../NotifPopover';
+import JoinClassByCodeModal from 'src/containers/JoinClassByCodeModal';
 
 export default function NavBar({ openSideBar, onClickAddButton, isTeacher }) {
+	const [openModal, setOpenModal] = useState(false);
+	const handleCloseModal = useCallback(() => {
+		setOpenModal(false);
+	}, []);
 	return (
 		<Box sx={{ minWidth: '100%' }}>
 			<AppBar position="static" sx={{ backgroundColor: 'white' }}>
@@ -27,15 +33,21 @@ export default function NavBar({ openSideBar, onClickAddButton, isTeacher }) {
 					<Typography variant="h6" sx={{ flexGrow: 1, ml: 1, color: 'black' }}>
 						Classroom
 					</Typography>
-					{isTeacher && (
+					{isTeacher ? (
 						<IconButton onClick={onClickAddButton} sx={{ mr: 2 }}>
 							<AddIcon />
 						</IconButton>
+					) : (
+						<IconButton sx={{mr: 3}} onClick={() => setOpenModal(true)}>
+							<AddBoxOutlinedIcon />
+						</IconButton>
 					)}
-					<NotifPopover sx={{ mr: 2}}/>
+
+					<NotifPopover sx={{ mr: 3 }} />
 					<AccountPopover />
 				</Toolbar>
 			</AppBar>
+			<JoinClassByCodeModal open={openModal} handleClose={handleCloseModal} />
 		</Box>
 	);
 }
