@@ -32,7 +32,8 @@ router.get('/classes', auth, async (req, res) => {
 		for (let index = 0; index < listClass.length; index++) {
 			const element = listClass[index];
 			const owner = await Account.findById(element.owner_id);
-			listResult.push({ class: element, owner: owner });
+			const listStudent = await ClassStudent.find({ code: element.code })
+			listResult.push({ class: element, owner: owner, numberOfStudent: listStudent.length });
 		}
 		res.status(200).json(listResult);
 	} catch (error) {
