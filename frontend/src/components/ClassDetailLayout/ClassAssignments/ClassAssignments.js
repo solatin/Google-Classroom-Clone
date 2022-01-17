@@ -9,7 +9,7 @@ import styles from './ClassAssignments.module.css';
 
 const ClassAssignments = () => {
 	const { id: classID } = useParams();
-	const [list, setList] = useState([]);
+	const [data, setData] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const user = useAuth();
 	const onReviewClick = (item) => {
@@ -24,7 +24,7 @@ const ClassAssignments = () => {
 			setLoading(true);
 			const rs = await authAxios.get(`/gradeReview/forStudent?classId=${classID}`);
 			setLoading(false);
-			setList(rs);
+			setData(rs);
 		};
 		fetch();
 	}, []);
@@ -39,8 +39,12 @@ const ClassAssignments = () => {
 						</Avatar>
 						<Typography variant="h5">{user.user.name}</Typography>
 					</Box>
+					<Box sx={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mt: 1}}>
+						<Typography variant="subtitle2" display="inline" sx={{fontWeight: 600, mr: 1}}>Overall:</Typography>
+						{data?.overall}
+					</Box>
 					<List>
-						{list.map((item) => (
+						{data && data.listGrade.map((item) => (
 							<ListItem
 								className={styles.listItem}
 								{...(item.gradeStructure.finalized === 'finalized'

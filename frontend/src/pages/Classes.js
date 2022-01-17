@@ -26,7 +26,7 @@ export const ClassesPage = () => {
 			<Box sx={{ m: 3, width: '100%', height: '100%' }}>
 				<Grid container spacing={3}>
 					{classList.map((item) => (
-						<Grid item md={4} sm={6} xs={12}>
+						<Grid id={item.name} item md={4} sm={6} xs={12}>
 							<ClassCard item={item} onClick={onClick}/>
 						</Grid>
 					))}
