@@ -21,6 +21,9 @@ const AccountSchema = new Schema({
     role: {
         type: String
     },
+    status: {
+        type: String
+    }
 
 }, { collection: "Account" });
 
