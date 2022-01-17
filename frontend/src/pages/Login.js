@@ -8,9 +8,11 @@ import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
 import * as AuthActions from 'src/actions/auth';
 import axiosClient from 'src/utils/axios';
+import { useNotify } from 'src/hooks/useNotify';
 
 export const Login = () => {
 	const navigate = useNavigate();
+	const { error, success }= useNotify();
 	const { register, handleSubmit, formState: { errors } } = useForm();
 	const dispatch = useDispatch();
 	const onSubmit = async (form) => {
@@ -19,6 +21,7 @@ export const Login = () => {
 			navigate('/');
 		} catch (e) {
 			console.log(e);
+			error("Email or password is not correct");
 		}
 	};
 
@@ -34,9 +37,9 @@ export const Login = () => {
 			navigate('/');
 		} catch (e) {
 			console.log(e);
+			error('Login failed. Please try again!');
 		}
 	};
-	console.log(errors);
 	return (
 		<>
 			<Helmet>
@@ -54,7 +57,7 @@ export const Login = () => {
 					</FormControl>
 					
 					<FormControl error={!!errors.password}  variant="standard" fullWidth sx={{mb: 2}}>
-						<TextField error={!!errors.password} fullWidth label="Password" variant="outlined" {...register('password', { required: 'Password is required' })} sx={{ mb: 0 }} />
+						<TextField error={!!errors.password} type="password" fullWidth label="Password" variant="outlined" {...register('password', { required: 'Password is required' })} sx={{ mb: 0 }} />
 						<FormHelperText>{errors.password?.message}</FormHelperText>
 					</FormControl>
 					<Button variant="contained" onClick={handleSubmit(onSubmit)}>
