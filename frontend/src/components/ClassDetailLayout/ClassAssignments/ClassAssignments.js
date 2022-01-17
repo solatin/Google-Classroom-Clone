@@ -6,28 +6,42 @@ import { useParams } from 'react-router';
 import { useAuth } from 'src/hooks/useAuth';
 import authAxios from 'src/utils/authAxios';
 import styles from './ClassAssignments.module.css';
+import CreateReviewModal from './CreateReviewModal'
+import CreateCommentModal from './CreateCommentModal'
 
 const ClassAssignments = () => {
 	const { id: classID } = useParams();
 	const [data, setData] = useState(null);
 	const [loading, setLoading] = useState(false);
+	const [openCreateReviewModal, setOpenCreateReviewModal] = useState(false);
+	const [openCreateCommentModal, setOpenCreateCommentModal] = useState(false);
+	const [currentAssignment, setCurrentAssignment] = useState(null);
+	const [currentComment, setCurrentComment] = useState(null);
 	const user = useAuth();
+
+
 	const onReviewClick = (item) => {
 		if (item.review) {
+			setCurrentAssignment(item);
+			setOpenCreateCommentModal(true);
 			console.log('open review');
 		} else {
+			setCurrentAssignment(item);
+			setOpenCreateReviewModal(true);
 			console.log('create new review');
 		}
 	}
 	useEffect(() => {
-		const fetch = async () => {
-			setLoading(true);
-			const rs = await authAxios.get(`/gradeReview/forStudent?classId=${classID}`);
-			setLoading(false);
-			setData(rs);
-		};
 		fetch();
 	}, []);
+
+	const fetch = async () => {
+		setLoading(true);
+		const rs = await authAxios.get(`/gradeReview/forStudent?classId=${classID}`);
+		setLoading(false);
+		setData(rs);
+	};
+
 	return (
 		<>
 			<Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', position: 'relative' }}>
@@ -39,8 +53,8 @@ const ClassAssignments = () => {
 						</Avatar>
 						<Typography variant="h5">{user.user.name}</Typography>
 					</Box>
-					<Box sx={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mt: 1}}>
-						<Typography variant="subtitle2" display="inline" sx={{fontWeight: 600, mr: 1}}>Overall:</Typography>
+					<Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mt: 1 }}>
+						<Typography variant="subtitle2" display="inline" sx={{ fontWeight: 600, mr: 1 }}>Overall:</Typography>
 						{data?.overall}
 					</Box>
 					<List>
@@ -49,12 +63,12 @@ const ClassAssignments = () => {
 								className={styles.listItem}
 								{...(item.gradeStructure.finalized === 'finalized'
 									? {
-											secondaryAction: (
-												<IconButton edge="end" aria-label="delete" onClick={() => onReviewClick(item)}>
-													<RateReviewIcon />
-												</IconButton>
-											)
-									  }
+										secondaryAction: (
+											<IconButton edge="end" aria-label="delete" onClick={() => onReviewClick(item)}>
+												<RateReviewIcon />
+											</IconButton>
+										)
+									}
 									: {})}
 							>
 								<ListItemText
@@ -68,10 +82,13 @@ const ClassAssignments = () => {
 										: 'Đã giao'}
 								</Typography>
 							</ListItem>
+
 						))}
 					</List>
 				</Box>
 			</Box>
+			<CreateReviewModal open={openCreateReviewModal} handleClose={() => setOpenCreateReviewModal(false)} assignment={currentAssignment} reFetch={fetch} />
+			<CreateCommentModal open={openCreateCommentModal} handleClose={() => setOpenCreateCommentModal(false)} assignment={currentAssignment} reFetch={fetch} />
 		</>
 	);
 };

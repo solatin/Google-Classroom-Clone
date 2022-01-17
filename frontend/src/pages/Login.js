@@ -12,7 +12,7 @@ import { useNotify } from 'src/hooks/useNotify';
 
 export const Login = () => {
 	const navigate = useNavigate();
-	const { error, success }= useNotify();
+	const { error, success } = useNotify();
 	const { register, handleSubmit, formState: { errors } } = useForm();
 	const dispatch = useDispatch();
 	const onSubmit = async (form) => {
@@ -21,7 +21,7 @@ export const Login = () => {
 			navigate('/');
 		} catch (e) {
 			console.log(e);
-			error("Email or password is not correct");
+			error(e.message);
 		}
 	};
 
@@ -37,7 +37,7 @@ export const Login = () => {
 			navigate('/');
 		} catch (e) {
 			console.log(e);
-			error('Login failed. Please try again!');
+			error(e.message);
 		}
 	};
 	return (
@@ -51,12 +51,12 @@ export const Login = () => {
 					<Typography variant="h4" sx={{ mb: 3 }}>
 						Login
 					</Typography>
-					<FormControl error={!!errors.email}  variant="standard" fullWidth sx={{mb: 2}}>
+					<FormControl error={!!errors.email} variant="standard" fullWidth sx={{ mb: 2 }}>
 						<TextField error={!!errors.email} fullWidth label="Email" variant="outlined" {...register('email', { required: 'Email is required' })} sx={{ mb: 0 }} />
 						<FormHelperText>{errors.email?.message}</FormHelperText>
 					</FormControl>
-					
-					<FormControl error={!!errors.password}  variant="standard" fullWidth sx={{mb: 2}}>
+
+					<FormControl error={!!errors.password} variant="standard" fullWidth sx={{ mb: 2 }}>
 						<TextField error={!!errors.password} type="password" fullWidth label="Password" variant="outlined" {...register('password', { required: 'Password is required' })} sx={{ mb: 0 }} />
 						<FormHelperText>{errors.password?.message}</FormHelperText>
 					</FormControl>
