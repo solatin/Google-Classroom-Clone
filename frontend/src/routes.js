@@ -52,7 +52,11 @@ export const routes = [
 			{
 				path: '/grades',
 				element: <ClassGrade />
-			}
+			},
+			{
+				path: '/gradeReviews',
+				element: <>Review</>
+			},
 		]
 	},
 	{ path: '/profile', element: <ClassListLayout />, children: [{ path: '/', element: <Profile /> }] },

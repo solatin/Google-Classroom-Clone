@@ -36,6 +36,7 @@ export default function NavBar({ openSideBar, onClickTab, tab, isTeacher }) {
 							{!isTeacher && <Tab label="Bài tập trên lớp" value="assignments" />}
 							<Tab label="Mọi người" value="members" />
 							{isTeacher && <Tab label="Số điểm" value="grades" />}
+							{isTeacher && <Tab label="Phúc khảo" value="gradeReviews" />}
 						</Tabs>
 					</Box>
 					<Box sx={{ flex: '1 1 0.0625rem', display: 'flex', justifyContent: 'flex-end' }}>
