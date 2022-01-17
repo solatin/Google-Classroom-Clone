@@ -14,14 +14,12 @@ import {
 } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import { useAuth } from '../hooks/useAuth';
-import FormInviteModal from 'src/containers/FormInviteModal';
 
 const AccountPopover = ({ props }) => {
   const anchorRef = useRef(null);
   const { user, onLogout } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [openForm, setOpenForm] = useState(false);
 
   const handleOpen = () => {
     setOpen(true);
@@ -41,10 +39,6 @@ const AccountPopover = ({ props }) => {
     }
   };
 
-  const handleOpenForm = () => {
-    setOpen(false);
-    setOpenForm(true);
-  }
 
   return (
     <>
@@ -98,18 +92,6 @@ const AccountPopover = ({ props }) => {
               }
             />
           </MenuItem>
-          <MenuItem onClick={() => handleOpenForm()}>
-            <ListItemIcon>
-              <PersonIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText
-              primary={
-                <Typography color="textPrimary" variant="subtitle2">
-                  Create Invite
-                </Typography>
-              }
-            />
-          </MenuItem>
         </Box>
         <Box sx={{ p: 2 }}>
           <Button
@@ -122,7 +104,6 @@ const AccountPopover = ({ props }) => {
           </Button>
         </Box>
       </Popover>
-      <FormInviteModal open={openForm} handleCloseForm={() => setOpenForm(false)}></FormInviteModal>
     </>
   );
 };

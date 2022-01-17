@@ -13,8 +13,10 @@ import ClassMembers from './components/ClassDetailLayout/ClassMembers/ClassMembe
 import AcceptInvitation from './components/AcceptInvitation/AcceptInvitation';
 import ClassGradeEdit from './components/ClassDetailLayout/ClassGradeStructure/ClassGradeEdit';
 import ClassGrade from './components/ClassDetailLayout/ClassGrades/index';
-
-export const routes = [
+import AdminMainLayout from 'src/components/AdminLayout/MainLayout';
+import { ListAdmin } from 'src/containers/admin/ListAdmin';
+import { ListUser } from './containers/admin/ListUser';
+const routes = [
 	{
 		path: '/classes',
 		element: <ClassListLayout />,
@@ -52,6 +54,10 @@ export const routes = [
 			{
 				path: '/grades',
 				element: <ClassGrade />
+			},
+			{
+				path: '/gradeReviews',
+				element: <>Review</>
 			}
 		]
 	},
@@ -71,3 +77,35 @@ export const routes = [
 
 	{ path: '/acceptInvite/:id', element: <AcceptInvitation /> }
 ];
+
+const adminRoutes = [
+	{
+		path: '/',
+		element: <AdminMainLayout />,
+		children: [
+			{
+				path: '/manage-admins',
+				element: <ListAdmin />
+			},
+			{
+				path: '/manage-users',
+				element: <ListUser />
+			},
+			{
+				path: '/manage-classes',
+				element: <>Manage class</>
+			},
+			{ path: '/', element: <Navigate to="/manage-admins" /> },
+
+		]
+	}
+];
+
+export const getRoutes = (role) => {
+	switch (role) {
+		case 'admin':
+			return adminRoutes;
+		default:
+			return routes;
+	}
+};

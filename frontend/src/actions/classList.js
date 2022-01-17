@@ -1,9 +1,6 @@
 import { createTypes } from 'reduxsauce';
 import authAxios from 'src/utils/authAxios';
 
-import { useSelector } from 'react-redux';
-import * as UserSelectors from 'src/selectors/user';
-
 export const ClassListTypes = createTypes(`
   LIST_CLASS_FETCH_REQUEST
   LIST_CLASS_FETCH_SUCCESS
