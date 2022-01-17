@@ -10,11 +10,15 @@ import {
 	TextField,
 	Typography
 } from '@mui/material';
+import * as ClassListActions from 'src/actions/classList';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import authAxios from 'src/utils/authAxios';
+import { useDispatch } from 'react-redux';
 import './style.css';
 
 const JoinClassByCodeModal = ({ open, handleClose }) => {
+	const dispatch = useDispatch();
 	const {
 		register,
 		handleSubmit,
@@ -24,7 +28,8 @@ const JoinClassByCodeModal = ({ open, handleClose }) => {
 
 	const onSubmit = async (form) => {
 		handleClose();
-		console.log('join class code: ', form.classCode);
+		await authAxios.post('/class/joinByCode', { code: form.classCode });
+		dispatch(ClassListActions.fetchRequest());
 	};
 
 	useEffect(() => {
