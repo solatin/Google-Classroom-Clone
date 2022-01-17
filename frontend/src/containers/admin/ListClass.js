@@ -29,7 +29,7 @@ export const ListClass = () => {
 		setData(
 			rs.map((user, index) => ({
 				...user,
-				id: index,
+				id: index
 			}))
 		);
 	};
@@ -45,35 +45,38 @@ export const ListClass = () => {
 	}, []);
 	return (
 		<Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-			<Table sx={{ minWidth: 600, width: 'auto' }} aria-label="caption table">
+			<Table sx={{ minWidth: 1000, width: 'auto' }} aria-label="caption table">
 				<TableHead>
 					<TableRow>
-						<TableCell>
+						<TableCell sx={{ width:' 30%'}}>
 							<Typography sx={{ fontWeight: 600 }}>Name</Typography>
 						</TableCell>
-						<TableCell>
+						<TableCell sx={{ width:' 20%'}}>
 							<Typography sx={{ fontWeight: 600 }}>Code</Typography>
 						</TableCell>
-						<TableCell>
+						<TableCell sx={{ width:' 30%'}}>
 							<Typography sx={{ fontWeight: 600 }}>Owner</Typography>
 						</TableCell>
 						<TableCell align="center">
 							<Typography sx={{ fontWeight: 600 }}>NumberOfStudent</Typography>
 						</TableCell>
+						<TableCell align="center">
+							<Typography sx={{ fontWeight: 600 }}>Actions</Typography>
+						</TableCell>
 					</TableRow>
 				</TableHead>
 				<TableBody>
-					{data?.map((user) => (
-						<TableRow key={user._id}>
+					{data?.map((e) => (
+						<TableRow key={e._id}>
 							<TableCell component="th" scope="row">
-								{user.name}
+								{e.class.name}
 							</TableCell>
-							<TableCell sx={{ textTransform: 'capitalize' }}>{user.code}</TableCell>
-							<TableCell sx={{ textTransform: 'capitalize' }}>{user?.owner}</TableCell>
-							<TableCell sx={{ textTransform: 'capitalize' }}>{user?.numberOfStudent}</TableCell>
+							<TableCell sx={{ textTransform: 'capitalize' }}>{e.class.code}</TableCell>
+							<TableCell sx={{ textTransform: 'capitalize' }}>{e.owner?.display_name}</TableCell>
+							<TableCell sx={{ textTransform: 'capitalize' }} align="center">{e.numberOfStudent}</TableCell>
 							<TableCell>
 								<Tooltip title="Details">
-									<IconButton onClick={() => seeDetails(user)}>
+									<IconButton onClick={() => seeDetails(e)}>
 										<RemoveRedEyeIcon sx={{ color: 'green' }} />
 									</IconButton>
 								</Tooltip>
@@ -90,16 +93,30 @@ export const ListClass = () => {
 				</DialogTitle>
 				<Divider />
 				<DialogContent>
-					{['name', 'name', 'owner', 'numberOfStudent'].map((field) => (
-            <Box>
-						<Box sx={{ display: 'inline-block', width: 200}}>
-							<Typography variant="h6" sx={{ textTransform: 'capitalize', mr: 2 }}>
-								{field === "numberOfStudent" ? "Number of Student" : field}
-							</Typography>
+					<Box>
+						<Box sx={{ display: 'inline-block', width: 200 }}>
+							<Typography variant="h6" sx={{ textTransform: 'capitalize', mr: 2 }}>Name</Typography>
 						</Box>
-							{classDetails && classDetails[field]}
-              </Box>
-					))}
+						{classDetails?.class?.name}
+					</Box>
+					<Box>
+						<Box sx={{ display: 'inline-block', width: 200 }}>
+							<Typography variant="h6" sx={{ textTransform: 'capitalize', mr: 2 }}>Code</Typography>
+						</Box>
+						{classDetails?.class?.code}
+					</Box>
+					<Box>
+						<Box sx={{ display: 'inline-block', width: 200 }}>
+							<Typography variant="h6" sx={{ textTransform: 'capitalize', mr: 2 }}>Owner</Typography>
+						</Box>
+						{classDetails?.owner?.display_name}
+					</Box>
+					<Box>
+						<Box sx={{ display: 'inline-block', width: 200 }}>
+							<Typography variant="h6" sx={{ textTransform: 'capitalize', mr: 2 }}>Number of student</Typography>
+						</Box>
+						{classDetails?.numberOfStudent}
+					</Box>
 				</DialogContent>
 				<DialogActions sx={{ p: 3, pt: 0 }}>
 					<Button onClick={closeSeeDetails} autoFocus variant="outlined">
