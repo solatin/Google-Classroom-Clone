@@ -22,33 +22,24 @@ import { Box } from '@mui/system';
 import { default as React, useEffect, useState } from 'react';
 import authAxios from 'src/utils/authAxios';
 
-export const ListUser = () => {
+export const ListClass = () => {
 	const [data, setData] = useState(null);
 	const fetch = async () => {
-		const rs = await authAxios.get('/admin/users');
+		const rs = await authAxios.get('/admin/classes');
 		setData(
 			rs.map((user, index) => ({
 				...user,
 				id: index,
-				actions: ''
 			}))
 		);
 	};
+	console.log(data);
 
-	const banAccount = async (id) => {
-		await authAxios.post('/admin/banAccount', { userId: id });
-		fetch();
-	};
-	const unBanAccount = async (id) => {
-		await authAxios.post('/admin/unbanAccount', { userId: id });
-		fetch();
-	};
-
-	const [userDetails, setUserDetails] = useState(null);
+	const [classDetails, setClassDetails] = useState(null);
 	const seeDetails = (user) => {
-		setUserDetails(user);
+		setClassDetails(user);
 	};
-	const closeSeeDetails = () => setUserDetails(null);
+	const closeSeeDetails = () => setClassDetails(null);
 	useEffect(() => {
 		fetch();
 	}, []);
@@ -58,16 +49,16 @@ export const ListUser = () => {
 				<TableHead>
 					<TableRow>
 						<TableCell>
-							<Typography sx={{ fontWeight: 600 }}>Email</Typography>
+							<Typography sx={{ fontWeight: 600 }}>Name</Typography>
 						</TableCell>
 						<TableCell>
-							<Typography sx={{ fontWeight: 600 }}>Role</Typography>
+							<Typography sx={{ fontWeight: 600 }}>Code</Typography>
 						</TableCell>
 						<TableCell>
-							<Typography sx={{ fontWeight: 600 }}>Actions</Typography>
+							<Typography sx={{ fontWeight: 600 }}>Owner</Typography>
 						</TableCell>
 						<TableCell align="center">
-							<Typography sx={{ fontWeight: 600 }}>Ban/UnBan</Typography>
+							<Typography sx={{ fontWeight: 600 }}>NumberOfStudent</Typography>
 						</TableCell>
 					</TableRow>
 				</TableHead>
@@ -75,9 +66,11 @@ export const ListUser = () => {
 					{data?.map((user) => (
 						<TableRow key={user._id}>
 							<TableCell component="th" scope="row">
-								{user.email}
+								{user.name}
 							</TableCell>
-							<TableCell sx={{ textTransform: 'capitalize' }}>{user.role}</TableCell>
+							<TableCell sx={{ textTransform: 'capitalize' }}>{user.code}</TableCell>
+							<TableCell sx={{ textTransform: 'capitalize' }}>{user?.owner}</TableCell>
+							<TableCell sx={{ textTransform: 'capitalize' }}>{user?.numberOfStudent}</TableCell>
 							<TableCell>
 								<Tooltip title="Details">
 									<IconButton onClick={() => seeDetails(user)}>
@@ -85,41 +78,26 @@ export const ListUser = () => {
 									</IconButton>
 								</Tooltip>
 							</TableCell>
-							<TableCell align="center">
-								{user.status === 'banned' ? (
-									<Tooltip title="Unban">
-										<IconButton onClick={() => unBanAccount(user._id)}>
-											<NotInterestedIcon sx={{ color: 'green' }} />
-										</IconButton>
-									</Tooltip>
-								) : (
-									<Tooltip title="Ban">
-										<IconButton onClick={() => banAccount(user._id)}>
-											<NotInterestedIcon sx={{ color: 'red' }} />
-										</IconButton>
-									</Tooltip>
-								)}
-							</TableCell>
 						</TableRow>
 					))}
 				</TableBody>
 			</Table>
-			<Dialog open={!!userDetails} onClose={closeSeeDetails} fullWidth maxWidth="sm">
+			<Dialog open={!!classDetails} onClose={closeSeeDetails} fullWidth maxWidth="sm">
 				<DialogTitle id="alert-dialog-title">
 					<Typography variant="h5" textAlign="center">
-						User detail
+						Class detail
 					</Typography>
 				</DialogTitle>
 				<Divider />
 				<DialogContent>
-					{['email', 'display_name', 'role'].map((field) => (
+					{['name', 'name', 'owner', 'numberOfStudent'].map((field) => (
             <Box>
 						<Box sx={{ display: 'inline-block', width: 200}}>
 							<Typography variant="h6" sx={{ textTransform: 'capitalize', mr: 2 }}>
-								{field === "display_name" ? "Display Name" : field}
+								{field === "numberOfStudent" ? "Number of Student" : field}
 							</Typography>
 						</Box>
-							{userDetails && userDetails[field]}
+							{classDetails && classDetails[field]}
               </Box>
 					))}
 				</DialogContent>
