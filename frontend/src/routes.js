@@ -17,6 +17,7 @@ import AdminMainLayout from 'src/components/AdminLayout/MainLayout';
 import { ListAdmin } from 'src/containers/admin/ListAdmin';
 import { ListUser } from './containers/admin/ListUser';
 import { ListClass } from './containers/admin/ListClass';
+import ListAssignments from './pages/TeacherReview/ListAssignment';
 
 const routes = [
 	{
@@ -59,7 +60,7 @@ const routes = [
 			},
 			{
 				path: '/gradeReviews',
-				element: <>Review</>
+				element: <ListAssignments />
 			}
 		]
 	},

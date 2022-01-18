@@ -16,7 +16,6 @@ const ClassAssignments = () => {
 	const [openCreateReviewModal, setOpenCreateReviewModal] = useState(false);
 	const [openCreateCommentModal, setOpenCreateCommentModal] = useState(false);
 	const [currentAssignment, setCurrentAssignment] = useState(null);
-	const [currentComment, setCurrentComment] = useState(null);
 	const user = useAuth();
 
 
@@ -24,11 +23,9 @@ const ClassAssignments = () => {
 		if (item.review) {
 			setCurrentAssignment(item);
 			setOpenCreateCommentModal(true);
-			console.log('open review');
 		} else {
 			setCurrentAssignment(item);
 			setOpenCreateReviewModal(true);
-			console.log('create new review');
 		}
 	}
 	useEffect(() => {
@@ -63,7 +60,7 @@ const ClassAssignments = () => {
 								className={styles.listItem}
 								{...(item.gradeStructure.finalized === 'finalized'
 									? {
-										secondaryAction: (
+										secondaryAction:   item.review?.status === 'solved' ? 'Final' : (
 											<IconButton edge="end" aria-label="delete" onClick={() => onReviewClick(item)}>
 												<RateReviewIcon />
 											</IconButton>

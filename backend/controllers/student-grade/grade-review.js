@@ -164,7 +164,16 @@ router.get('/all/', auth, async (req, res) => {
     for (let index = 0; index < gradeStructure.length; index++) {
       const element = gradeStructure[index];
       const listReview = await GradeReview.find({ grade_structure_id: element._id });
-      listResult.push({ gradeStructure: element, listReview: listReview });
+      const listReviewWithGrade = [];
+      for (let j = 0; j < listReview.length; j++) {
+        const review = listReview[j];
+        const currentGrade = await ClassStudentGrade.findOne({ student_class_id: review.student_class_id, grade_structure_id: review.grade_structure_id });
+        if (currentGrade)
+          listReviewWithGrade.push({ review: review, grade: currentGrade.student_grade });
+        else
+          listReviewWithGrade.push({ review: review });
+      }
+      listResult.push({ gradeStructure: element, listReview: listReviewWithGrade });
     }
     res.status(200).json(listResult);
   } catch (error) {
@@ -273,7 +282,7 @@ router.get('/detail', auth, async (req, res) => {
       student_expect_grade: review.student_grade,
       grade_structure_id: review.grade_structure_id,
       comment: review.comment,
-      current_grade: currentGrade.student_grade,
+      current_grade: currentGrade?.student_grade,
     });
   } catch (error) {
     console.log(error);
