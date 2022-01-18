@@ -77,6 +77,12 @@ export const Login = () => {
 							Register
 						</Link>
 					</Box>
+					<Box sx={{ mt: 2 }}>
+						Do you forgot your password?
+					</Box>
+					<Link to="/forgotPassword" style={{ marginLeft: '5px' }}>
+						Forgot Password
+					</Link>
 				</Box>
 			</Box>
 		</>

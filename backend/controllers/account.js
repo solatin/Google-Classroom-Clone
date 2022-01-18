@@ -115,6 +115,61 @@ router.get('/activate', async (req, res) => {
   }
 })
 
+router.post('/forgotPassword', async (req, res) => {
+  try {
+    const email = req.body.email;
+    const account = await Account.findOne({ email: email });
+    if (account === null) {
+      return res.status(401).send({
+        message: "You haven't register with this email yet."
+      });
+    }
+    console.log(account);
+    var mailOptions = {
+      from: 'test.22.11.2021@gmail.com',
+      to: req.body.email,
+      subject: 'Reset Password',
+      text:
+        'Please go to this link to reset your password: http://localhost:3000/resetPassword/' +
+        account._id
+    };
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent Success');
+      }
+    });
+    res.end();
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      message: "Process failed."
+    })
+  }
+})
+
+router.post('/resetPassword', async (req, res) => {
+  try {
+    const id = req.body.id;
+    const newPassword = req.body.newPassword;
+    const account = await Account.findById(id);
+    if (account === null) {
+      return res.status(401).send({
+        message: "You haven't register with this email yet."
+      });
+    }
+    account.password = newPassword;
+    await account.save();
+    res.end();
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      message: "Reset password failed."
+    })
+  }
+})
+
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
