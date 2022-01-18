@@ -6,6 +6,7 @@ import validator from 'validator'
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import { makeStyles } from '@mui/styles';
 import { useNotify } from 'src/hooks/useNotify';
+import SearchIcon from '@mui/icons-material/Search';
 import {
   Button,
   Dialog,
@@ -45,6 +46,7 @@ export const ListAdmin = () => {
   const [name, setName] = useState('');
   const classes = useStyles();
   const [emailError, setEmailError] = useState('');
+  const [dataShow, setDataShow] = useState(null);
   const validateEmail = (e) => {
     setEmail(e);
     if (validator.isEmail(e)) {
@@ -85,6 +87,12 @@ export const ListAdmin = () => {
         actions: ''
       }))
     );
+    setDataShow(
+      rs.map((user, index) => ({
+        ...user,
+        id: index,
+        actions: ''
+      })));
   };
 
   const createAccount = async () => {
@@ -107,8 +115,26 @@ export const ListAdmin = () => {
     setUserDetails(user);
   };
 
+  const searchData = (textSearch) => {
+    const filteredData = data.filter((account) => {
+      return account.display_name.toLowerCase().includes(textSearch.toLowerCase());
+    });
+    setDataShow(filteredData);
+  }
+
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', flexDirection: 'column' }}>
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', flexDirection: 'column', marginTop: 5 }}>
+      <TextField
+        id="outlined-basic"
+        label="Search"
+        variant="outlined"
+        sx={{ minWidth: 600, width: 'auto' }}
+        onChange={(e) => searchData(e.target.value)}
+        InputProps={{
+          startAdornment: (
+            <SearchIcon />
+          ),
+        }} />
       <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', }}>
         <Table sx={{ minWidth: 600, width: 'auto' }} aria-label="caption table">
           <TableHead>
@@ -128,7 +154,7 @@ export const ListAdmin = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data?.map((user, index) => <TableRow key={user._id}>
+            {dataShow?.map((user, index) => <TableRow key={user._id}>
               <TableCell component="th" scope="row">
                 {user.email}
               </TableCell>
