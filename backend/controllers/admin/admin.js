@@ -27,7 +27,8 @@ router.get('/classes', auth, async (req, res) => {
 			});
 			return;
 		}
-		const listClass = await Class.find();
+		const textSearch = req.query.textSearch;
+		const listClass = textSearch === undefined ? await Class.find() : await Class.find({ name: { $regex: textSearch, $options: "i" } });
 		const listResult = [];
 		for (let index = 0; index < listClass.length; index++) {
 			const element = listClass[index];
@@ -53,7 +54,8 @@ router.get('/users', auth, async (req, res) => {
 			});
 			return;
 		}
-		const listUser = await Account.find({ role: { $ne: 'admin' } });
+		const textSearch = req.query.textSearch;
+		const listUser = textSearch === undefined ? await Account.find({ role: { $ne: 'admin' } }) : await Account.find({ role: { $ne: 'admin' }, display_name: { $regex: textSearch, $options: "i" } });
 		res.status(200).json(listUser);
 	} catch (error) {
 		console.log(error);
@@ -154,8 +156,14 @@ router.get('/getListAdminAccount', auth, async (req, res) => {
 			});
 			return;
 		}
-		const listAdmin = await Account.find({ role: 'admin' });
-		res.status(200).json(listAdmin);
+		const textSearch = req.query.textSearch;
+		if (textSearch) {
+			const listAdmin = await Account.find({ role: 'admin', display_name: { $regex: textSearch, $options: "i" } });
+			res.status(200).json(listAdmin);
+		} else {
+			const listAdmin = await Account.find({ role: 'admin' });
+			res.status(200).json(listAdmin);
+		}
 	} catch (error) {
 		console.log(error);
 		res.status(400).send({
