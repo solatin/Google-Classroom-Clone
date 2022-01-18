@@ -26,33 +26,41 @@ router.post('/feed', auth, async (req, res) => {
 });
 
 router.post('/members', auth, async (req, res) => {
-	const account = res.locals.account;
-	const classroom = await Class.findById(req.body.classId);
-	const listStudent = await ClassStudent.find({ code: classroom.code });
-	const listStudentId = [];
-	for (let index = 0; index < listStudent.length; index++) {
-		const element = listStudent[index];
-		listStudentId.push(mongoose.Types.ObjectId(element.student_id));
-	}
-	const listStudentInfo = await Account.find({ _id: { $in: listStudentId } });
-	const listStudentRes = [];
-	for (let index = 0; index < listStudent.length; index++) {
-		const element = listStudent[index];
-		listStudentRes.push({
-			student_class_id: element.student_class_id,
-			display_name: listStudentInfo[index].display_name,
-			can_change: account.id === element.student_id
-		});
-	}
-	const listTeacher = await ClassTeacher.find({ code: classroom.code });
-	const listTeacherId = [];
-	for (let index = 0; index < listTeacher.length; index++) {
-		const element = listTeacher[index];
-		listTeacherId.push(mongoose.Types.ObjectId(element.teacher_id));
-	}
-	const listTeacherRes = await Account.find({ _id: { $in: listTeacherId } });
+	try {
+		const account = res.locals.account;
+		const classroom = await Class.findById(req.body.classId);
+		const listStudent = await ClassStudent.find({ code: classroom.code });
+		const listStudentId = [];
+		for (let index = 0; index < listStudent.length; index++) {
+			const element = listStudent[index];
+			listStudentId.push(mongoose.Types.ObjectId(element.student_id));
+		}
+		const listStudentInfo = await Account.find({ _id: { $in: listStudentId } });
+		const listStudentRes = [];
+		for (let index = 0; index < listStudent.length; index++) {
+			const element = listStudent[index];
+			listStudentRes.push({
+				student_class_id: element.student_class_id,
+				display_name: listStudentInfo[index].display_name,
+				account_id: account.role === 'admin' ? listStudentInfo[index]._id : '',
+				can_change: account.role === 'admin' ? true : account.id === element.student_id
+			});
+		}
+		const listTeacher = await ClassTeacher.find({ code: classroom.code });
+		const listTeacherId = [];
+		for (let index = 0; index < listTeacher.length; index++) {
+			const element = listTeacher[index];
+			listTeacherId.push(mongoose.Types.ObjectId(element.teacher_id));
+		}
+		const listTeacherRes = await Account.find({ _id: { $in: listTeacherId } });
 
-	res.json({ listTeacher: listTeacherRes, listStudent: listStudentRes });
+		res.json({ listTeacher: listTeacherRes, listStudent: listStudentRes });
+	} catch (error) {
+		console.log(error);
+		res.status(400).send({
+			message: 'Get member failed'
+		})
+	}
 });
 
 module.exports = router

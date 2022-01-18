@@ -18,6 +18,9 @@ import { ListAdmin } from 'src/containers/admin/ListAdmin';
 import { ListUser } from './containers/admin/ListUser';
 import { ListClass } from './containers/admin/ListClass';
 import ListAssignments from './pages/TeacherReview/ListAssignment';
+import ActivateAccount from './components/ActivateAccount/ActivateAccount';
+import { ForgotPassword } from './pages/ForgotPassword';
+import { ResetPassword } from './pages/ResetPassword';
 
 const routes = [
 	{
@@ -72,13 +75,16 @@ const routes = [
 		children: [
 			{ path: 'login', element: <Login /> },
 			{ path: 'register', element: <Register /> },
+			{ path: 'forgotPassword', element: <ForgotPassword /> },
+			{ path: '/resetPassword/:id', element: <ResetPassword /> },
 			{ path: '404', element: <div>not found</div> },
 			{ path: '/', element: <Navigate to="/classes" /> },
 			{ path: '*', element: <Navigate to="/404" replace /> }
 		]
 	},
 
-	{ path: '/acceptInvite/:id', element: <AcceptInvitation /> }
+	{ path: '/acceptInvite/:id', element: <AcceptInvitation /> },
+	{ path: '/activateAccount/:id', element: <ActivateAccount /> }
 ];
 
 const adminRoutes = [

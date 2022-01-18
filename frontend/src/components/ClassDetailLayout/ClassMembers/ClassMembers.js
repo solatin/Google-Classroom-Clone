@@ -11,6 +11,8 @@ import { Grid } from '@mui/material';
 import FormInviteModal from 'src/containers/FormInviteModal';
 import { useState } from 'react';
 
+import { useNotify } from 'src/hooks/useNotify';
+
 const ColoredLine = ({ color }) => (
     <hr
         style={{
@@ -22,23 +24,27 @@ const ColoredLine = ({ color }) => (
     />
 );
 
-const ClassMembers = () => {
+const ClassMembers = ({ classId }) => {
     const [openTeacherForm, setOpenTeacherForm] = useState(false);
     const [openStudentForm, setOpenStudentForm] = useState(false);
     const [classTeacherData, setClassTeacherData] = React.useState([]);
     const [classStudentData, setClassStudentData] = React.useState([]);
-    const { id } = useParams();
+    const { error, success } = useNotify();
+    var { id } = useParams();
+    id = classId !== undefined ? classId : id;
 
     const fetch = async () => {
-        const classID = { 'classId': id };
-        const rs = await authAxios.post(`/class-details/members`, classID);
-        console.log(rs.listStudent)
-        setClassTeacherData(rs.listTeacher);
-        setClassStudentData(rs.listStudent);
+        try {
+            const classID = { 'classId': id };
+            console.log(classID);
+            const rs = await authAxios.post(`/class-details/members`, classID);
+            console.log(rs.listStudent)
+            setClassTeacherData(rs.listTeacher);
+            setClassStudentData(rs.listStudent);
+        } catch (e) {
+            error('Get list member failed.');
+        }
     }
-
-
-
     React.useEffect(() => {
         fetch();
     }, []);
@@ -70,7 +76,7 @@ const ClassMembers = () => {
 
                 <ColoredLine color="#1967d2" />
             </Grid>
-            {classStudentData.map((item) => (<Students name={item.display_name} classId={id} studentClassId={item.student_class_id} canChange={item.can_change} />))}
+            {classStudentData.map((item) => (<Students name={item.display_name} classId={id} studentClassId={item.student_class_id} canChange={item.can_change} accountId={item.account_id} />))}
             <FormInviteModal open={openTeacherForm} handleCloseForm={() => setOpenTeacherForm(false)} teacher={true} classId={id} />
             <FormInviteModal open={openStudentForm} handleCloseForm={() => setOpenStudentForm(false)} teacher={false} classId={id} />
         </div >

@@ -29,7 +29,7 @@ router.post('/ChangeStudentClassID', auth, async (req, res) => {
 	const account = res.locals.account;
 	const classroom = await Class.findById(req.body.classId);
 	const rs = await ClassStudent.findOneAndUpdate(
-		{ code: classroom.code, student_id: account.id },
+		{ code: classroom.code, student_id: account.role === 'admin' ? req.body.accountId : account.id },
 		{ student_class_id: req.body.studentClassID }
 	);
 	res.end();
