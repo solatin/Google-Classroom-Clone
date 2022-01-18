@@ -18,6 +18,7 @@ import { ListAdmin } from 'src/containers/admin/ListAdmin';
 import { ListUser } from './containers/admin/ListUser';
 import { ListClass } from './containers/admin/ListClass';
 import ListAssignments from './pages/TeacherReview/ListAssignment';
+import ActivateAccount from './components/ActivateAccount/ActivateAccount';
 
 const routes = [
 	{
@@ -78,7 +79,8 @@ const routes = [
 		]
 	},
 
-	{ path: '/acceptInvite/:id', element: <AcceptInvitation /> }
+	{ path: '/acceptInvite/:id', element: <AcceptInvitation /> },
+	{ path: '/activateAccount/:id', element: <ActivateAccount /> }
 ];
 
 const adminRoutes = [
