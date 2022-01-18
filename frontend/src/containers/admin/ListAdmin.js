@@ -1,51 +1,246 @@
 import * as React from 'react';
-import { DataGrid } from '@mui/x-data-grid';
+import authAxios from 'src/utils/authAxios';
+import { useEffect, useState } from 'react';
+import { Box } from '@mui/system';
+import validator from 'validator'
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import { makeStyles } from '@mui/styles';
+import { useNotify } from 'src/hooks/useNotify';
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TextField,
+  Tooltip,
+  Typography
+} from '@mui/material';
 
-const columns = [
-  { field: 'id', headerName: 'ID', width: 70 },
-  { field: 'firstName', headerName: 'First name', width: 130 },
-  { field: 'lastName', headerName: 'Last name', width: 130 },
-  {
-    field: 'age',
-    headerName: 'Age',
-    type: 'number',
-    width: 90,
-  },
-  {
-    field: 'fullName',
-    headerName: 'Full name',
-    description: 'This column has a value getter and is not sortable.',
-    sortable: false,
-    width: 160,
-    valueGetter: (params) =>
-      `${params.getValue(params.id, 'firstName') || ''} ${
-        params.getValue(params.id, 'lastName') || ''
-      }`,
-  },
-];
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-const rows = [
-  { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
-  { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
-  { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
-  { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
-  { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-  { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-  { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-  { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-  { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-];
+const useStyles = makeStyles(() => ({
+  noBorder: {
+    border: "none",
+  },
+}));
 
 export const ListAdmin = () => {
+  const [data, setData] = useState(null);
+  const { error, success } = useNotify();
+  const [userDetails, setUserDetails] = useState(null);
+  const closeSeeDetails = () => setUserDetails(null);
+  const [showPassword, setShowPassword] = useState(null);
+  const [openCreateDialog, setOpenCreateDialog] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const classes = useStyles();
+  const [emailError, setEmailError] = useState('');
+  const validateEmail = (e) => {
+    setEmail(e);
+    if (validator.isEmail(e)) {
+      setEmailError('')
+    } else {
+      setEmailError('Please enter valid email.')
+    }
+  }
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
+
+  const closeCreateDialog = () => {
+    setOpenCreateDialog(false);
+  };
+  const handleOpenCreateDialog = () => {
+    setEmail('');
+    setPassword('');
+    setName('');
+    setOpenCreateDialog(true)
+  };
+
+  const handleClickShowPassword = (index) => {
+    setShowPassword(showPassword.map((value, i) => i === index ? !value : value));
+  };
+
+  const fetch = async () => {
+    const rs = await authAxios.get('/admin/getListAdminAccount');
+
+    setShowPassword(
+      rs.map(user => false)
+    );
+    setData(
+      rs.map((user, index) => ({
+        ...user,
+        id: index,
+        actions: ''
+      }))
+    );
+  };
+
+  const createAccount = async () => {
+    closeCreateDialog();
+    const account = { 'email': email, 'password': password, display_name: name }
+    try {
+      await authAxios.post('/admin/createAccount', account);
+      await fetch();
+      success('Create account success.');
+    } catch (e) {
+      console.log(e);
+      error(e.message ? e.message : 'Create account fail.')
+    }
+  }
+
+  useEffect(() => {
+    fetch();
+  }, []);
+  const seeDetails = (user) => {
+    setUserDetails(user);
+  };
+
   return (
-    <div style={{ height: 400, width: '100%' }}>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
-        checkboxSelection
-      />
-    </div>
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', flexDirection: 'column' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', }}>
+        <Table sx={{ minWidth: 600, width: 'auto' }} aria-label="caption table">
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                <Typography sx={{ fontWeight: 600 }}>Email</Typography>
+              </TableCell>
+              <TableCell>
+                <Typography sx={{ fontWeight: 600 }}>Password</Typography>
+              </TableCell>
+              <TableCell>
+                <Typography sx={{ fontWeight: 600 }}>Name</Typography>
+              </TableCell>
+              <TableCell>
+                <Typography sx={{ fontWeight: 600 }}>Actions</Typography>
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data?.map((user, index) => <TableRow key={user._id}>
+              <TableCell component="th" scope="row">
+                {user.email}
+              </TableCell>
+              <TableCell sx={{ textTransform: 'capitalize' }}>
+                <TextField value={user.password}
+                  type={showPassword[index] ? 'text' : 'password'}
+                  InputProps={{
+                    readOnly: true,
+                    classes: { notchedOutline: classes.noBorder }
+                  }}
+                  style={{ width: 100 }}
+                />
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={() =>
+                    handleClickShowPassword(index)
+                  }
+                  style={{ marginTop: 8 }}
+                  onMouseDown={handleMouseDownPassword}
+                >
+                  {showPassword[index] ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </TableCell>
+              <TableCell sx={{ textTransform: 'capitalize' }}>{user.display_name}</TableCell>
+              <TableCell>
+                <Tooltip title="Details">
+                  <IconButton onClick={() => seeDetails(user)}>
+                    <RemoveRedEyeIcon sx={{ color: 'green' }} />
+                  </IconButton>
+                </Tooltip>
+              </TableCell>
+            </TableRow>
+            )}
+          </TableBody>
+        </Table>
+        <Dialog open={!!userDetails} onClose={closeSeeDetails} fullWidth maxWidth="sm">
+          <DialogTitle id="alert-dialog-title">
+            <Typography variant="h5" textAlign="center">
+              User detail
+            </Typography>
+          </DialogTitle>
+          <Divider />
+          <DialogContent>
+            {['email', 'display_name', 'role'].map((field) => (
+              <Box>
+                <Box sx={{ display: 'inline-block', width: 200 }}>
+                  <Typography variant="h6" sx={{ textTransform: 'capitalize', mr: 2 }}>
+                    {field === "display_name" ? "Display Name" : field}
+                  </Typography>
+                </Box>
+                {userDetails && userDetails[field]}
+              </Box>
+            ))}
+          </DialogContent>
+          <DialogActions sx={{ p: 3, pt: 0 }}>
+            <Button onClick={closeSeeDetails} autoFocus variant="outlined">
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog open={openCreateDialog} onClose={closeCreateDialog} fullWidth maxWidth="sm">
+          <div className="form">
+            <DialogTitle id="alert-dialog-title">
+              <Typography variant="h5" textAlign="center">
+                Create Admin Account
+              </Typography>
+            </DialogTitle>
+            <div className="form__inputs">
+              <TextField id="filled-basic"
+                label='Email (required)'
+                className="form__input"
+                variant="filled"
+                type="email"
+                value={email}
+                onChange={(e) => validateEmail(e.target.value)}
+              >
+              </TextField>
+            </div>
+            <div className="form__inputs">
+              <TextField id="filled-basic"
+                label='Password'
+                className="form__input"
+                variant="filled"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              >
+              </TextField>
+            </div>
+            <div className="form__inputs">
+              <TextField id="filled-basic"
+                label='Name'
+                className="form__input"
+                variant="filled"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              >
+              </TextField>
+            </div>
+
+            <Typography variant="subtitle1" style={{ color: "red", marginLeft: 15 }}>
+              {emailError}
+            </Typography>
+            <DialogActions>
+              <Button onClick={closeCreateDialog}>Hủy</Button>
+              <Button color='primary' disabled={email.length === 0} onClick={createAccount}>Tạo</Button>
+            </DialogActions>
+          </div>
+        </Dialog>
+      </Box>
+      <Button variant="contained" style={{ width: 200, marginTop: 10 }} onClick={handleOpenCreateDialog}>Create Account</Button>
+    </Box>
   );
 }
