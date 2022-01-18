@@ -10,7 +10,7 @@
 
   - Start the server: `npm start`
 
-  - BE Server listening on: `localhost:8000`
+  - BE Server listening on: `localhost:8080`
 
 - Move path to frontend folder:
 

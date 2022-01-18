@@ -109,11 +109,11 @@ const ListAssignments = () => {
 							{!data.listAssign[currentAssginIdx].listReview.length && <Typography>No reviews</Typography>}
 							<List>
 								{currentAssginIdx !== -1 &&
-									data.listAssign[currentAssginIdx].listReview.map((review) => (
+									data.listAssign[currentAssginIdx].listReview.map(({grade, review}) => (
 										<ListItem
 											className={styles.listItem}
 											secondaryAction={
-												review.status === 'unsolved' ? (
+												review?.status === 'unsolved' ? (
 													<IconButton edge="end" aria-label="delete" onClick={() => onReviewClick(review)}>
 														<EditIcon />
 													</IconButton>
@@ -127,7 +127,7 @@ const ListAssignments = () => {
 												sx={{ minWidth: '440px', maxWidth: '440px' }}
 											/>
 											<Typography sx={{ flex: '1 1 auto' }} variant="subtitle2">
-												{review.comment.length} comment(s)
+												{review?.comment?.length} comment(s)
 											</Typography>
 										</ListItem>
 									))}
