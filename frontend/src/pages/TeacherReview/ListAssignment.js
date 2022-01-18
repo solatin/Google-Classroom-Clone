@@ -109,7 +109,7 @@ const ListAssignments = () => {
 							{!data.listAssign[currentAssginIdx].listReview.length && <Typography>No reviews</Typography>}
 							<List>
 								{currentAssginIdx !== -1 &&
-									data.listAssign[currentAssginIdx].listReview.map((review) => (
+									data.listAssign[currentAssginIdx].listReview.map(({grade, review}) => (
 										<ListItem
 											className={styles.listItem}
 											secondaryAction={

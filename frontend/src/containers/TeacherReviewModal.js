@@ -49,7 +49,7 @@ export const TeacherReviewModal = ({ open, handleClose, assignmentName, id, refe
 		>
 			<DialogTitle id="alert-dialog-title">
 				<Typography variant="h5" textAlign="center">
-					Request review of {review?.comment[0].user.display_name}
+					Request review of {review?.comment[0]?.user?.display_name}
 				</Typography>
 			</DialogTitle>
 			<Divider />
