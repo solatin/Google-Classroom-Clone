@@ -1,7 +1,7 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormHelperText, TextField, Typography } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import * as ClassListActions from 'src/actions/classList';
 
 export const CreateClassModal = ({ open, handleClose }) => {
