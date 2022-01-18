@@ -122,7 +122,13 @@ router.post('/createAccount', auth, async (req, res) => {
 			return;
 		}
 		const jwtRefreshToken = await generateToken({}, REFRESH_SECRET_KEY, REFRESH_EXP);
-		const newAccount = new Account({ email: req.body.email, password: req.body.password, refresh_token: jwtRefreshToken, role: 'admin' });
+		const newAccount = new Account({
+			email: req.body.email,
+			password: req.body.password,
+			refresh_token: jwtRefreshToken,
+			role: 'admin',
+			display_name: req.body.display_name
+		});
 		const { _id, role } = await newAccount.save();
 		const jwtPayload = { id: _id.toString(), role };
 		const jwtAccessToken = await generateToken(jwtPayload, ACCESS_SECRET_KEY, ACCESS_EXP);
@@ -139,7 +145,7 @@ router.post('/createAccount', auth, async (req, res) => {
 	}
 })
 
-router.get('/getListAdminAccount', async (req, res) => {
+router.get('/getListAdminAccount', auth, async (req, res) => {
 	try {
 		const account = res.locals.account;
 		if (account.role === 'student' || account.role === 'teacher') {
