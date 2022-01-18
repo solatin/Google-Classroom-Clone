@@ -7,6 +7,7 @@ import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import { makeStyles } from '@mui/styles';
 import { useNotify } from 'src/hooks/useNotify';
 import SearchIcon from '@mui/icons-material/Search';
+import ReactLoading from 'react-loading';
 import {
   Button,
   Dialog,
@@ -47,6 +48,7 @@ export const ListAdmin = () => {
   const classes = useStyles();
   const [emailError, setEmailError] = useState('');
   const [dataShow, setDataShow] = useState(null);
+  const [loading, setLoading] = useState(false);
   const validateEmail = (e) => {
     setEmail(e);
     if (validator.isEmail(e)) {
@@ -75,6 +77,7 @@ export const ListAdmin = () => {
   };
 
   const fetch = async () => {
+    setLoading(true);
     const rs = await authAxios.get('/admin/getListAdminAccount');
 
     setShowPassword(
@@ -93,6 +96,7 @@ export const ListAdmin = () => {
         id: index,
         actions: ''
       })));
+    setLoading(false);
   };
 
   const createAccount = async () => {
@@ -135,7 +139,8 @@ export const ListAdmin = () => {
             <SearchIcon />
           ),
         }} />
-      <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', }}>
+      {loading && <ReactLoading type="spinningBubbles" color='#b6d7a8' height={100} width={100} />}
+      {!loading && <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', }}>
         <Table sx={{ minWidth: 600, width: 'auto' }} aria-label="caption table">
           <TableHead>
             <TableRow>
@@ -265,7 +270,7 @@ export const ListAdmin = () => {
             </DialogActions>
           </div>
         </Dialog>
-      </Box>
+      </Box>}
       <Button variant="contained" style={{ width: 200, marginTop: 10 }} onClick={handleOpenCreateDialog}>Create Account</Button>
     </Box>
   );
