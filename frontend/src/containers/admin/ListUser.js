@@ -21,11 +21,14 @@ import { Box } from '@mui/system';
 import { default as React, useEffect, useState } from 'react';
 import authAxios from 'src/utils/authAxios';
 import SearchIcon from '@mui/icons-material/Search';
+import ReactLoading from 'react-loading';
 
 export const ListUser = () => {
 	const [data, setData] = useState(null);
 	const [dataShow, setDataShow] = useState(null);
+	const [loading, setLoading] = useState(false);
 	const fetch = async () => {
+		setLoading(true);
 		const rs = await authAxios.get('/admin/users');
 		setData(
 			rs.map((user, index) => ({
@@ -41,6 +44,7 @@ export const ListUser = () => {
 				actions: ''
 			}))
 		);
+		setLoading(false);
 	};
 
 	const banAccount = async (id) => {
@@ -79,7 +83,8 @@ export const ListUser = () => {
 						<SearchIcon />
 					),
 				}} />
-			<Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+			{loading && <ReactLoading type="spinningBubbles" color='#b6d7a8' height={100} width={100} />}
+			{!loading && <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
 				<Table sx={{ minWidth: 800, width: 'auto' }} aria-label="caption table">
 					<TableHead>
 						<TableRow>
@@ -159,7 +164,7 @@ export const ListUser = () => {
 						</Button>
 					</DialogActions>
 				</Dialog>
-			</Box>
+			</Box>}
 		</Box>
 	);
 };

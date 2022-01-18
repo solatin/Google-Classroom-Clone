@@ -12,6 +12,16 @@ const Account = require('../models/account.js');
 const { OAuth2Client } = require('google-auth-library')
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
+var nodemailer = require('nodemailer');
+
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'test.22.11.2021@gmail.com',
+    pass: '18CNTNWNC'
+  }
+});
+
 router.post("/google", async (req, res) => {
   const { token } = req.body;
   try {
@@ -63,16 +73,47 @@ router.post('/register', async (req, res) => {
   }
 
   const jwtRefreshToken = await generateToken({}, REFRESH_SECRET_KEY, REFRESH_EXP);
-  const newAccount = new Account({ ...req.body, refresh_token: jwtRefreshToken });
+  const newAccount = new Account({ ...req.body, refresh_token: jwtRefreshToken, status: 'Unactivated' });
   const { _id, role } = await newAccount.save();
   const jwtPayload = { id: _id.toString(), role };
   const jwtAccessToken = await generateToken(jwtPayload, ACCESS_SECRET_KEY, ACCESS_EXP);
+
+  var mailOptions = {
+    from: 'test.22.11.2021@gmail.com',
+    to: req.body.email,
+    subject: 'Account Activation',
+    text:
+      'Please go to this link to activate your account: http://localhost:3000/activateAccount/' +
+      _id
+  };
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent Success');
+    }
+  });
   return res.status(201).json({
     message: 'Register account successfully',
     jwtAccessToken,
     jwtRefreshToken
   });
 });
+
+router.get('/activate', async (req, res) => {
+  try {
+    const accountId = req.query.id;
+    const account = await Account.findById(accountId);
+    account.status = 'Activated';
+    await account.save();
+    res.end();
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      message: "Activate failed"
+    });
+  }
+})
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
@@ -87,6 +128,12 @@ router.post('/login', async (req, res) => {
   if (account.status === 'banned') {
     return res.status(402).send({
       message: 'Your account has been banned.'
+    });
+  }
+
+  if (account.status === 'Unactivated') {
+    return res.status(403).send({
+      message: "Your account hasn't been activated."
     });
   }
 
