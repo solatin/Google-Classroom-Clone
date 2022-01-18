@@ -21,6 +21,7 @@ import { Box } from '@mui/system';
 import { default as React, useEffect, useState } from 'react';
 import authAxios from 'src/utils/authAxios';
 import SearchIcon from '@mui/icons-material/Search';
+import ClassMembers from 'src/components/ClassDetailLayout/ClassMembers/ClassMembers';
 
 export const ListClass = () => {
 	const [data, setData] = useState(null);
@@ -43,7 +44,6 @@ export const ListClass = () => {
 		);
 		setLoading(false);
 	};
-	console.log(data);
 
 	const [classDetails, setClassDetails] = useState(null);
 	const seeDetails = (user) => {
@@ -146,6 +146,9 @@ export const ListClass = () => {
 									<Typography variant="h6" sx={{ textTransform: 'capitalize', mr: 2 }}>Number of student</Typography>
 								</Box>
 								{classDetails?.numberOfStudent}
+							</Box>
+							<Box>
+								<ClassMembers classId={classDetails?.class?._id} />
 							</Box>
 						</DialogContent>
 						<DialogActions sx={{ p: 3, pt: 0 }}>

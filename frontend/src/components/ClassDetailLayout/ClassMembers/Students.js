@@ -3,11 +3,19 @@ import { TextField, Button } from '@mui/material';
 import "./Members.css"
 import authAxios from "src/utils/authAxios";
 
-const Students = ({ name, classId, studentClassId, canChange }) => {
+import { useNotify } from 'src/hooks/useNotify';
+
+const Students = ({ name, classId, studentClassId, canChange, accountId }) => {
     const [studentClassID, setStudentClassID] = useState(studentClassId);
+    const { error, success } = useNotify();
     const submitField = async () => {
-        const infoChange = { 'classId': classId, 'studentClassID': studentClassID };
-        await authAxios.post(`/studentClass/ChangeStudentClassID`, infoChange);
+        try {
+            const infoChange = { 'classId': classId, 'studentClassID': studentClassID, 'accountId': accountId };
+            await authAxios.post(`/studentClass/ChangeStudentClassID`, infoChange);
+            success('Change ID success');
+        } catch (e) {
+            error('Change ID failed');
+        }
     }
     return (
         <div className='student'>
