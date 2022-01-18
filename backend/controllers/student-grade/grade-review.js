@@ -263,6 +263,9 @@ router.get('/markAsDone', auth, async (req, res) => {
     const review = await GradeReview.findById(req.query.id);
     review.status = 'solved';
     await review.save();
+    const student = review.comment[0].user;
+    const noti = new Notification({ user_id: student._id, content: 'Your teacher has finalled your review.', status: 'unread' });
+    await noti.save();
     res.end();
   } catch (error) {
     console.log(error);

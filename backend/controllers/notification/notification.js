@@ -16,6 +16,7 @@ router.get('/', auth, async (req, res) => {
 	try {
 		const account = res.locals.account;
 		const listNotification = await Notification.find({ user_id: account.id });
+		await Notification.updateMany({ user_id: account.id }, { "$set": { status: 'read' } });
 		res.status(200).json(listNotification);
 	} catch (error) {
 		console.log(error);
@@ -29,7 +30,7 @@ router.get('/count', auth, async (req, res) => {
 	try {
 		const account = res.locals.account;
 		const listNotification = await Notification.find({ user_id: account.id, status: 'unread' });
-		res.status(200).json({count: listNotification.length});
+		res.status(200).json({ count: listNotification.length });
 	} catch (error) {
 		console.error(error);
 		res.status(400).send({
