@@ -121,7 +121,7 @@ const ListAssignments = () => {
 											}
 										>
 											<ListItemText
-												primary={review?.comment[0]?.user.display_name}
+												primary={review?.comment?.length ? review?.comment[0]?.user?.display_name : ''}
 												secondary={review.status}
 												primaryTypographyProps={{ variant: 'subtitle1' }}
 												sx={{ minWidth: '440px', maxWidth: '440px' }}

@@ -269,7 +269,7 @@ export default function Grades() {
 			let listStGrades = {};
 			listAsgmnID.forEach((assID) => {
 				const stGrade = student.studentGrade.find((e) => e.grade_structure_id === assID);
-				listStGrades = { ...listStGrades, [assID]: stGrade?.student_grade || 0 };
+				listStGrades = { ...listStGrades, [assID]: stGrade?.student_grade };
 			});
 			return {
 				id: student.studentId,
