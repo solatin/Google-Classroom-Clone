@@ -282,7 +282,7 @@ router.get('/detail', auth, async (req, res) => {
       student_expect_grade: review.student_grade,
       grade_structure_id: review.grade_structure_id,
       comment: review.comment,
-      current_grade: currentGrade.student_grade,
+      current_grade: currentGrade?.student_grade,
     });
   } catch (error) {
     console.log(error);
