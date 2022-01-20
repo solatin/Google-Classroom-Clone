@@ -40,7 +40,7 @@ const CreateCommentModal = ({ open, handleClose, assignment, reFetch }) => {
                 <Typography variant="h6" textAlign="left" sx={{ display: 'block', mb: 1 }}>Expected Grade: {assignment?.review?.student_grade}</Typography>
                 <Typography variant="h6" textAlign="left" sx={{ display: 'block', mb: 1 }}>Explanation: {assignment?.review?.comment[0]?.comment}</Typography>
                 <Typography variant="h6" textAlign="left" sx={{ display: 'block', mb: 1 }}>Comment: </Typography>
-                {assignment?.review?.comment?.map((cmt) => <Typography sx={{ display: 'block', mb: 1 }}>{cmt?.user?.display_name}({cmt?.user?.role}): {cmt?.comment} </Typography>)}
+                {assignment?.review?.comment?.map((cmt) => <Typography sx={{ display: 'block', mb: 1 }}>{cmt?.user?.display_name}({cmt?.user?.role === 'teacher' ? 'teacher' : `${assignment?.review?.student_class_id}`}): {cmt?.comment} </Typography>)}
                 <TextField fullWidth color="secondary" label="Comment" variant="outlined" {...register('comment')} sx={{ display: 'block', mb: 2 }} />
 
             </DialogContent>
