@@ -71,7 +71,7 @@ export const TeacherReviewModal = ({ open, handleClose, assignmentName, id, refe
 				</Typography>
 				{review?.comment?.map((cmt) => (
 					<Typography sx={{ display: 'block', mb: 1 }}>
-						{cmt?.user?.display_name}({cmt?.user?.role}): {cmt?.comment}{' '}
+						{cmt?.user?.display_name}({cmt?.user?.role === 'teacher' ? 'teacher' : review.student_class_id}): {cmt?.comment}{' '}
 					</Typography>
 				))}
 				<TextField
